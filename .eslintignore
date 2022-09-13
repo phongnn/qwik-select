@@ -31,3 +31,5 @@ vite.config.ts
 vite.example.ts
 .eslintrc.cjs
 cypress.config.ts
+postcss.config.cjs
+tailwind.config.cjs

@@ -15,7 +15,11 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
-      "qwik-select": ["./node_modules/qwik-select/dist/types", "../dist/types"]
+      "~/*": ["./src/*"],
+      "qwik-lib-starter": [
+        "./node_modules/qwik-lib-starter/dist/types",
+        "../dist/types"
+      ]
     }
   },
   "include": ["src"]
