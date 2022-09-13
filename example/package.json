@@ -10,7 +10,7 @@
     "build.ssr": "vite build --ssr src/entry.express.tsx"
   },
   "dependencies": {
-    "qwik-lib-starter": "latest"
+    "qwik-select": "latest"
   },
   "devDependencies": {
     "@builder.io/qwik": "0.0.108",

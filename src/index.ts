@@ -1,15 +1,4 @@
-export function add(a: number, b: number) {
-  return a + b;
-}
+import Select from "./Select";
+export type { SelectProps } from "./Select";
 
-export function subtract(a: number, b: number) {
-  return a - b;
-}
-
-export function multiply(a: number, b: number) {
-  return a * b;
-}
-
-export function divide(a: number, b: number) {
-  return a / b;
-}
+export default Select;

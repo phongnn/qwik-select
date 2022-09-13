@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.example.ts --mode ssr",
     "test": "vitest",
-    "test.run": "vitest run",
+    "test.ci": "vitest run --passWithNoTests",
     "coverage": "vitest run --coverage",
     "cy": "cypress open",
     "e2e": "start-server-and-test dev http://localhost:5173 \"npx cypress run\"",
@@ -30,8 +30,10 @@
     "prepare": "npx husky install",
     "prepublishOnly": "pnpm build"
   },
+  "peerDependencies": {
+    "@builder.io/qwik": "^0.0.107"
+  },
   "devDependencies": {
-    "@builder.io/qwik": "^0.0.107",
     "@builder.io/qwik-city": "^0.0.109",
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
@@ -79,7 +81,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "pnpm test.run"
+      "pnpm test.ci"
     ]
   }
 }

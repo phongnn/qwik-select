@@ -1,14 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 
+import Select from "qwik-select";
+
 export default component$(() => {
-  return (
-    <div>
-      <h1>Welcome to Qwik City</h1>
-    </div>
-  );
+  return <Select />;
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik City",
+  title: "Basic example",
 };
