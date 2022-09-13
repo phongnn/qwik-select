@@ -1,0 +1,80 @@
+{
+  "name": "qwik-select",
+  "version": "0.0.0-semantic-release",
+  "description": "A template for creating a new library for Qwik framework.",
+  "homepage": "https://phongnn.github.io/qwik-select",
+  "repository": {
+    "url": "https://github.com/phongnn/qwik-select.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "qwik-select": "./dist/index.mjs",
+  "scripts": {
+    "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.example.ts --mode ssr",
+    "build.example": "vite build --config vite.example.ts --ssr src/entry.ssr.tsx",
+    "test": "vitest",
+    "test.run": "vitest run",
+    "coverage": "vitest run --coverage",
+    "cy": "cypress open",
+    "e2e": "start-server-and-test dev http://localhost:5173 \"npx cypress run\"",
+    "typecheck": "tsc --incremental --noEmit",
+    "build": "pnpm build.lib && pnpm build.types",
+    "build.lib": "vite build --mode lib",
+    "build.types": "tsc --emitDeclarationOnly",
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check .",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "release": "np",
+    "prepare": "npx husky install",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@builder.io/qwik": "^0.0.107",
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@faker-js/faker": "^7.5.0",
+    "@testing-library/cypress": "^8.0.3",
+    "@types/eslint": "8.4.6",
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "5.34.0",
+    "@typescript-eslint/parser": "5.34.0",
+    "@vitest/coverage-c8": "^0.22.1",
+    "cypress": "10.7.0",
+    "eslint": "8.22.0",
+    "eslint-plugin-qwik": "0.0.107",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "node-fetch": "3.2.10",
+    "np": "7.6.1",
+    "prettier": "2.7.1",
+    "start-server-and-test": "^1.14.0",
+    "typescript": "4.7.4",
+    "vite": "3.0.9",
+    "vitest": "^0.22.1"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "pnpm test.run"
+    ]
+  }
+}

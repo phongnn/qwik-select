@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "types": ["cypress", "@testing-library/cypress", "node"],
+    "paths": {
+      "~/*": ["../src/*"]
+    }
+  }
+}
