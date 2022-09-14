@@ -1,0 +1,5 @@
+.custom {
+  --listEmptyColor: red;
+  --listEmptyTextAlign: left;
+  --listEmptyPadding: 10px;
+}
