@@ -1,10 +1,12 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useStyles$ } from "@builder.io/qwik";
 
+import styles from "./input.css?inline";
 export interface ControlProps {
   placeholder: string;
 }
 
 const Control = component$((props: ControlProps) => {
+  useStyles$(styles);
   return (
     <div>
       <input type="text" placeholder={props.placeholder} />

@@ -1,5 +1,5 @@
 import { component$, useStyles$ } from "@builder.io/qwik";
-import Select from "qwik-select";
+import { Select } from "qwik-select";
 
 import styles from "./styles.css";
 
