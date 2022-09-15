@@ -1,13 +1,15 @@
 it("opens list when click on text input", () => {
   cy.visit("/basics");
+  cy.wait(500);
   cy.findByPlaceholderText("Select...").click();
-  cy.findAllByText(/(One)|(Two)|(Three)|(Four)|(Five)/).should(
-    "have.length",
-    5
-  );
-  // cy.findByText("Two").click();
-  // cy.findByDisplayValue("Two")
-  // cy.findByText("You've selected two.")
+  cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
+});
+
+it("shows first item in hover state", () => {
+  cy.visit("/basics");
+  cy.wait(500);
+  cy.findByPlaceholderText("Select...").click();
+  cy.findByText("One").should("have.class", "hover");
 });
 
 // List starts with first item in hover state

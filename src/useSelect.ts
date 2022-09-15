@@ -1,8 +1,22 @@
-import { useRef, useClientEffect$, useStore, $ } from "@builder.io/qwik";
+import {
+  useRef,
+  useClientEffect$,
+  useStore,
+  $,
+  useWatch$,
+} from "@builder.io/qwik";
+import { SelectOption } from "./types";
 
-export default function useSelect() {
-  const state = useStore({ isOpen: false });
+interface UseSelectParams {
+  options: SelectOption[];
+}
+
+export default function useSelect({ options }: UseSelectParams) {
+  const state = useStore({ isOpen: false, hoveredOptionIndex: -1 });
   const containerRef = useRef<HTMLElement>();
+
+  const hoveredOption = options[state.hoveredOptionIndex];
+  const isOptionHovered = (option: SelectOption) => option === hoveredOption;
 
   const toggle = $(() => (state.isOpen = !state.isOpen));
 
@@ -13,8 +27,18 @@ export default function useSelect() {
     };
   });
 
+  useWatch$(({ track }) => {
+    track(state, "isOpen");
+    if (state.isOpen) {
+      state.hoveredOptionIndex = 0;
+    }
+  });
+
   return {
-    state,
+    state: {
+      isOpen: state.isOpen,
+    },
     containerRef,
+    isOptionHovered,
   };
 }

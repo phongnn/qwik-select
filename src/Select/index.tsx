@@ -6,6 +6,7 @@ import useSelect from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import List from "./List";
+import ListItem from "./ListItem";
 
 import styles from "./select.css?inline";
 
@@ -22,12 +23,21 @@ const Select = component$((props: SelectProps) => {
 
   useStyles$(styles);
 
-  const { containerRef, state } = useSelect();
+  const { containerRef, state, isOptionHovered } = useSelect({
+    options: props.options,
+  });
   return (
     <Container ref={containerRef}>
       <div>
         <Control placeholder={placeholder} />
-        {state.isOpen && <List items={props.options} />}
+        {state.isOpen && (
+          <List
+            items={props.options}
+            renderItem={(opt) => (
+              <ListItem data={opt} isHovered={isOptionHovered(opt)} />
+            )}
+          />
+        )}
         {isEmpty && <div class="empty">{noOptionsMessage}</div>}
       </div>
     </Container>
