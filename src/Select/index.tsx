@@ -23,19 +23,17 @@ const Select = component$((props: SelectProps) => {
 
   useStyles$(styles);
 
-  const { containerRef, state, isOptionHovered } = useSelect({
+  const { refs, state } = useSelect({
     options: props.options,
   });
   return (
-    <Container ref={containerRef}>
+    <Container ref={refs.containerRef}>
       <div>
-        <Control placeholder={placeholder} />
+        <Control placeholder={placeholder} ref={refs.inputRef} />
         {state.isOpen && (
           <List
             items={props.options}
-            renderItem={(opt) => (
-              <ListItem data={opt} isHovered={isOptionHovered(opt)} />
-            )}
+            renderItem={(opt) => <ListItem data={opt} selectState={state} />}
           />
         )}
         {isEmpty && <div class="empty">{noOptionsMessage}</div>}

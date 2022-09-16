@@ -1,7 +1,8 @@
-import { component$, useStyles$ } from "@builder.io/qwik";
+import { component$, useStyles$, Ref } from "@builder.io/qwik";
 
 import styles from "./input.css?inline";
 export interface ControlProps {
+  ref: Ref<HTMLInputElement>;
   placeholder: string;
 }
 
@@ -9,7 +10,7 @@ const Control = component$((props: ControlProps) => {
   useStyles$(styles);
   return (
     <div>
-      <input type="text" placeholder={props.placeholder} />
+      <input type="text" placeholder={props.placeholder} ref={props.ref} />
     </div>
   );
 });

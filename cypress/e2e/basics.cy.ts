@@ -1,19 +1,22 @@
-it("opens list when click on text input", () => {
+it("opens list and allows navigation with keyboard", () => {
   cy.visit("/basics");
   cy.wait(500);
-  cy.findByPlaceholderText("Select...").click();
+  const input = cy.findByPlaceholderText("Select...");
+
+  // opens list when click on text input
+  input.click();
   cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
-});
 
-it("shows first item in hover state", () => {
-  cy.visit("/basics");
-  cy.wait(500);
-  cy.findByPlaceholderText("Select...").click();
+  // shows first item in hover state
   cy.findByText("One").should("have.class", "hover");
+
+  // updates hovered item on arrowDown and arrowUp
+  input.type("{downArrow}{downArrow}");
+  cy.findByText("Three").should("have.class", "hover");
+  input.type("{upArrow}{upArrow}{upArrow}");
+  cy.findByText("Five").should("have.class", "hover");
 });
 
-// List starts with first item in hover state
-// hover item updates on keyUp or keyDown
 // on enter active item fires a itemSelected event
 // on tab active item fires a itemSelected event
 // selected item\'s default view
