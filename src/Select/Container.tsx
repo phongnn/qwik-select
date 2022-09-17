@@ -1,14 +1,10 @@
-import { component$, Ref, Slot, useStyles$ } from "@builder.io/qwik";
+import { component$, Ref, Slot } from "@builder.io/qwik";
 
-import styles from "./container.css?inline";
-
-export interface ContainerProps {
+interface ContainerProps {
   ref: Ref<HTMLElement>;
 }
 
 export const Container = component$((props: ContainerProps) => {
-  useStyles$(styles);
-
   return (
     <div class="container" ref={props.ref}>
       <Slot />

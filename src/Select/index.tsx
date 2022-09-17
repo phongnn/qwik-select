@@ -5,7 +5,6 @@ import type { SelectOption } from "../types";
 import useSelect, { UseSelectParams } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
-import List from "./List";
 import ListItem from "./ListItem";
 
 import styles from "./select.css?inline";
@@ -45,10 +44,11 @@ const Select = component$((props: SelectProps) => {
           getOptionLabel={getOptionLabel}
         />
         {state.isOpen && (
-          <List
-            items={props.options}
-            renderItem={(opt) => <ListItem data={opt} selectState={state} />}
-          />
+          <div class="list">
+            {props.options.map((opt) => (
+              <ListItem data={opt} selectState={state} />
+            ))}
+          </div>
         )}
         {isEmpty && <div class="empty">{noOptionsMessage}</div>}
       </div>
