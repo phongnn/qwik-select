@@ -7,11 +7,7 @@ import {
   PropFunction,
 } from "@builder.io/qwik";
 
-import { SelectOption, SelectState } from "./types";
-
-interface SelectedOptionStore {
-  value?: SelectOption;
-}
+import { SelectOption } from "./types";
 
 export interface UseSelectParams {
   options: SelectOption[];
@@ -30,14 +26,16 @@ export default function useSelect({
     onChange$,
   });
 
-  const state = useStore<SelectState>({ isOpen: false });
-  const selectedOptionStore = useStore<SelectedOptionStore>({
-    value: initialValue,
-  });
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
 
-  const toggle = $(() => (state.isOpen = !state.isOpen));
+  const isOpenStore = useStore({ value: false });
+  const selectedOptionStore = useStore<{ value?: SelectOption }>({
+    value: initialValue,
+  });
+  const hoveredOptionStore = useStore<{ value?: SelectOption }>({});
+
+  const toggleMenu = $(() => (isOpenStore.value = !isOpenStore.value));
 
   const clearHoveredOption = $(() => (internalState.hoveredOptionIndex = -1));
   const hoverFirstOption = $(() => (internalState.hoveredOptionIndex = 0));
@@ -60,7 +58,7 @@ export default function useSelect({
         internalState.onChange$(opt);
       }
     }
-    state.isOpen = false;
+    isOpenStore.value = false;
   });
 
   const handleKeyDown = $(async (event: KeyboardEvent) => {
@@ -69,24 +67,24 @@ export default function useSelect({
     } else if (event.key === "ArrowUp") {
       hoverOption("previous");
     } else if (event.key === "Enter" || event.key === "Tab") {
-      if (state.hoveredOption) {
-        setSelectedOption(state.hoveredOption);
+      if (hoveredOptionStore.value) {
+        setSelectedOption(hoveredOptionStore.value);
       }
     }
   });
 
   useClientEffect$(() => {
-    containerRef.current?.addEventListener("click", toggle);
+    containerRef.current?.addEventListener("click", toggleMenu);
     inputRef.current?.addEventListener("keydown", handleKeyDown);
     return () => {
-      containerRef.current?.removeEventListener("click", toggle);
+      containerRef.current?.removeEventListener("click", toggleMenu);
       inputRef.current?.removeEventListener("keydown", handleKeyDown);
     };
   });
 
   useWatch$(function updateHoveredOptionOnListToggle({ track }) {
-    track(state, "isOpen");
-    if (state.isOpen) {
+    track(isOpenStore, "value");
+    if (isOpenStore.value) {
       hoverFirstOption();
     } else {
       clearHoveredOption();
@@ -95,7 +93,8 @@ export default function useSelect({
 
   useWatch$(function computeHoveredOption({ track }) {
     const idx = track(internalState, "hoveredOptionIndex");
-    state.hoveredOption = idx >= 0 ? internalState.options[idx] : undefined;
+    hoveredOptionStore.value =
+      idx >= 0 ? internalState.options[idx] : undefined;
   });
 
   // useWatch$(function triggerOnChange({ track }) {
@@ -106,13 +105,14 @@ export default function useSelect({
   // });
 
   return {
-    state,
     refs: {
       containerRef,
       inputRef,
     },
     stores: {
+      isOpenStore,
       selectedOptionStore,
+      hoveredOptionStore,
     },
   };
 }

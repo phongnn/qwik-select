@@ -29,8 +29,8 @@ const Select = component$((props: SelectProps) => {
   const isEmpty = !props.options || props.options.length === 0;
   const getOptionLabel = props.getOptionLabel || defaultGetOptionLabel;
 
-  const { refs, state, stores } = useSelect(props);
-  const { selectedOptionStore } = stores;
+  const { refs, stores } = useSelect(props);
+  const { selectedOptionStore, hoveredOptionStore, isOpenStore } = stores;
 
   useStyles$(styles);
 
@@ -43,10 +43,10 @@ const Select = component$((props: SelectProps) => {
           selectedOptionStore={selectedOptionStore}
           getOptionLabel={getOptionLabel}
         />
-        {state.isOpen && (
+        {isOpenStore.value && (
           <div class="list">
             {props.options.map((opt) => (
-              <ListItem data={opt} selectState={state} />
+              <ListItem data={opt} hoveredOptionStore={hoveredOptionStore} />
             ))}
           </div>
         )}
