@@ -1,4 +1,4 @@
-export type SelectOption = string | { value: string; label: string };
+export type SelectOption = any;
 export interface SelectState {
   isOpen: boolean;
   hoveredOption?: SelectOption;

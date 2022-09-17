@@ -4,16 +4,36 @@ import {
   useStore,
   $,
   useWatch$,
+  PropFunction,
 } from "@builder.io/qwik";
+
 import { SelectOption, SelectState } from "./types";
 
-interface UseSelectParams {
-  options: SelectOption[];
+interface SelectedOptionStore {
+  value?: SelectOption;
 }
 
-export default function useSelect({ options }: UseSelectParams) {
-  const internalState = useStore({ options, hoveredOptionIndex: -1 });
+export interface UseSelectParams {
+  options: SelectOption[];
+  initialValue?: SelectOption;
+  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+}
+
+export default function useSelect({
+  options,
+  initialValue,
+  onChange$,
+}: UseSelectParams) {
+  const internalState = useStore({
+    options,
+    hoveredOptionIndex: -1,
+    onChange$,
+  });
+
   const state = useStore<SelectState>({ isOpen: false });
+  const selectedOptionStore = useStore<SelectedOptionStore>({
+    value: initialValue,
+  });
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
 
@@ -33,11 +53,25 @@ export default function useSelect({ options }: UseSelectParams) {
     internalState.hoveredOptionIndex = index;
   });
 
-  const handleKeyDown = $((event: KeyboardEvent) => {
+  const setSelectedOption = $((opt: SelectOption) => {
+    if (selectedOptionStore.value !== opt) {
+      selectedOptionStore.value = opt;
+      if (internalState.onChange$) {
+        internalState.onChange$(opt);
+      }
+    }
+    state.isOpen = false;
+  });
+
+  const handleKeyDown = $(async (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       hoverOption("next");
     } else if (event.key === "ArrowUp") {
       hoverOption("previous");
+    } else if (event.key === "Enter" || event.key === "Tab") {
+      if (state.hoveredOption) {
+        setSelectedOption(state.hoveredOption);
+      }
     }
   });
 
@@ -64,11 +98,21 @@ export default function useSelect({ options }: UseSelectParams) {
     state.hoveredOption = idx >= 0 ? internalState.options[idx] : undefined;
   });
 
+  // useWatch$(function triggerOnChange({ track }) {
+  //   const val = track(value, "current");
+  //   if (internalState.onChange$) {
+  //     internalState.onChange$(val);
+  //   }
+  // });
+
   return {
     state,
     refs: {
       containerRef,
       inputRef,
+    },
+    stores: {
+      selectedOptionStore,
     },
   };
 }

@@ -1,19 +1,34 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useStore } from "@builder.io/qwik";
 import { Select } from "qwik-select";
-import type { SelectOption } from "qwik-select";
 
-export const items: SelectOption[] = [
-  { value: "1", label: "One" },
-  { value: "2", label: "Two" },
-  { value: "3", label: "Three" },
-  { value: "4", label: "Four" },
-  { value: "5", label: "Five" },
+interface Item {
+  value: number;
+  label: string;
+}
+
+export const items: Item[] = [
+  { value: 1, label: "One" },
+  { value: 2, label: "Two" },
+  { value: 3, label: "Three" },
+  { value: 4, label: "Four" },
+  { value: 5, label: "Five" },
 ];
 
 export default component$(() => {
+  const state = useStore({
+    items: items,
+    selectedItem: null,
+  });
+
   return (
     <div>
-      <Select options={items} />
+      <Select
+        options={state.items}
+        onChange$={(it) => (state.selectedItem = it)}
+      />
+      {state.selectedItem && (
+        <p>You've selected {(state.selectedItem as Item).label}.</p>
+      )}
     </div>
   );
 });

@@ -15,10 +15,12 @@ it("opens list and allows navigation with keyboard", () => {
   cy.findByText("Three").should("have.class", "hover");
   input.type("{upArrow}{upArrow}{upArrow}");
   cy.findByText("Five").should("have.class", "hover");
+
+  // sets value on Enter
+  input.type("{enter}");
+  cy.findByText("You've selected Five.");
 });
 
-// on enter active item fires a itemSelected event
-// on tab active item fires a itemSelected event
 // selected item\'s default view
 // should highlight active list item
 // list scrolls to active item
