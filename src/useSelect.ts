@@ -15,51 +15,83 @@ export interface UseSelectParams {
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
 }
 
-export default function useSelect({
-  options,
-  initialValue,
-  onChange$,
-}: UseSelectParams) {
-  const internalState = useStore({
-    options,
-    hoveredOptionIndex: -1,
-    onChange$,
-  });
-
-  const containerRef = useRef<HTMLElement>();
-  const inputRef = useRef<HTMLInputElement>();
-
+function useIsOpenStore() {
   const isOpenStore = useStore({ value: false });
-  const selectedOptionStore = useStore<{ value?: SelectOption }>({
-    value: initialValue,
-  });
+  const toggleMenu = $(() => (isOpenStore.value = !isOpenStore.value));
+  const closeMenu = $(() => (isOpenStore.value = false));
+  const actions = { toggleMenu, closeMenu };
+  return { isOpenStore, actions };
+}
+
+function useHoveredOptionStore(props: UseSelectParams) {
+  const state = useStore({ hoveredOptionIndex: -1 });
   const hoveredOptionStore = useStore<{ value?: SelectOption }>({});
 
-  const toggleMenu = $(() => (isOpenStore.value = !isOpenStore.value));
+  useWatch$(function computeHoveredOption({ track }) {
+    const idx = track(state, "hoveredOptionIndex");
+    hoveredOptionStore.value = idx >= 0 ? props.options[idx] : undefined;
+  });
 
-  const clearHoveredOption = $(() => (internalState.hoveredOptionIndex = -1));
-  const hoverFirstOption = $(() => (internalState.hoveredOptionIndex = 0));
+  const clearHoveredOption = $(() => (state.hoveredOptionIndex = -1));
+  const hoverFirstOption = $(() => (state.hoveredOptionIndex = 0));
   const hoverOption = $((direction: "next" | "previous") => {
-    const max = internalState.options.length - 1;
+    const max = props.options.length - 1;
     const delta = direction === "next" ? 1 : -1;
-    let index = internalState.hoveredOptionIndex + delta;
+    let index = state.hoveredOptionIndex + delta;
     if (index > max) {
       index = 0;
     } else if (index < 0) {
       index = max;
     }
-    internalState.hoveredOptionIndex = index;
+    state.hoveredOptionIndex = index;
+  });
+
+  const actions = { hoverFirstOption, hoverOption, clearHoveredOption };
+  return { hoveredOptionStore, actions };
+}
+
+function useSelectedOptionStore(props: UseSelectParams) {
+  const selectedOptionStore = useStore<{ value?: SelectOption }>({
+    value: props.initialValue,
   });
 
   const setSelectedOption = $((opt: SelectOption) => {
     if (selectedOptionStore.value !== opt) {
       selectedOptionStore.value = opt;
-      if (internalState.onChange$) {
-        internalState.onChange$(opt);
+      if (props.onChange$) {
+        props.onChange$(opt);
       }
     }
-    isOpenStore.value = false;
   });
+
+  // useWatch$(function triggerOnChange({ track }) {
+  //   const val = track(selectedOptionStore, "value");
+  //   if (props.onChange$) {
+  //     props.onChange$(val);
+  //   }
+  // });
+
+  return { selectedOptionStore, actions: { setSelectedOption } };
+}
+
+export default function useSelect(props: UseSelectParams) {
+  const containerRef = useRef<HTMLElement>();
+  const inputRef = useRef<HTMLInputElement>();
+
+  const {
+    hoveredOptionStore,
+    actions: { hoverOption, hoverFirstOption, clearHoveredOption },
+  } = useHoveredOptionStore(props);
+
+  const {
+    isOpenStore,
+    actions: { toggleMenu, closeMenu },
+  } = useIsOpenStore();
+
+  const {
+    selectedOptionStore,
+    actions: { setSelectedOption },
+  } = useSelectedOptionStore(props);
 
   const handleKeyDown = $(async (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
@@ -69,6 +101,7 @@ export default function useSelect({
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.value) {
         setSelectedOption(hoveredOptionStore.value);
+        closeMenu();
       }
     }
   });
@@ -90,19 +123,6 @@ export default function useSelect({
       clearHoveredOption();
     }
   });
-
-  useWatch$(function computeHoveredOption({ track }) {
-    const idx = track(internalState, "hoveredOptionIndex");
-    hoveredOptionStore.value =
-      idx >= 0 ? internalState.options[idx] : undefined;
-  });
-
-  // useWatch$(function triggerOnChange({ track }) {
-  //   const val = track(value, "current");
-  //   if (internalState.onChange$) {
-  //     internalState.onChange$(val);
-  //   }
-  // });
 
   return {
     refs: {
