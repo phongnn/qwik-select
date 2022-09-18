@@ -1,28 +1,19 @@
-import { Ref } from "@builder.io/qwik";
-
-import { SelectOption } from "../types";
+import { MutableWrapper, Ref } from "@builder.io/qwik";
 
 interface ControlProps {
   ref: Ref<HTMLInputElement>;
-  selectedOptionStore: {
-    value?: SelectOption;
-  };
   placeholder: string;
-  getOptionLabel: (opt: SelectOption) => string;
+  value?: MutableWrapper<string>;
 }
 
 const Control = (props: ControlProps) => {
-  const selectedOptionLabel = props.selectedOptionStore.value
-    ? props.getOptionLabel(props.selectedOptionStore.value)
-    : undefined;
-
   return (
     <div>
       <input
         type="text"
         placeholder={props.placeholder}
         ref={props.ref}
-        value={selectedOptionLabel}
+        value={props.value?.v}
       />
     </div>
   );

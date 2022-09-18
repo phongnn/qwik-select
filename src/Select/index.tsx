@@ -1,4 +1,4 @@
-import { component$, useStyles$ } from "@builder.io/qwik";
+import { component$, useStyles$, mutable } from "@builder.io/qwik";
 
 import type { SelectOption } from "../types";
 
@@ -29,8 +29,13 @@ const Select = component$((props: SelectProps) => {
   const isEmpty = !props.options || props.options.length === 0;
   const getOptionLabel = props.getOptionLabel || defaultGetOptionLabel;
 
-  const { refs, stores } = useSelect(props);
-  const { selectedOptionStore, hoveredOptionStore, isOpenStore } = stores;
+  const { refs, state } = useSelect(props);
+  // const { selectedOptionStore, hoveredOptionStore, isOpenStore } = stores;
+
+  const selectedOptionLabel = state.value
+    ? getOptionLabel(state.value)
+    : undefined;
+  const isOptionHovered = (opt: SelectOption) => state.hoveredOption === opt;
 
   useStyles$(styles);
 
@@ -40,14 +45,19 @@ const Select = component$((props: SelectProps) => {
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
-          selectedOptionStore={selectedOptionStore}
-          getOptionLabel={getOptionLabel}
+          value={mutable(selectedOptionLabel)}
         />
-        {isOpenStore.value && (
+        {state.isOpen && (
           <div class="list">
-            {props.options.map((opt) => (
-              <ListItem data={opt} hoveredOptionStore={hoveredOptionStore} />
-            ))}
+            {props.options.map((opt) => {
+              return (
+                <ListItem
+                  data={opt}
+                  isOptionHovered={mutable(isOptionHovered)}
+                  getOptionLabel={getOptionLabel}
+                />
+              );
+            })}
           </div>
         )}
         {isEmpty && <div class="empty">{noOptionsMessage}</div>}

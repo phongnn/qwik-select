@@ -35,6 +35,10 @@ function useHoveredOptionStore(props: UseSelectParams) {
   const clearHoveredOption = $(() => (state.hoveredOptionIndex = -1));
   const hoverFirstOption = $(() => (state.hoveredOptionIndex = 0));
   const hoverOption = $((direction: "next" | "previous") => {
+    if (state.hoveredOptionIndex < 0) {
+      return;
+    }
+
     const max = props.options.length - 1;
     const delta = direction === "next" ? 1 : -1;
     let index = state.hoveredOptionIndex + delta;
@@ -129,10 +133,15 @@ export default function useSelect(props: UseSelectParams) {
       containerRef,
       inputRef,
     },
-    stores: {
-      isOpenStore,
-      selectedOptionStore,
-      hoveredOptionStore,
+    state: {
+      isOpen: isOpenStore.value,
+      value: selectedOptionStore.value,
+      hoveredOption: hoveredOptionStore.value,
     },
+    // stores: {
+    //   isOpenStore,
+    //   selectedOptionStore,
+    //   hoveredOptionStore,
+    // },
   };
 }

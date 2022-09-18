@@ -1,16 +1,17 @@
+import { MutableWrapper } from "@builder.io/qwik";
+
 import { SelectOption } from "../types";
 
 interface ListItemProps {
   data: SelectOption;
-  hoveredOptionStore: {
-    value?: SelectOption;
-  };
+  isOptionHovered: MutableWrapper<(opt: SelectOption) => boolean>;
+  getOptionLabel: (opt: SelectOption) => string;
 }
 
-export const ListItem = ({ data, hoveredOptionStore }: ListItemProps) => {
-  const isHovered = data === hoveredOptionStore.value;
-  const classes = `item ${isHovered ? "hover" : ""}`;
-  const label = typeof data === "string" ? data : data.label;
+export const ListItem = (props: ListItemProps) => {
+  const { data, isOptionHovered, getOptionLabel } = props;
+  const classes = `item ${isOptionHovered.v(data) ? "hover" : ""}`;
+  const label = getOptionLabel(data);
   return <div class={classes}>{label}</div>;
 };
 
