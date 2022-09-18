@@ -104,6 +104,11 @@ input.disabled::placeholder {
   color: var(--itemHoverColor, inherit);
 }
 
+.item:hover:not(.selected) {
+  background: var(--itemHoverBG, #e7f2ff);
+  color: var(--itemHoverColor, inherit);
+}
+
 .empty {
   text-align: var(--listEmptyTextAlign, center);
   padding: var(--listEmptyPadding, 20px 0);
