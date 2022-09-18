@@ -1,11 +1,22 @@
-it("opens list and allows navigation with keyboard", () => {
+it("opens menu when click on text input", () => {
   cy.visit("/basics");
   cy.wait(500);
+  cy.findByPlaceholderText("Select...").click();
+
+  // opens menu
+  cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
+
+  // shows first item in hover state
+  cy.findByText("One").should("have.class", "hover");
+});
+
+it("allows navigation with keyboard", () => {
+  cy.visit("/basics");
   const input = cy.findByPlaceholderText("Select...");
 
-  // opens list when click on text input
-  input.click();
-  cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
+  // opens menu
+  input.type("{downArrow}");
+  cy.wait(500);
 
   // shows first item in hover state
   cy.findByText("One").should("have.class", "hover");
@@ -19,6 +30,33 @@ it("opens list and allows navigation with keyboard", () => {
   // sets value on Enter
   input.type("{enter}");
   cy.findByText("You've selected Five.");
+});
+
+it("closes menu on Escape", () => {
+  cy.visit("/basics");
+  const input = cy.findByPlaceholderText("Select...");
+
+  // opens menu
+  input.type("{downArrow}");
+  cy.wait(500);
+  cy.findByText("One").should("have.class", "hover");
+
+  // closes menu on Escape
+  input.type("{esc}");
+  cy.get(".item").should("not.exist");
+});
+
+it("closes menu when click outside", () => {
+  cy.visit("/basics");
+  cy.wait(500);
+
+  // opens menu
+  cy.findByPlaceholderText("Select...").click();
+  cy.findByText("One").should("have.class", "hover");
+
+  // closes menu when click outside
+  cy.findByTestId("outside").click();
+  cy.get(".item").should("not.exist");
 });
 
 // selected item\'s default view

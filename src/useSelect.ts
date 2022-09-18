@@ -18,8 +18,9 @@ export interface UseSelectParams {
 function useIsOpenStore() {
   const isOpenStore = useStore({ value: false });
   const toggleMenu = $(() => (isOpenStore.value = !isOpenStore.value));
+  const openMenu = $(() => (isOpenStore.value = true));
   const closeMenu = $(() => (isOpenStore.value = false));
-  const actions = { toggleMenu, closeMenu };
+  const actions = { toggleMenu, openMenu, closeMenu };
   return { isOpenStore, actions };
 }
 
@@ -89,7 +90,7 @@ export default function useSelect(props: UseSelectParams) {
 
   const {
     isOpenStore,
-    actions: { toggleMenu, closeMenu },
+    actions: { toggleMenu, openMenu, closeMenu },
   } = useIsOpenStore();
 
   const {
@@ -99,7 +100,11 @@ export default function useSelect(props: UseSelectParams) {
 
   const handleKeyDown = $(async (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
-      hoverOption("next");
+      if (isOpenStore.value) {
+        hoverOption("next");
+      } else {
+        openMenu();
+      }
     } else if (event.key === "ArrowUp") {
       hoverOption("previous");
     } else if (event.key === "Enter" || event.key === "Tab") {
@@ -107,14 +112,21 @@ export default function useSelect(props: UseSelectParams) {
         setSelectedOption(hoveredOptionStore.value);
         closeMenu();
       }
+    } else if (event.key === "Escape") {
+      closeMenu();
     }
   });
 
   useClientEffect$(() => {
     containerRef.current?.addEventListener("click", toggleMenu);
+    containerRef.current?.addEventListener("focusout", closeMenu);
+
     inputRef.current?.addEventListener("keydown", handleKeyDown);
+
     return () => {
       containerRef.current?.removeEventListener("click", toggleMenu);
+      containerRef.current?.removeEventListener("focusout", closeMenu);
+
       inputRef.current?.removeEventListener("keydown", handleKeyDown);
     };
   });
