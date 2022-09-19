@@ -118,30 +118,28 @@ export default function useSelect(props: UseSelectParams) {
     }
   });
 
-  // const handleFocusOut = $((e: FocusEvent) => {
-  //   debugger;
-  //   // console.log("inside focus out.....");
-  //   // const target = e.relatedTarget as HTMLElement;
-  //   // if (listRef.current?.contains(target)) {
-  //   //   e.preventDefault();
-  //   //   e.stopPropagation();
-  //   //   return;
-  //   // }
-
-  //   closeMenu();
-  // });
+  const handlePointerDown = $((event: PointerEvent) => {
+    // avoid triggering "focusout" event when user clicks on a menu item
+    // otherwise the item's click event won't fire
+    if (event.target !== inputRef.current) {
+      event.preventDefault();
+    }
+  });
 
   useClientEffect$(() => {
     containerRef.current?.addEventListener("click", toggleMenu);
-    // containerRef.current?.addEventListener("focusout", handleFocusOut);
+    containerRef.current?.addEventListener("pointerdown", handlePointerDown);
 
     inputRef.current?.addEventListener("keydown", handleKeyDown);
+    inputRef.current?.addEventListener("focusout", closeMenu);
 
     return () => {
       containerRef.current?.removeEventListener("click", toggleMenu);
-      // containerRef.current?.removeEventListener("focusout", handleFocusOut);
+      // prettier-ignore
+      containerRef.current?.removeEventListener("pointerdown", handlePointerDown);
 
       inputRef.current?.removeEventListener("keydown", handleKeyDown);
+      inputRef.current?.removeEventListener("focusout", closeMenu);
     };
   });
 
