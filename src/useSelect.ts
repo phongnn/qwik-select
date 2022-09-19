@@ -60,7 +60,7 @@ function useSelectedOptionStore(props: UseSelectParams) {
     value: props.initialValue,
   });
 
-  const setSelectedOption = $((opt: SelectOption) => {
+  const selectOption = $((opt: SelectOption) => {
     if (selectedOptionStore.value !== opt) {
       selectedOptionStore.value = opt;
       if (props.onChange$) {
@@ -76,12 +76,13 @@ function useSelectedOptionStore(props: UseSelectParams) {
   //   }
   // });
 
-  return { selectedOptionStore, actions: { setSelectedOption } };
+  return { selectedOptionStore, actions: { selectOption } };
 }
 
 export default function useSelect(props: UseSelectParams) {
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
+  const listRef = useRef<HTMLElement>();
 
   const {
     hoveredOptionStore,
@@ -95,7 +96,7 @@ export default function useSelect(props: UseSelectParams) {
 
   const {
     selectedOptionStore,
-    actions: { setSelectedOption },
+    actions: { selectOption },
   } = useSelectedOptionStore(props);
 
   const handleKeyDown = $(async (event: KeyboardEvent) => {
@@ -109,7 +110,7 @@ export default function useSelect(props: UseSelectParams) {
       hoverOption("previous");
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.value) {
-        setSelectedOption(hoveredOptionStore.value);
+        selectOption(hoveredOptionStore.value);
         closeMenu();
       }
     } else if (event.key === "Escape") {
@@ -117,15 +118,28 @@ export default function useSelect(props: UseSelectParams) {
     }
   });
 
+  // const handleFocusOut = $((e: FocusEvent) => {
+  //   debugger;
+  //   // console.log("inside focus out.....");
+  //   // const target = e.relatedTarget as HTMLElement;
+  //   // if (listRef.current?.contains(target)) {
+  //   //   e.preventDefault();
+  //   //   e.stopPropagation();
+  //   //   return;
+  //   // }
+
+  //   closeMenu();
+  // });
+
   useClientEffect$(() => {
     containerRef.current?.addEventListener("click", toggleMenu);
-    containerRef.current?.addEventListener("focusout", closeMenu);
+    // containerRef.current?.addEventListener("focusout", handleFocusOut);
 
     inputRef.current?.addEventListener("keydown", handleKeyDown);
 
     return () => {
       containerRef.current?.removeEventListener("click", toggleMenu);
-      containerRef.current?.removeEventListener("focusout", closeMenu);
+      // containerRef.current?.removeEventListener("focusout", handleFocusOut);
 
       inputRef.current?.removeEventListener("keydown", handleKeyDown);
     };
@@ -144,11 +158,15 @@ export default function useSelect(props: UseSelectParams) {
     refs: {
       containerRef,
       inputRef,
+      listRef,
     },
     state: {
       isOpen: isOpenStore.value,
       value: selectedOptionStore.value,
       hoveredOption: hoveredOptionStore.value,
+    },
+    actions: {
+      selectOption,
     },
     // stores: {
     //   isOpenStore,

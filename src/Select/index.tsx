@@ -5,7 +5,7 @@ import type { SelectOption } from "../types";
 import useSelect, { UseSelectParams } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
-import ListItem from "./ListItem";
+import MenuItem from "./MenuItem";
 
 import styles from "./select.css?inline";
 
@@ -29,8 +29,7 @@ const Select = component$((props: SelectProps) => {
   const isEmpty = !props.options || props.options.length === 0;
   const getOptionLabel = props.getOptionLabel || defaultGetOptionLabel;
 
-  const { refs, state } = useSelect(props);
-  // const { selectedOptionStore, hoveredOptionStore, isOpenStore } = stores;
+  const { refs, state, actions } = useSelect(props);
 
   const selectedOptionLabel = state.value
     ? getOptionLabel(state.value)
@@ -48,13 +47,14 @@ const Select = component$((props: SelectProps) => {
           value={mutable(selectedOptionLabel)}
         />
         {state.isOpen && (
-          <div class="list">
+          <div class="menu" ref={refs.listRef}>
             {props.options.map((opt) => {
               return (
-                <ListItem
-                  data={opt}
+                <MenuItem
+                  option={opt}
                   isOptionHovered={mutable(isOptionHovered)}
                   getOptionLabel={getOptionLabel}
+                  onClick$={() => actions.selectOption(opt)}
                 />
               );
             })}

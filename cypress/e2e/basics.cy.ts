@@ -59,6 +59,18 @@ it("closes menu when click outside", () => {
   cy.get(".item").should("not.exist");
 });
 
+it.only("sets value when click on item", () => {
+  cy.visit("/basics");
+  cy.wait(500);
+
+  // opens menu
+  cy.findByPlaceholderText("Select...").click();
+
+  // sets value when click on item
+  cy.findByText("Three").click();
+  cy.findByText("You've selected Three.");
+});
+
 // selected item\'s default view
 // should highlight active list item
 // list scrolls to active item
