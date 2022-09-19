@@ -75,12 +75,3 @@ it("sets value when click on item", () => {
   cy.findByText("Three").click();
   cy.findByText("You've selected Three.");
 });
-
-// selected item\'s default view
-// should highlight active list item
-// list scrolls to active item
-// list scrolls to hovered item when navigating with keys
-// select view updates with value updates
-// clear wipes value and updates view
-// when isFocused true container adds focused class
-// when isFocused changes to true input should focus
