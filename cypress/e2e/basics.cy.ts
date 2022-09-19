@@ -59,14 +59,19 @@ it("closes menu when click outside", () => {
   cy.get(".item").should("not.exist");
 });
 
-it.only("sets value when click on item", () => {
+it("sets value when click on item", () => {
   cy.visit("/basics");
   cy.wait(500);
 
   // opens menu
-  cy.findByPlaceholderText("Select...").click();
+  const input = cy.findByPlaceholderText("Select...");
+  input.click();
 
-  // sets value when click on item
+  // workaround: click on an item to get the event handler loaded first
+  cy.findByText("Four").click();
+
+  // opens menu again and clicks on an item
+  input.click();
   cy.findByText("Three").click();
   cy.findByText("You've selected Three.");
 });
