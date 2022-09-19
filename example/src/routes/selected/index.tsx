@@ -19,17 +19,20 @@ export const items: Item[] = [
   { value: 10, label: "Ten" },
 ];
 
+export const initialValue = items[8]; // "Nine"
+
 export default component$(() => {
   const state = useStore({
     items: items,
-    selectedItem: items[8], // "Nine"
+    initialValue: initialValue,
+    selectedItem: initialValue,
   });
 
   return (
     <div>
       <Select
         options={state.items}
-        initialValue={state.selectedItem}
+        initialValue={state.initialValue}
         onChange$={(it) => (state.selectedItem = it)}
       />
       {state.selectedItem && (

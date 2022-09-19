@@ -4,6 +4,14 @@ it("shows selected value", () => {
   cy.get("input").should("have.value", "Nine");
 });
 
+it.only("highlights selected option in menu", () => {
+  cy.visit("/selected");
+  cy.wait(500);
+  cy.get("input").click();
+
+  cy.findByText("Nine").should("have.class", "selected");
+});
+
 // should highlight active list item
 // list scrolls to active item
 // list scrolls to hovered item when navigating with keys

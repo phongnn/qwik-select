@@ -34,7 +34,6 @@ const Select = component$((props: SelectProps) => {
   const selectedOptionLabel = state.value
     ? getOptionLabel(state.value)
     : undefined;
-  const isOptionHovered = (opt: SelectOption) => state.hoveredOption === opt;
 
   useStyles$(styles);
 
@@ -49,11 +48,15 @@ const Select = component$((props: SelectProps) => {
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>
             {props.options.map((opt) => {
+              const isSelected = opt === state.value;
+              const isHovered = opt === state.hoveredOption;
+
               return (
                 <MenuItem
                   option={opt}
-                  isOptionHovered={mutable(isOptionHovered)}
                   getOptionLabel={getOptionLabel}
+                  isSelected={mutable(isSelected)}
+                  isHovered={mutable(isHovered)}
                   onClick$={() => actions.selectOption(opt)}
                 />
               );

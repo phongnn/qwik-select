@@ -4,15 +4,17 @@ import { SelectOption } from "../types";
 
 interface MenuItemProps {
   option: SelectOption;
-  isOptionHovered: MutableWrapper<(opt: SelectOption) => boolean>;
   getOptionLabel: (opt: SelectOption) => string;
+  isSelected: MutableWrapper<boolean>;
+  isHovered: MutableWrapper<boolean>;
   onClick$: PropFunction<() => void>;
 }
 
 export const MenuItem = (props: MenuItemProps) => {
-  const { option, isOptionHovered, getOptionLabel } = props;
-  const classes = `item ${isOptionHovered.v(option) ? "hover" : ""}`;
+  const { option, getOptionLabel, isHovered, isSelected } = props;
   const label = getOptionLabel(option);
+  // prettier-ignore
+  const classes = `item ${isSelected.v ? "selected" : ""} ${isHovered.v ? "hover" : ""}`
 
   return (
     <div class={classes} onClick$={props.onClick$}>
