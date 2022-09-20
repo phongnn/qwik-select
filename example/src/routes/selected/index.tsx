@@ -1,4 +1,4 @@
-import { component$, useStore } from "@builder.io/qwik";
+import { component$, useStore, mutable } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 
 interface Item {
@@ -19,20 +19,17 @@ export const items: Item[] = [
   { value: 10, label: "Ten" },
 ];
 
-export const initialValue = items[8]; // "Nine"
-
 export default component$(() => {
   const state = useStore({
     items: items,
-    initialValue: initialValue,
-    selectedItem: initialValue,
+    selectedItem: items[8], // "Nine",
   });
 
   return (
     <div>
       <Select
         options={state.items}
-        initialValue={state.initialValue}
+        value={mutable(state.selectedItem)}
         onChange$={(it) => (state.selectedItem = it)}
       />
       {state.selectedItem && (

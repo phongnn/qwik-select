@@ -29,10 +29,10 @@ const Select = component$((props: SelectProps) => {
   const isEmpty = !props.options || props.options.length === 0;
   const getOptionLabel = props.getOptionLabel || defaultGetOptionLabel;
 
-  const { refs, state, actions } = useSelect(props);
+  const { refs, state } = useSelect(props);
 
-  const selectedOptionLabel = state.value
-    ? getOptionLabel(state.value)
+  const selectedOptionLabel = props.value
+    ? getOptionLabel(props.value)
     : undefined;
 
   useStyles$(styles);
@@ -48,7 +48,7 @@ const Select = component$((props: SelectProps) => {
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>
             {props.options.map((opt) => {
-              const isSelected = opt === state.value;
+              const isSelected = opt === props.value;
               const isHovered = opt === state.hoveredOption;
 
               return (
@@ -57,7 +57,11 @@ const Select = component$((props: SelectProps) => {
                   getOptionLabel={getOptionLabel}
                   isSelected={mutable(isSelected)}
                   isHovered={mutable(isHovered)}
-                  onClick$={() => actions.selectOption(opt)}
+                  onClick$={async () => {
+                    if (props.onChange$) {
+                      props.onChange$(opt);
+                    }
+                  }}
                 />
               );
             })}

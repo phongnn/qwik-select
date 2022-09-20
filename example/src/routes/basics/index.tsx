@@ -1,4 +1,4 @@
-import { component$, useStore } from "@builder.io/qwik";
+import { component$, useStore, mutable } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 
 interface Item {
@@ -24,6 +24,7 @@ export default component$(() => {
     <div>
       <Select
         options={state.items}
+        value={mutable(state.selectedItem)}
         onChange$={(it) => (state.selectedItem = it)}
       />
       {state.selectedItem && (

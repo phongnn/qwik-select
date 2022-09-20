@@ -11,7 +11,7 @@ import { SelectOption } from "./types";
 
 export interface UseSelectParams {
   options: SelectOption[];
-  initialValue?: SelectOption;
+  value?: SelectOption;
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
 }
 
@@ -89,27 +89,14 @@ function useHoveredOptionStore(props: UseSelectParams) {
   return { hoveredOptionStore: state, actions };
 }
 
-function useSelectedOptionStore(props: UseSelectParams) {
-  const selectedOptionStore = useStore<{ value?: SelectOption }>({
-    value: props.initialValue,
-  });
-
-  const selectOption = $((opt: SelectOption) => {
-    if (selectedOptionStore.value !== opt) {
-      selectedOptionStore.value = opt;
-      if (props.onChange$) {
-        props.onChange$(opt);
-      }
-    }
-  });
-
-  return { selectedOptionStore, actions: { selectOption } };
-}
-
 export default function useSelect(props: UseSelectParams) {
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
   const listRef = useRef<HTMLElement>();
+
+  // propsStore is needed as otherwise we will get an error
+  // "props is not defined" in event handlers
+  const propsStore = useStore({ ...props });
 
   const {
     hoveredOptionStore,
@@ -127,11 +114,6 @@ export default function useSelect(props: UseSelectParams) {
     actions: { toggleMenu, openMenu, closeMenu },
   } = useIsOpenStore();
 
-  const {
-    selectedOptionStore,
-    actions: { selectOption },
-  } = useSelectedOptionStore(props);
-
   const handleContainerClick = $(() => {
     inputRef.current?.focus();
     toggleMenu();
@@ -148,8 +130,10 @@ export default function useSelect(props: UseSelectParams) {
       hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
-        selectOption(hoveredOptionStore.hoveredOption);
         closeMenu();
+        if (propsStore.onChange$) {
+          propsStore.onChange$(hoveredOptionStore.hoveredOption);
+        }
       }
     } else if (event.key === "Escape") {
       closeMenu();
@@ -185,8 +169,8 @@ export default function useSelect(props: UseSelectParams) {
   useWatch$(function updateHoveredOptionOnListToggle({ track }) {
     const isOpen = track(isOpenStore, "value");
     if (isOpen) {
-      if (selectedOptionStore.value) {
-        hoverOption(selectedOptionStore.value);
+      if (propsStore.value) {
+        hoverOption(propsStore.value);
       } else {
         hoverFirstOption();
       }
@@ -199,7 +183,7 @@ export default function useSelect(props: UseSelectParams) {
     // scroll to the selected option whenever the list is created
     // (i.e. whenever the menu is opened)
     const elem = track(listRef, "current");
-    if (!!elem && !!selectedOptionStore.value) {
+    if (!!elem && !!propsStore.value) {
       scrollToItem(elem, ".item.selected");
     }
   });
@@ -219,11 +203,7 @@ export default function useSelect(props: UseSelectParams) {
     },
     state: {
       isOpen: isOpenStore.value,
-      value: selectedOptionStore.value,
       hoveredOption: hoveredOptionStore.hoveredOption,
-    },
-    actions: {
-      selectOption,
     },
   };
 }
