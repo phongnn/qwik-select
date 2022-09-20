@@ -132,7 +132,12 @@ export default function useSelect(props: UseSelectParams) {
     actions: { selectOption },
   } = useSelectedOptionStore(props);
 
-  const handleKeyDown = $(async (event: KeyboardEvent) => {
+  const handleContainerClick = $(() => {
+    inputRef.current?.focus();
+    toggleMenu();
+  });
+
+  const handleInputKeyDown = $(async (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       if (isOpenStore.value) {
         hoverNextOption();
@@ -151,7 +156,7 @@ export default function useSelect(props: UseSelectParams) {
     }
   });
 
-  const handlePointerDown = $((event: PointerEvent) => {
+  const handleContainerPointerDown = $((event: PointerEvent) => {
     // avoid triggering "focusout" event when user clicks on a menu item
     // otherwise the item's click event won't fire
     if (event.target !== inputRef.current) {
@@ -160,18 +165,19 @@ export default function useSelect(props: UseSelectParams) {
   });
 
   useClientEffect$(() => {
-    containerRef.current?.addEventListener("click", toggleMenu);
-    containerRef.current?.addEventListener("pointerdown", handlePointerDown);
+    containerRef.current?.addEventListener("click", handleContainerClick);
+    // prettier-ignore
+    containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
 
-    inputRef.current?.addEventListener("keydown", handleKeyDown);
+    inputRef.current?.addEventListener("keydown", handleInputKeyDown);
     inputRef.current?.addEventListener("focusout", closeMenu);
 
     return () => {
-      containerRef.current?.removeEventListener("click", toggleMenu);
+      containerRef.current?.removeEventListener("click", handleContainerClick);
       // prettier-ignore
-      containerRef.current?.removeEventListener("pointerdown", handlePointerDown);
+      containerRef.current?.removeEventListener("pointerdown", handleContainerPointerDown);
 
-      inputRef.current?.removeEventListener("keydown", handleKeyDown);
+      inputRef.current?.removeEventListener("keydown", handleInputKeyDown);
       inputRef.current?.removeEventListener("focusout", closeMenu);
     };
   });
