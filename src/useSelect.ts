@@ -15,6 +15,22 @@ export interface UseSelectParams {
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
 }
 
+interface HoveredOptionStore {
+  hoveredOptionIndex: number;
+  hoveredOption?: SelectOption;
+}
+
+export function scrollToItem(
+  listElem: HTMLElement | undefined,
+  selector: string
+) {
+  const itemElement = listElem?.querySelector(selector);
+  itemElement?.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+}
+
 function useIsOpenStore() {
   const isOpenStore = useStore({ value: false });
   const toggleMenu = $(() => (isOpenStore.value = !isOpenStore.value));
@@ -25,34 +41,52 @@ function useIsOpenStore() {
 }
 
 function useHoveredOptionStore(props: UseSelectParams) {
-  const state = useStore({ hoveredOptionIndex: -1 });
-  const hoveredOptionStore = useStore<{ value?: SelectOption }>({});
+  const state = useStore<HoveredOptionStore>({ hoveredOptionIndex: -1 });
 
-  useWatch$(function computeHoveredOption({ track }) {
-    const idx = track(state, "hoveredOptionIndex");
-    hoveredOptionStore.value = idx >= 0 ? props.options[idx] : undefined;
+  const clearHoveredOption = $(() => {
+    state.hoveredOptionIndex = -1;
+    state.hoveredOption = undefined;
   });
 
-  const clearHoveredOption = $(() => (state.hoveredOptionIndex = -1));
-  const hoverFirstOption = $(() => (state.hoveredOptionIndex = 0));
-  const hoverOption = $((direction: "next" | "previous") => {
-    if (state.hoveredOptionIndex < 0) {
-      return;
-    }
-
-    const max = props.options.length - 1;
-    const delta = direction === "next" ? 1 : -1;
-    let index = state.hoveredOptionIndex + delta;
-    if (index > max) {
-      index = 0;
-    } else if (index < 0) {
-      index = max;
-    }
-    state.hoveredOptionIndex = index;
+  const hoverOption = $((opt: SelectOption) => {
+    state.hoveredOptionIndex = props.options.indexOf(opt);
+    state.hoveredOption = opt;
   });
 
-  const actions = { hoverFirstOption, hoverOption, clearHoveredOption };
-  return { hoveredOptionStore, actions };
+  const hoverFirstOption = $(() => {
+    state.hoveredOptionIndex = 0;
+    state.hoveredOption = props.options[0];
+  });
+
+  const hoverNextOption = $(() => {
+    if (state.hoveredOptionIndex >= 0) {
+      let index = state.hoveredOptionIndex + 1;
+      if (index > props.options.length - 1) {
+        index = 0;
+      }
+      state.hoveredOptionIndex = index;
+      state.hoveredOption = props.options[index];
+    }
+  });
+  const hoverPrevOption = $(() => {
+    if (state.hoveredOptionIndex >= 0) {
+      let index = state.hoveredOptionIndex - 1;
+      if (index < 0) {
+        index = props.options.length - 1;
+      }
+      state.hoveredOptionIndex = index;
+      state.hoveredOption = props.options[index];
+    }
+  });
+
+  const actions = {
+    hoverFirstOption,
+    hoverNextOption,
+    hoverPrevOption,
+    clearHoveredOption,
+    hoverOption,
+  };
+  return { hoveredOptionStore: state, actions };
 }
 
 function useSelectedOptionStore(props: UseSelectParams) {
@@ -69,13 +103,6 @@ function useSelectedOptionStore(props: UseSelectParams) {
     }
   });
 
-  // useWatch$(function triggerOnChange({ track }) {
-  //   const val = track(selectedOptionStore, "value");
-  //   if (props.onChange$) {
-  //     props.onChange$(val);
-  //   }
-  // });
-
   return { selectedOptionStore, actions: { selectOption } };
 }
 
@@ -86,7 +113,13 @@ export default function useSelect(props: UseSelectParams) {
 
   const {
     hoveredOptionStore,
-    actions: { hoverOption, hoverFirstOption, clearHoveredOption },
+    actions: {
+      hoverOption,
+      hoverFirstOption,
+      hoverNextOption,
+      hoverPrevOption,
+      clearHoveredOption,
+    },
   } = useHoveredOptionStore(props);
 
   const {
@@ -102,15 +135,15 @@ export default function useSelect(props: UseSelectParams) {
   const handleKeyDown = $(async (event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       if (isOpenStore.value) {
-        hoverOption("next");
+        hoverNextOption();
       } else {
         openMenu();
       }
     } else if (event.key === "ArrowUp") {
-      hoverOption("previous");
+      hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
-      if (hoveredOptionStore.value) {
-        selectOption(hoveredOptionStore.value);
+      if (hoveredOptionStore.hoveredOption) {
+        selectOption(hoveredOptionStore.hoveredOption);
         closeMenu();
       }
     } else if (event.key === "Escape") {
@@ -144,11 +177,31 @@ export default function useSelect(props: UseSelectParams) {
   });
 
   useWatch$(function updateHoveredOptionOnListToggle({ track }) {
-    track(isOpenStore, "value");
-    if (isOpenStore.value) {
-      hoverFirstOption();
+    const isOpen = track(isOpenStore, "value");
+    if (isOpen) {
+      if (selectedOptionStore.value) {
+        hoverOption(selectedOptionStore.value);
+      } else {
+        hoverFirstOption();
+      }
     } else {
       clearHoveredOption();
+    }
+  });
+
+  useWatch$(function scrollToSelectedOption({ track }) {
+    // scroll to the selected option whenever the list is created
+    // (i.e. whenever the menu is opened)
+    const elem = track(listRef, "current");
+    if (!!elem && !!selectedOptionStore.value) {
+      scrollToItem(elem, ".item.selected");
+    }
+  });
+
+  useWatch$(function scrollToHoveredOption({ track }) {
+    const hoveredOption = track(hoveredOptionStore, "hoveredOption");
+    if (hoveredOption) {
+      scrollToItem(listRef.current, ".item.hover");
     }
   });
 
@@ -161,15 +214,10 @@ export default function useSelect(props: UseSelectParams) {
     state: {
       isOpen: isOpenStore.value,
       value: selectedOptionStore.value,
-      hoveredOption: hoveredOptionStore.value,
+      hoveredOption: hoveredOptionStore.hoveredOption,
     },
     actions: {
       selectOption,
     },
-    // stores: {
-    //   isOpenStore,
-    //   selectedOptionStore,
-    //   hoveredOptionStore,
-    // },
   };
 }
