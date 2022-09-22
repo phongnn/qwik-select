@@ -9,10 +9,11 @@ import {
 
 import { SelectOption } from "./types";
 
-export interface UseSelectParams {
+interface UseSelectParams {
   options: SelectOption[];
   value?: SelectOption;
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  optionLabelKey: string;
 }
 
 interface HoveredOptionStore {
@@ -89,6 +90,27 @@ function useHoveredOptionStore(props: UseSelectParams) {
   return { hoveredOptionStore: state, actions };
 }
 
+function useFilteredOptionsStore(props: UseSelectParams) {
+  const state = useStore({ value: props.options });
+
+  const filter = $(async (query: string) => {
+    if (query === "") {
+      state.value = props.options;
+    } else {
+      state.value = props.options.filter((opt) => {
+        const label =
+          typeof opt === "string" ? opt : (opt[props.optionLabelKey] as string);
+        return label.toLowerCase().includes(query.toLowerCase());
+      });
+    }
+  });
+
+  const actions = {
+    filter,
+  };
+  return { filteredOptionsStore: state, actions };
+}
+
 export default function useSelect(props: UseSelectParams) {
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
@@ -114,12 +136,17 @@ export default function useSelect(props: UseSelectParams) {
     actions: { toggleMenu, openMenu, closeMenu },
   } = useIsOpenStore();
 
+  const {
+    filteredOptionsStore,
+    actions: { filter },
+  } = useFilteredOptionsStore(props);
+
   const handleContainerClick = $(() => {
     inputRef.current?.focus();
     toggleMenu();
   });
 
-  const handleInputKeyDown = $(async (event: KeyboardEvent) => {
+  const handleInputKeyDown = $((event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       if (isOpenStore.value) {
         hoverNextOption();
@@ -140,6 +167,10 @@ export default function useSelect(props: UseSelectParams) {
     }
   });
 
+  const handleInputChange = $((event: Event) => {
+    filter((event.target as HTMLInputElement).value);
+  });
+
   const handleContainerPointerDown = $((event: PointerEvent) => {
     // avoid triggering "focusout" event when user clicks on a menu item
     // otherwise the item's click event won't fire
@@ -154,6 +185,7 @@ export default function useSelect(props: UseSelectParams) {
     containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
 
     inputRef.current?.addEventListener("keydown", handleInputKeyDown);
+    inputRef.current?.addEventListener("input", handleInputChange);
     inputRef.current?.addEventListener("focusout", closeMenu);
 
     return () => {
@@ -162,6 +194,7 @@ export default function useSelect(props: UseSelectParams) {
       containerRef.current?.removeEventListener("pointerdown", handleContainerPointerDown);
 
       inputRef.current?.removeEventListener("keydown", handleInputKeyDown);
+      inputRef.current?.removeEventListener("input", handleInputChange);
       inputRef.current?.removeEventListener("focusout", closeMenu);
     };
   });
@@ -204,6 +237,7 @@ export default function useSelect(props: UseSelectParams) {
     state: {
       isOpen: isOpenStore.value,
       hoveredOption: hoveredOptionStore.hoveredOption,
+      filteredOptions: filteredOptionsStore.value,
     },
   };
 }

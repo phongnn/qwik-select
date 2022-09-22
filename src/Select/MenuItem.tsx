@@ -12,13 +12,12 @@ interface MenuItemProps {
 
 export const MenuItem = (props: MenuItemProps) => {
   const { option, getOptionLabel, isHovered, isSelected } = props;
-  const label = getOptionLabel(option);
   // prettier-ignore
   const classes = `item ${isSelected.v ? "selected" : ""} ${isHovered.v ? "hover" : ""}`
 
   return (
     <div class={classes} onClick$={props.onClick$}>
-      {label}
+      {getOptionLabel(option)}
     </div>
   );
 };

@@ -1,39 +1,44 @@
-import { component$, useStyles$, mutable } from "@builder.io/qwik";
+import {
+  component$,
+  useStyles$,
+  mutable,
+  PropFunction,
+} from "@builder.io/qwik";
 
 import type { SelectOption } from "../types";
 
-import useSelect, { UseSelectParams } from "../useSelect";
+import useSelect from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
 
 import styles from "./select.css?inline";
 
-type SelectProps = UseSelectParams & {
+type SelectProps = {
+  options: SelectOption[];
+  value?: SelectOption;
+  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  optionLabelKey?: string;
   placeholder?: string;
   noOptionsMessage?: string;
-  getOptionLabel?: (opt: SelectOption) => string;
-};
-
-export const defaultGetOptionLabel = (opt: SelectOption) => {
-  return typeof opt === "string"
-    ? opt
-    : typeof opt === "object" && "label" in opt
-    ? opt.label
-    : opt.toString();
+  getOptionLabel$?: PropFunction<(opt: SelectOption) => string>;
 };
 
 const Select = component$((props: SelectProps) => {
   const placeholder = props.placeholder || "Select...";
   const noOptionsMessage = props.noOptionsMessage || "No options";
   const isEmpty = !props.options || props.options.length === 0;
-  const getOptionLabel = props.getOptionLabel || defaultGetOptionLabel;
-
-  const { refs, state } = useSelect(props);
-
+  const optionLabelKey = props.optionLabelKey || "label";
+  // prettier-ignore
+  const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
   const selectedOptionLabel = props.value
     ? getOptionLabel(props.value)
     : undefined;
+
+  const { refs, state } = useSelect({
+    ...props,
+    optionLabelKey,
+  });
 
   useStyles$(styles);
 
@@ -47,10 +52,9 @@ const Select = component$((props: SelectProps) => {
         />
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>
-            {props.options.map((opt) => {
+            {state.filteredOptions.map((opt) => {
               const isSelected = opt === props.value;
               const isHovered = opt === state.hoveredOption;
-
               return (
                 <MenuItem
                   option={opt}
