@@ -27,18 +27,17 @@ type SelectProps = {
 const Select = component$((props: SelectProps) => {
   const placeholder = props.placeholder || "Select...";
   const noOptionsMessage = props.noOptionsMessage || "No options";
-  const isEmpty = !props.options || props.options.length === 0;
   const optionLabelKey = props.optionLabelKey || "label";
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
-  const selectedOptionLabel = props.value
-    ? getOptionLabel(props.value)
-    : undefined;
 
   const { refs, state } = useSelect({
     ...props,
     optionLabelKey,
   });
+  // prettier-ignore
+  const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
+  const isEmpty = state.filteredOptions.length === 0;
 
   useStyles$(styles);
 
@@ -69,9 +68,9 @@ const Select = component$((props: SelectProps) => {
                 />
               );
             })}
+            {isEmpty && <div class="empty">{noOptionsMessage}</div>}
           </div>
         )}
-        {isEmpty && <div class="empty">{noOptionsMessage}</div>}
       </div>
     </Container>
   );

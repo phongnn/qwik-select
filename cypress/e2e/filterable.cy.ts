@@ -13,9 +13,13 @@ it("filters options as user types", () => {
   cy.get(".item").should("have.length", 3); // "Apple", "Pear", "Pineapple"
   cy.get("input").type("e");
   cy.get(".item").should("have.length", 1); // "Pear"
+
+  // shows "No options"
   cy.get("input").type("p");
   cy.get(".item").should("have.length", 0);
-  // TODO: show "No options"
+  cy.findByText("No options");
+
+  // delete last character -> "pe"
   cy.get("input").type("{backspace}");
   cy.get(".item").should("have.length", 1); // "Pear"
 });
