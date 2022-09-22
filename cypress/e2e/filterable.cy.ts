@@ -41,3 +41,43 @@ it("allows navigation with keyboard", () => {
   input.type("{downArrow}{downArrow}");
   cy.findByText("Pear").should("have.class", "hover");
 });
+
+it("resets text input when closing menu", () => {
+  cy.visit("/filterable");
+  cy.wait(500);
+
+  // on Escape
+  cy.get("input").type("b{esc}"); // banana
+  cy.get("input").should("have.value", "");
+
+  // click on the text input to close menu
+  cy.get("input").type("b").click(); // banana
+  cy.get("input").should("have.value", "");
+});
+
+it("resets text input after selecting a value", () => {
+  // NOTE: the selected value is actually displayed
+  // in a div underneath the input
+  cy.visit("/filterable");
+  cy.wait(500);
+  cy.get("input").type("pe"); // "Pear";
+  cy.wait(500);
+  cy.get("input").type("{enter}");
+
+  cy.findByText("You've selected Pear.");
+  cy.get("input").should("have.value", "");
+});
+
+it("clears filter when closing menu", () => {
+  cy.visit("/filterable");
+  cy.wait(500);
+
+  // select a value
+  cy.get("input").type("pe");
+  cy.wait(500);
+  cy.get("input").type("{enter}");
+
+  // reopen the menu and check if all items are available
+  cy.get("input").click();
+  cy.get(".item").should("have.length", 5);
+});

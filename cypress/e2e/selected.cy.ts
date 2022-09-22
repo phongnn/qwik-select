@@ -1,14 +1,14 @@
-it("shows selected value in text input", () => {
+it("shows selected value", () => {
   cy.visit("/selected");
   cy.wait(500);
-  cy.get("input").should("have.value", "Nine");
+  cy.findByText("Nine").should("have.class", "selected-item-label");
 });
 
 it("highlights selected option in menu", () => {
   cy.visit("/selected");
   cy.wait(500);
   cy.get("input").click();
-  cy.findByText("Nine").should("have.class", "selected");
+  cy.get(".item.selected").should("have.text", "Nine");
 });
 
 it("allows navigation with keyboard", () => {
@@ -18,7 +18,7 @@ it("allows navigation with keyboard", () => {
 
   // hovers selected option by default
   input.click();
-  cy.findByText("Nine").should("have.class", "hover");
+  cy.get(".item.hover").should("have.text", "Nine");
 
   // navigates with arrowUp and arrowDown
   cy.get("input").type("{upArrow}");
@@ -28,10 +28,5 @@ it("allows navigation with keyboard", () => {
 
   // updates value on Enter
   input.type("{enter}");
-  input.should("have.value", "One");
   cy.findByText("You've selected One.");
 });
-
-// clear wipes value and updates view
-// when isFocused true container adds focused class
-// when isFocused changes to true input should focus

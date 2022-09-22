@@ -26,6 +26,17 @@
   border-color: var(--borderFocusColor, #006fe8);
 } */
 
+.selected-item-label {
+  line-height: var(--height, 42px);
+  height: var(--height, 42px);
+  overflow-x: hidden;
+  padding: var(--selectedItemPadding, 0 20px 0 0);
+}
+
+.selected-item-label:focus {
+  outline: none;
+}
+
 input {
   cursor: default;
   border: none;
@@ -37,7 +48,8 @@ input {
   background: transparent;
   font-size: var(--inputFontSize, 14px);
   letter-spacing: var(--inputLetterSpacing, -0.08px);
-  /* position: absolute; */
+  position: absolute;
+  top: 0;
   left: var(--inputLeft, 0);
   margin: var(--inputMargin, 0);
 }

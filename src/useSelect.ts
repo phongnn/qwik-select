@@ -98,7 +98,7 @@ function useFilteredOptionsStore(
 ) {
   const state = useStore({ value: options });
 
-  const filter = $(async (query: string) => {
+  const filterOptions = $((query: string) => {
     if (query === "") {
       state.value = options;
     } else {
@@ -110,10 +110,22 @@ function useFilteredOptionsStore(
     }
   });
 
-  const actions = {
-    filter,
+  const clearFilter = $(() => (state.value = options));
+
+  return {
+    filteredOptionsStore: state,
+    actions: { filterOptions, clearFilter },
   };
-  return { filteredOptionsStore: state, actions };
+}
+
+function useInputValueStore() {
+  const state = useStore({ value: "" });
+  const setInputValue = $((val: string) => (state.value = val));
+  const clearInputValue = $(() => (state.value = ""));
+  return {
+    inputValueStore: state,
+    actions: { setInputValue, clearInputValue },
+  };
 }
 
 export default function useSelect(props: UseSelectParams) {
@@ -132,7 +144,7 @@ export default function useSelect(props: UseSelectParams) {
 
   const {
     filteredOptionsStore,
-    actions: { filter },
+    actions: { filterOptions, clearFilter },
   } = useFilteredOptionsStore(props.options, props.optionLabelKey);
 
   const {
@@ -146,6 +158,11 @@ export default function useSelect(props: UseSelectParams) {
     },
   } = useHoveredOptionStore(filteredOptionsStore);
 
+  const {
+    inputValueStore,
+    actions: { setInputValue, clearInputValue },
+  } = useInputValueStore();
+
   const handleContainerClick = $(() => {
     inputRef.current?.focus();
     toggleMenu();
@@ -154,7 +171,6 @@ export default function useSelect(props: UseSelectParams) {
   const handleInputKeyDown = $((event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      // event.stopPropagation();
       if (isOpenStore.value) {
         hoverNextOption();
       } else {
@@ -162,7 +178,6 @@ export default function useSelect(props: UseSelectParams) {
       }
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      // event.stopPropagation();
       hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
@@ -181,7 +196,9 @@ export default function useSelect(props: UseSelectParams) {
       openMenu();
     }
 
-    filter((event.target as HTMLInputElement).value);
+    const value = (event.target as HTMLInputElement).value;
+    setInputValue(value);
+    filterOptions(value);
 
     // update hovered option
     if (
@@ -232,6 +249,8 @@ export default function useSelect(props: UseSelectParams) {
       }
     } else {
       clearHoveredOption();
+      clearInputValue();
+      clearFilter();
     }
   });
 
@@ -261,6 +280,7 @@ export default function useSelect(props: UseSelectParams) {
       isOpen: isOpenStore.value,
       hoveredOption: hoveredOptionStore.hoveredOption,
       filteredOptions: filteredOptionsStore.value,
+      inputValue: inputValueStore.value,
     },
   };
 }

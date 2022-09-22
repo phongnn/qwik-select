@@ -47,7 +47,8 @@ const Select = component$((props: SelectProps) => {
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
-          value={mutable(selectedOptionLabel)}
+          selectedOptionLabel={mutable(selectedOptionLabel)}
+          inputValue={mutable(state.inputValue)}
         />
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>
@@ -61,7 +62,7 @@ const Select = component$((props: SelectProps) => {
                   isSelected={mutable(isSelected)}
                   isHovered={mutable(isHovered)}
                   onClick$={async () => {
-                    if (props.onChange$) {
+                    if (props.onChange$ && opt !== props.value) {
                       props.onChange$(opt);
                     }
                   }}

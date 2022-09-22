@@ -1,7 +1,7 @@
 it("opens menu when click on text input", () => {
   cy.visit("/basics");
   cy.wait(500);
-  cy.findByPlaceholderText("Select...").click();
+  cy.get("input").click();
 
   // opens menu
   cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
@@ -12,7 +12,7 @@ it("opens menu when click on text input", () => {
 
 it("allows navigation with keyboard", () => {
   cy.visit("/basics");
-  const input = cy.findByPlaceholderText("Select...");
+  const input = cy.get("input");
 
   // opens menu
   input.type("{downArrow}");
@@ -34,7 +34,7 @@ it("allows navigation with keyboard", () => {
 
 it("closes menu on Escape", () => {
   cy.visit("/basics");
-  const input = cy.findByPlaceholderText("Select...");
+  const input = cy.get("input");
 
   // opens menu
   input.type("{downArrow}");
@@ -51,7 +51,7 @@ it("closes menu when click outside", () => {
   cy.wait(500);
 
   // opens menu
-  cy.findByPlaceholderText("Select...").click();
+  cy.get("input").click();
   cy.findByText("One").should("have.class", "hover");
 
   // closes menu when click outside
@@ -64,7 +64,7 @@ it("sets value when click on item", () => {
   cy.wait(500);
 
   // opens menu
-  const input = cy.findByPlaceholderText("Select...");
+  const input = cy.get("input");
   input.click();
 
   // workaround: click on an item to get the event handler loaded first
