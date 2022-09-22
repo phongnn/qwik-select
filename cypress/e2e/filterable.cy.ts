@@ -9,17 +9,35 @@
 it("filters options as user types", () => {
   cy.visit("/filterable");
   cy.wait(500);
-  cy.get("input").type("p");
+  const input = cy.get("input");
+
+  input.type("p");
   cy.get(".item").should("have.length", 3); // "Apple", "Pear", "Pineapple"
-  cy.get("input").type("e");
+  input.type("e");
   cy.get(".item").should("have.length", 1); // "Pear"
 
   // shows "No options"
-  cy.get("input").type("p");
+  input.type("p");
   cy.get(".item").should("have.length", 0);
   cy.findByText("No options");
 
   // delete last character -> "pe"
-  cy.get("input").type("{backspace}");
+  input.type("{backspace}");
   cy.get(".item").should("have.length", 1); // "Pear"
+});
+
+it("allows navigation with keyboard", () => {
+  cy.visit("/filterable");
+  cy.wait(500);
+  const input = cy.get("input");
+
+  input.type("p"); // "Apple", "Pear", "Pineapple"
+  cy.findByText("Apple").should("have.class", "hover");
+
+  // updates hovered item on arrowDown and arrowUp
+  input.type("{upArrow}");
+  cy.findByText("Pineapple").should("have.class", "hover");
+
+  input.type("{downArrow}{downArrow}");
+  cy.findByText("Pear").should("have.class", "hover");
 });

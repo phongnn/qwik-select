@@ -41,7 +41,9 @@ function useIsOpenStore() {
   return { isOpenStore, actions };
 }
 
-function useHoveredOptionStore(props: UseSelectParams) {
+function useHoveredOptionStore(filteredOptionsStore: {
+  value: SelectOption[];
+}) {
   const state = useStore<HoveredOptionStore>({ hoveredOptionIndex: -1 });
 
   const clearHoveredOption = $(() => {
@@ -50,33 +52,33 @@ function useHoveredOptionStore(props: UseSelectParams) {
   });
 
   const hoverOption = $((opt: SelectOption) => {
-    state.hoveredOptionIndex = props.options.indexOf(opt);
+    state.hoveredOptionIndex = filteredOptionsStore.value.indexOf(opt);
     state.hoveredOption = opt;
   });
 
   const hoverFirstOption = $(() => {
     state.hoveredOptionIndex = 0;
-    state.hoveredOption = props.options[0];
+    state.hoveredOption = filteredOptionsStore.value[0];
   });
 
   const hoverNextOption = $(() => {
     if (state.hoveredOptionIndex >= 0) {
       let index = state.hoveredOptionIndex + 1;
-      if (index > props.options.length - 1) {
+      if (index > filteredOptionsStore.value.length - 1) {
         index = 0;
       }
       state.hoveredOptionIndex = index;
-      state.hoveredOption = props.options[index];
+      state.hoveredOption = filteredOptionsStore.value[index];
     }
   });
   const hoverPrevOption = $(() => {
     if (state.hoveredOptionIndex >= 0) {
       let index = state.hoveredOptionIndex - 1;
       if (index < 0) {
-        index = props.options.length - 1;
+        index = filteredOptionsStore.value.length - 1;
       }
       state.hoveredOptionIndex = index;
-      state.hoveredOption = props.options[index];
+      state.hoveredOption = filteredOptionsStore.value[index];
     }
   });
 
@@ -90,16 +92,19 @@ function useHoveredOptionStore(props: UseSelectParams) {
   return { hoveredOptionStore: state, actions };
 }
 
-function useFilteredOptionsStore(props: UseSelectParams) {
-  const state = useStore({ value: props.options });
+function useFilteredOptionsStore(
+  options: SelectOption[],
+  optionLabelKey: string
+) {
+  const state = useStore({ value: options });
 
   const filter = $(async (query: string) => {
     if (query === "") {
-      state.value = props.options;
+      state.value = options;
     } else {
-      state.value = props.options.filter((opt) => {
+      state.value = options.filter((opt) => {
         const label =
-          typeof opt === "string" ? opt : (opt[props.optionLabelKey] as string);
+          typeof opt === "string" ? opt : (opt[optionLabelKey] as string);
         return label.toLowerCase().includes(query.toLowerCase());
       });
     }
@@ -121,6 +126,16 @@ export default function useSelect(props: UseSelectParams) {
   const propsStore = useStore({ ...props });
 
   const {
+    isOpenStore,
+    actions: { toggleMenu, openMenu, closeMenu },
+  } = useIsOpenStore();
+
+  const {
+    filteredOptionsStore,
+    actions: { filter },
+  } = useFilteredOptionsStore(props.options, props.optionLabelKey);
+
+  const {
     hoveredOptionStore,
     actions: {
       hoverOption,
@@ -129,17 +144,7 @@ export default function useSelect(props: UseSelectParams) {
       hoverPrevOption,
       clearHoveredOption,
     },
-  } = useHoveredOptionStore(props);
-
-  const {
-    isOpenStore,
-    actions: { toggleMenu, openMenu, closeMenu },
-  } = useIsOpenStore();
-
-  const {
-    filteredOptionsStore,
-    actions: { filter },
-  } = useFilteredOptionsStore(props);
+  } = useHoveredOptionStore(filteredOptionsStore);
 
   const handleContainerClick = $(() => {
     inputRef.current?.focus();
@@ -148,12 +153,16 @@ export default function useSelect(props: UseSelectParams) {
 
   const handleInputKeyDown = $((event: KeyboardEvent) => {
     if (event.key === "ArrowDown") {
+      event.preventDefault();
+      // event.stopPropagation();
       if (isOpenStore.value) {
         hoverNextOption();
       } else {
         openMenu();
       }
     } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      // event.stopPropagation();
       hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
@@ -168,7 +177,21 @@ export default function useSelect(props: UseSelectParams) {
   });
 
   const handleInputChange = $((event: Event) => {
+    if (!isOpenStore.value) {
+      openMenu();
+    }
+
     filter((event.target as HTMLInputElement).value);
+
+    // update hovered option
+    if (
+      propsStore.value &&
+      filteredOptionsStore.value.includes(propsStore.value)
+    ) {
+      hoverOption(propsStore.value);
+    } else if (filteredOptionsStore.value.length > 0) {
+      hoverFirstOption();
+    }
   });
 
   const handleContainerPointerDown = $((event: PointerEvent) => {
