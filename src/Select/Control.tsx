@@ -5,6 +5,7 @@ interface ControlProps {
   placeholder: string;
   selectedOptionLabel: MutableWrapper<string | undefined>;
   inputValue: MutableWrapper<string>;
+  disabled: MutableWrapper<boolean>;
 }
 
 const Control = (props: ControlProps) => {
@@ -16,7 +17,12 @@ const Control = (props: ControlProps) => {
       >
         {props.selectedOptionLabel.v || props.placeholder}
       </div>
-      <input type="text" ref={props.ref} value={props.inputValue.v} />
+      <input
+        type="text"
+        ref={props.ref}
+        value={props.inputValue.v}
+        disabled={props.disabled.v}
+      />
     </div>
   );
 };

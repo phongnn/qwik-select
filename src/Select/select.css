@@ -26,6 +26,18 @@
   border-color: var(--borderFocusColor, #006fe8);
 } */
 
+.container.disabled {
+  background: var(--disabledBackground, #ebedef);
+  border-color: var(--disabledBorderColor, #ebedef);
+  color: var(--disabledColor, #c1c6cc);
+  pointer-events: none;
+}
+
+.container.disabled input::placeholder {
+  color: var(--disabledPlaceholderColor, #c1c6cc);
+  opacity: var(--disabledPlaceholderOpacity, 1);
+}
+
 .selected-item-label {
   line-height: var(--height, 42px);
   height: var(--height, 42px);

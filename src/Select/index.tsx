@@ -18,16 +18,17 @@ type SelectProps = {
   options: SelectOption[];
   value?: SelectOption;
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  disabled?: boolean;
   optionLabelKey?: string;
   placeholder?: string;
   noOptionsMessage?: string;
-  getOptionLabel$?: PropFunction<(opt: SelectOption) => string>;
 };
 
 const Select = component$((props: SelectProps) => {
-  const placeholder = props.placeholder || "Select...";
-  const noOptionsMessage = props.noOptionsMessage || "No options";
-  const optionLabelKey = props.optionLabelKey || "label";
+  const disabled = props.disabled ?? false;
+  const placeholder = props.placeholder ?? "Select...";
+  const noOptionsMessage = props.noOptionsMessage ?? "No options";
+  const optionLabelKey = props.optionLabelKey ?? "label";
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
 
@@ -42,13 +43,14 @@ const Select = component$((props: SelectProps) => {
   useStyles$(styles);
 
   return (
-    <Container ref={refs.containerRef}>
+    <Container ref={refs.containerRef} disabled={mutable(disabled)}>
       <div>
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
           selectedOptionLabel={mutable(selectedOptionLabel)}
           inputValue={mutable(state.inputValue)}
+          disabled={mutable(disabled)}
         />
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>

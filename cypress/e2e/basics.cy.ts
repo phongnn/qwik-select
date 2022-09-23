@@ -35,7 +35,7 @@ describe("with no selected value", () => {
 
     // opens menu
     input.type("{downArrow}");
-    cy.wait(500);
+    cy.wait(1000);
 
     // shows first item in hover state
     cy.findByText("One").should("have.class", "hover");
@@ -128,5 +128,24 @@ describe("with selected value", () => {
     // updates value on Enter
     input.type("{enter}");
     cy.findByText("You've selected One.");
+  });
+});
+
+describe("disable/enable", () => {
+  it("disables the control", () => {
+    cy.visit("/disabled");
+    cy.wait(500);
+    cy.get("input").should("be.disabled");
+    cy.get(".container").should("have.class", "disabled");
+  });
+
+  it("enables the control", () => {
+    cy.visit("/disabled");
+    // cy.wait(500);
+    cy.findByText("Enable Select").click();
+    cy.wait(500);
+    cy.get("input").type("t");
+    cy.wait(500);
+    cy.get(".item").should("have.length", 2); // "Two", "Three"
   });
 });
