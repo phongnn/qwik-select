@@ -1,29 +1,13 @@
-import {
-  component$,
-  useStyles$,
-  mutable,
-  PropFunction,
-} from "@builder.io/qwik";
+import { component$, useStyles$, mutable } from "@builder.io/qwik";
 
-import type { SelectOption } from "../types";
+import type { SelectOption, SelectProps } from "../types";
 
-import useSelect from "../useSelect";
+import { useSelect } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
 
 import styles from "./select.css?inline";
-
-type SelectProps = {
-  options: SelectOption[];
-  value?: SelectOption;
-  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
-  onClear$?: PropFunction<() => void>;
-  disabled?: boolean;
-  optionLabelKey?: string;
-  placeholder?: string;
-  noOptionsMessage?: string;
-};
 
 const Select = component$((props: SelectProps) => {
   const disabled = props.disabled ?? false;
@@ -33,10 +17,7 @@ const Select = component$((props: SelectProps) => {
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
 
-  const { refs, state } = useSelect({
-    ...props,
-    optionLabelKey,
-  });
+  const { refs, state } = useSelect(props, { optionLabelKey });
   // prettier-ignore
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
   const isEmpty = state.filteredOptions.length === 0;

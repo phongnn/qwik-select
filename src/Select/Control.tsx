@@ -10,20 +10,20 @@ interface ControlProps {
 }
 
 const Control = (props: ControlProps) => {
-  const clearable = props.selectedOptionLabel.v && props.onClear$;
+  const clearable = props.selectedOptionLabel.mut && props.onClear$;
   return (
     <div>
       <div
         class="selected-item-label"
-        style={{ visibility: props.inputValue.v ? "hidden" : "visible" }}
+        style={{ visibility: props.inputValue.mut ? "hidden" : "visible" }}
       >
-        {props.selectedOptionLabel.v || props.placeholder}
+        {props.selectedOptionLabel.mut || props.placeholder}
       </div>
       <input
         type="text"
         ref={props.ref}
-        value={props.inputValue.v}
-        disabled={props.disabled.v}
+        value={props.inputValue.mut}
+        disabled={props.disabled.mut}
       />
       {clearable && <ClearButton onClick$={props.onClear$!} />}
     </div>
