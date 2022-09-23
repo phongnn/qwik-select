@@ -18,6 +18,7 @@ type SelectProps = {
   options: SelectOption[];
   value?: SelectOption;
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  onClear$?: PropFunction<() => void>;
   disabled?: boolean;
   optionLabelKey?: string;
   placeholder?: string;
@@ -51,6 +52,7 @@ const Select = component$((props: SelectProps) => {
           selectedOptionLabel={mutable(selectedOptionLabel)}
           inputValue={mutable(state.inputValue)}
           disabled={mutable(disabled)}
+          onClear$={props.onClear$}
         />
         {state.isOpen && (
           <div class="menu" ref={refs.listRef}>

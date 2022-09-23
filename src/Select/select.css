@@ -80,6 +80,26 @@ input.disabled::placeholder {
   opacity: var(--disabledPlaceholderOpacity, 1);
 }
 
+.clear-button {
+  position: absolute;
+  right: var(--clearButtonRight, 10px);
+  top: var(--clearButtonTop, 11px);
+  bottom: var(--clearButtonBottom, 11px);
+  width: var(--clearButtonWidth, 20px);
+  color: var(--clearButtonColor, #c5cacf);
+  flex: none !important;
+}
+
+.clear-button:hover {
+  color: var(--clearButtonHoverColor, #2c3e50);
+}
+
+/*
+.container.focused .clear-button {
+  color: var(--clearButtonFocusColor, #3f4f5f);
+}
+*/
+
 .menu {
   box-shadow: var(--listShadow, 0 2px 3px 0 rgba(44, 62, 80, 0.24));
   border-radius: var(--listBorderRadius, 4px);

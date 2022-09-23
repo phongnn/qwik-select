@@ -149,3 +149,18 @@ describe("disable/enable", () => {
     cy.get(".item").should("have.length", 2); // "Two", "Three"
   });
 });
+
+describe("clearable", () => {
+  it("clears selected value", () => {
+    cy.visit("/clearable");
+    cy.wait(500);
+    cy.findByTestId("qwik-select-clear").click();
+
+    // clear selected value
+    cy.wait(500);
+    cy.findByText("Select an item.");
+
+    // hide the clear button
+    cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+  });
+});
