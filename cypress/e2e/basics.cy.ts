@@ -1,77 +1,132 @@
-it("opens menu when click on text input", () => {
-  cy.visit("/basics");
-  cy.wait(500);
-  cy.get("input").click();
+describe("empty list of options", () => {
+  it("shows a text input and a 'no options' message", () => {
+    cy.visit("/empty");
+    cy.wait(500);
 
-  // opens menu
-  cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
+    // "force: true" because the div is actually underneath the text input
+    cy.findByText("Select...").click({ force: true });
+    cy.findByText("No options").should("have.class", "empty");
+  });
 
-  // shows first item in hover state
-  cy.findByText("One").should("have.class", "hover");
+  it("shows custom message", () => {
+    cy.visit("/empty");
+    cy.wait(500);
+    cy.findByText("-- Select an option --").click({ force: true });
+    cy.findByText("No options available!!!");
+  });
 });
 
-it("allows navigation with keyboard", () => {
-  cy.visit("/basics");
-  const input = cy.get("input");
+describe("with no selected value", () => {
+  it("opens menu when click on text input", () => {
+    cy.visit("/basics");
+    cy.wait(500);
+    cy.get("input").click();
 
-  // opens menu
-  input.type("{downArrow}");
-  cy.wait(500);
+    // opens menu
+    cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
 
-  // shows first item in hover state
-  cy.findByText("One").should("have.class", "hover");
+    // shows first item in hover state
+    cy.findByText("One").should("have.class", "hover");
+  });
 
-  // updates hovered item on arrowDown and arrowUp
-  input.type("{downArrow}{downArrow}");
-  cy.findByText("Three").should("have.class", "hover");
-  input.type("{upArrow}{upArrow}{upArrow}");
-  cy.findByText("Five").should("have.class", "hover");
+  it("allows navigation with keyboard", () => {
+    cy.visit("/basics");
+    const input = cy.get("input");
 
-  // sets value on Enter
-  input.type("{enter}");
-  cy.findByText("You've selected Five.");
+    // opens menu
+    input.type("{downArrow}");
+    cy.wait(500);
+
+    // shows first item in hover state
+    cy.findByText("One").should("have.class", "hover");
+
+    // updates hovered item on arrowDown and arrowUp
+    input.type("{downArrow}{downArrow}");
+    cy.findByText("Three").should("have.class", "hover");
+    input.type("{upArrow}{upArrow}{upArrow}");
+    cy.findByText("Five").should("have.class", "hover");
+
+    // sets value on Enter
+    input.type("{enter}");
+    cy.findByText("You've selected Five.");
+  });
+
+  it("closes menu on Escape", () => {
+    cy.visit("/basics");
+    const input = cy.get("input");
+
+    // opens menu
+    input.type("{downArrow}");
+    cy.wait(500);
+    cy.findByText("One").should("have.class", "hover");
+
+    // closes menu on Escape
+    input.type("{esc}");
+    cy.get(".item").should("not.exist");
+  });
+
+  it("closes menu when click outside", () => {
+    cy.visit("/basics");
+    cy.wait(500);
+
+    // opens menu
+    cy.get("input").click();
+    cy.findByText("One").should("have.class", "hover");
+
+    // closes menu when click outside
+    cy.findByTestId("outside").click();
+    cy.get(".item").should("not.exist");
+  });
+
+  it("sets value when click on item", () => {
+    cy.visit("/basics");
+    cy.wait(500);
+
+    // opens menu
+    const input = cy.get("input");
+    input.click();
+
+    // workaround: click on an item to get the event handler loaded first
+    cy.findByText("Four").click();
+
+    // opens menu again and clicks on an item
+    input.click();
+    cy.findByText("Three").click();
+    cy.findByText("You've selected Three.");
+  });
 });
 
-it("closes menu on Escape", () => {
-  cy.visit("/basics");
-  const input = cy.get("input");
+describe("with selected value", () => {
+  it("shows selected value", () => {
+    cy.visit("/selected");
+    cy.wait(500);
+    cy.findByText("Nine").should("have.class", "selected-item-label");
+  });
 
-  // opens menu
-  input.type("{downArrow}");
-  cy.wait(500);
-  cy.findByText("One").should("have.class", "hover");
+  it("highlights selected option in menu", () => {
+    cy.visit("/selected");
+    cy.wait(500);
+    cy.get("input").click();
+    cy.get(".item.selected").should("have.text", "Nine");
+  });
 
-  // closes menu on Escape
-  input.type("{esc}");
-  cy.get(".item").should("not.exist");
-});
+  it("allows navigation with keyboard", () => {
+    cy.visit("/selected");
+    cy.wait(500);
+    const input = cy.get("input");
 
-it("closes menu when click outside", () => {
-  cy.visit("/basics");
-  cy.wait(500);
+    // hovers selected option by default
+    input.click();
+    cy.get(".item.hover").should("have.text", "Nine");
 
-  // opens menu
-  cy.get("input").click();
-  cy.findByText("One").should("have.class", "hover");
+    // navigates with arrowUp and arrowDown
+    cy.get("input").type("{upArrow}");
+    cy.findByText("Eight").should("have.class", "hover");
+    cy.get("input").type("{downArrow}{downArrow}{downArrow}");
+    cy.findByText("One").should("have.class", "hover");
 
-  // closes menu when click outside
-  cy.findByTestId("outside").click();
-  cy.get(".item").should("not.exist");
-});
-
-it("sets value when click on item", () => {
-  cy.visit("/basics");
-  cy.wait(500);
-
-  // opens menu
-  const input = cy.get("input");
-  input.click();
-
-  // workaround: click on an item to get the event handler loaded first
-  cy.findByText("Four").click();
-
-  // opens menu again and clicks on an item
-  input.click();
-  cy.findByText("Three").click();
-  cy.findByText("You've selected Three.");
+    // updates value on Enter
+    input.type("{enter}");
+    cy.findByText("You've selected One.");
+  });
 });

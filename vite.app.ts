@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => {
   return {
-    root: "example",
+    root: "app",
     resolve: {
       alias: {
         "qwik-select": path.resolve("./src/index.ts"),

@@ -13,7 +13,7 @@
   "types": "./dist/types/index.d.ts",
   "qwik-select": "./dist/index.mjs",
   "scripts": {
-    "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.example.ts --mode ssr",
+    "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.app.ts --mode ssr",
     "test": "vitest",
     "test.ci": "vitest run --passWithNoTests",
     "coverage": "vitest run --coverage",

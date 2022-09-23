@@ -15,7 +15,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: [
       "./tsconfig.json",
-      "./example/tsconfig.json",
+      "./app/tsconfig.json",
       "./cypress/tsconfig.json",
     ],
     ecmaVersion: 2021,
