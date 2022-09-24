@@ -161,9 +161,12 @@ export function useSelect(
     actions: { setInputValue, clearInputValue },
   } = useInputValueStore();
 
-  const handleContainerClick = $(() => {
-    inputRef.current?.focus();
-    toggleMenu();
+  const handleContainerClick = $((event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!listRef.current?.contains(target)) {
+      inputRef.current?.focus();
+      toggleMenu();
+    }
   });
 
   const handleInputKeyDown = $((event: KeyboardEvent) => {
@@ -215,6 +218,7 @@ export function useSelect(
   });
 
   useClientEffect$(() => {
+    // prettier-ignore
     containerRef.current?.addEventListener("click", handleContainerClick);
     // prettier-ignore
     containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
@@ -265,6 +269,10 @@ export function useSelect(
     }
   });
 
+  const blur = $(() => {
+    inputRef.current?.blur();
+  });
+
   return {
     refs: {
       containerRef,
@@ -277,5 +285,6 @@ export function useSelect(
       filteredOptions: filteredOptionsStore.value,
       inputValue: inputValueStore.value,
     },
+    actions: { blur },
   };
 }

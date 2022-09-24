@@ -17,7 +17,8 @@ const Select = component$((props: SelectProps) => {
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
 
-  const { refs, state } = useSelect(props, { optionLabelKey });
+  const { refs, state, actions } = useSelect(props, { optionLabelKey });
+  const { blur } = actions;
   // prettier-ignore
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
   const isEmpty = state.filteredOptions.length === 0;
@@ -50,6 +51,7 @@ const Select = component$((props: SelectProps) => {
                     if (props.onChange$ && opt !== props.value) {
                       props.onChange$(opt);
                     }
+                    blur();
                   }}
                 />
               );

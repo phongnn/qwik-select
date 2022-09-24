@@ -93,6 +93,8 @@ describe("with no selected value", () => {
     input.click();
     cy.findByText("Three").click();
     cy.findByText("You've selected Three.");
+
+    cy.get("input").should("not.be.focused");
   });
 });
 
