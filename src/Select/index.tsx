@@ -33,6 +33,7 @@ const Select = component$((props: SelectProps) => {
           ref={refs.inputRef}
           selectedOptionLabel={mutable(selectedOptionLabel)}
           inputValue={mutable(state.inputValue)}
+          loading={mutable(state.loading)}
           disabled={mutable(disabled)}
           onClear$={props.onClear$}
         />

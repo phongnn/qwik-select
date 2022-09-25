@@ -3,7 +3,9 @@ it("fetches and shows options", () => {
   // cy.wait(500);
   cy.get("input").type("t");
 
-  // TODO: shows loading indicator
+  // shows loading indicator
+  cy.wait(1000);
+  cy.get(".spinner");
 
   // shows filtered options
   cy.wait(1000);

@@ -16,6 +16,11 @@ import { SelectOption, SelectProps } from "./types";
 //   optionLabelKey: string;
 // }
 
+interface FilteredOptionsStore {
+  options: SelectOption[];
+  loading: boolean;
+}
+
 interface HoveredOptionStore {
   hoveredOptionIndex: number;
   hoveredOption?: SelectOption;
@@ -41,9 +46,7 @@ function useIsOpenStore() {
   return { isOpenStore, actions };
 }
 
-function useHoveredOptionStore(filteredOptionsStore: {
-  value: SelectOption[];
-}) {
+function useHoveredOptionStore(filteredOptionsStore: FilteredOptionsStore) {
   const state = useStore<HoveredOptionStore>({ hoveredOptionIndex: -1 });
 
   const clearHoveredOption = $(() => {
@@ -52,33 +55,39 @@ function useHoveredOptionStore(filteredOptionsStore: {
   });
 
   const hoverOption = $((opt: SelectOption) => {
-    state.hoveredOptionIndex = filteredOptionsStore.value.indexOf(opt);
-    state.hoveredOption = opt;
+    const optIndex = filteredOptionsStore.options.indexOf(opt);
+    if (optIndex >= 0) {
+      state.hoveredOptionIndex = optIndex;
+      state.hoveredOption = opt;
+    }
   });
 
   const hoverFirstOption = $(() => {
-    state.hoveredOptionIndex = 0;
-    state.hoveredOption = filteredOptionsStore.value[0];
+    if (filteredOptionsStore.options.length > 0) {
+      state.hoveredOptionIndex = 0;
+      state.hoveredOption = filteredOptionsStore.options[0];
+    }
   });
 
   const hoverNextOption = $(() => {
     if (state.hoveredOptionIndex >= 0) {
       let index = state.hoveredOptionIndex + 1;
-      if (index > filteredOptionsStore.value.length - 1) {
+      if (index > filteredOptionsStore.options.length - 1) {
         index = 0;
       }
       state.hoveredOptionIndex = index;
-      state.hoveredOption = filteredOptionsStore.value[index];
+      state.hoveredOption = filteredOptionsStore.options[index];
     }
   });
+
   const hoverPrevOption = $(() => {
     if (state.hoveredOptionIndex >= 0) {
       let index = state.hoveredOptionIndex - 1;
       if (index < 0) {
-        index = filteredOptionsStore.value.length - 1;
+        index = filteredOptionsStore.options.length - 1;
       }
       state.hoveredOptionIndex = index;
-      state.hoveredOption = filteredOptionsStore.value[index];
+      state.hoveredOption = filteredOptionsStore.options[index];
     }
   });
 
@@ -93,30 +102,30 @@ function useHoveredOptionStore(filteredOptionsStore: {
 }
 
 function useFilteredOptionsStore(
-  params:
+  param:
     | {
         options: SelectOption[];
         optionLabelKey: string;
       }
     | PropFunction<(text: string) => Promise<SelectOption[]>>
 ) {
-  const isAsync = typeof params === "function";
-  const state = useStore({
-    value: isAsync ? [] : params.options,
+  const isAsync = typeof param === "function";
+  const state = useStore<FilteredOptionsStore>({
+    options: isAsync ? [] : param.options,
     loading: false,
   });
 
   const filterOptions = $(async (query: string) => {
     if (query === "") {
-      state.value = isAsync ? [] : params.options;
+      state.options = isAsync ? [] : param.options;
     } else if (isAsync) {
-      state.value = [];
+      state.options = [];
       state.loading = true;
-      state.value = await params(query);
+      state.options = await param(query);
       state.loading = false;
     } else {
-      const { options, optionLabelKey } = params;
-      state.value = options.filter((opt) => {
+      const { optionLabelKey } = param;
+      state.options = param.options.filter((opt) => {
         const label =
           typeof opt === "string" ? opt : (opt[optionLabelKey] as string);
         return label.toLowerCase().includes(query.toLowerCase());
@@ -124,7 +133,7 @@ function useFilteredOptionsStore(
     }
   });
 
-  const clearFilter = $(() => (state.value = isAsync ? [] : params.options));
+  const clearFilter = $(() => (state.options = isAsync ? [] : param.options));
 
   return {
     filteredOptionsStore: state,
@@ -227,9 +236,9 @@ export function useSelect(
     await filterOptions(value);
 
     // update hovered option
-    if (props.value && filteredOptionsStore.value.includes(props.value)) {
+    if (props.value && filteredOptionsStore.options.includes(props.value)) {
       hoverOption(props.value);
-    } else if (filteredOptionsStore.value.length > 0) {
+    } else if (filteredOptionsStore.options.length > 0) {
       hoverFirstOption();
     }
   });
@@ -306,9 +315,10 @@ export function useSelect(
     },
     state: {
       isOpen: isOpenStore.value,
-      hoveredOption: hoveredOptionStore.hoveredOption,
-      filteredOptions: filteredOptionsStore.value,
       inputValue: inputValueStore.value,
+      filteredOptions: filteredOptionsStore.options,
+      loading: filteredOptionsStore.loading,
+      hoveredOption: hoveredOptionStore.hoveredOption,
     },
     actions: { blur },
   };

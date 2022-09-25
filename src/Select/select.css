@@ -100,6 +100,35 @@ input.disabled::placeholder {
 }
 */
 
+.spinner {
+  position: absolute;
+  right: var(--spinnerRight, 10px);
+  top: var(--spinnerLeft, 11px);
+  width: var(--spinnerWidth, 20px);
+  height: var(--spinnerHeight, 20px);
+  color: var(--spinnerColor, #51ce6c);
+  animation: rotate 0.75s linear infinite;
+}
+
+.spinner-icon {
+  display: block;
+  height: 100%;
+  transform-origin: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  /* -webkit-transform: none; */
+}
+
+.spinner-path {
+  stroke-dasharray: 90;
+  stroke-linecap: round;
+}
+
 .menu {
   box-shadow: var(--listShadow, 0 2px 3px 0 rgba(44, 62, 80, 0.24));
   border-radius: var(--listBorderRadius, 4px);

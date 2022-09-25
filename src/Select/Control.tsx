@@ -12,6 +12,7 @@ interface ControlProps {
   placeholder: string;
   selectedOptionLabel: MutableWrapper<string | undefined>;
   inputValue: MutableWrapper<string>;
+  loading: MutableWrapper<boolean>;
   disabled: MutableWrapper<boolean>;
   onClear$?: PropFunction<() => void>;
 }
@@ -34,6 +35,7 @@ const Control = (props: ControlProps) => {
         disabled={props.disabled.mut}
       />
       {clearable && <ClearButton onClick$={props.onClear$!} />}
+      {props.loading.mut && <LoadingIndicator />}
     </div>
   );
 };
@@ -72,5 +74,24 @@ l3.641,3.641L27.641,22.688L38.564,33.61L34.923,37.251z"
     );
   }
 );
+
+const LoadingIndicator = component$(() => {
+  return (
+    <div class="spinner">
+      <svg class="spinner-icon" viewBox="25 25 50 50">
+        <circle
+          class="spinner-path"
+          cx="50"
+          cy="50"
+          r="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="5"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+  );
+});
 
 export default Control;
