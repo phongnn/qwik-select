@@ -165,4 +165,11 @@ describe("clearable", () => {
     // hide the clear button
     cy.get("[data-testid='qwik-select-clear']").should("not.exist");
   });
+
+  it("hides clear button when user starts typing", () => {
+    cy.visit("/clearable");
+    cy.findByTestId("qwik-select-clear");
+    cy.get("input").type("abc");
+    cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+  });
 });

@@ -17,7 +17,8 @@ interface ControlProps {
 }
 
 const Control = (props: ControlProps) => {
-  const clearable = props.selectedOptionLabel.mut && props.onClear$;
+  const clearable =
+    props.onClear$ && props.selectedOptionLabel.mut && !props.inputValue.mut;
   return (
     <div>
       <div
