@@ -4,6 +4,7 @@ import {
   useStore,
   $,
   useWatch$,
+  PropFunction,
 } from "@builder.io/qwik";
 
 import { SelectOption, SelectProps } from "./types";
@@ -92,15 +93,29 @@ function useHoveredOptionStore(filteredOptionsStore: {
 }
 
 function useFilteredOptionsStore(
-  options: SelectOption[],
-  optionLabelKey: string
+  params:
+    | {
+        options: SelectOption[];
+        optionLabelKey: string;
+      }
+    | PropFunction<(text: string) => Promise<SelectOption[]>>
 ) {
-  const state = useStore({ value: options });
+  const isAsync = typeof params === "function";
+  const state = useStore({
+    value: isAsync ? [] : params.options,
+    loading: false,
+  });
 
-  const filterOptions = $((query: string) => {
+  const filterOptions = $(async (query: string) => {
     if (query === "") {
-      state.value = options;
+      state.value = isAsync ? [] : params.options;
+    } else if (isAsync) {
+      state.value = [];
+      state.loading = true;
+      state.value = await params(query);
+      state.loading = false;
     } else {
+      const { options, optionLabelKey } = params;
       state.value = options.filter((opt) => {
         const label =
           typeof opt === "string" ? opt : (opt[optionLabelKey] as string);
@@ -109,7 +124,7 @@ function useFilteredOptionsStore(
     }
   });
 
-  const clearFilter = $(() => (state.value = options));
+  const clearFilter = $(() => (state.value = isAsync ? [] : params.options));
 
   return {
     filteredOptionsStore: state,
@@ -131,6 +146,12 @@ export function useSelect(
   props: SelectProps,
   config: { optionLabelKey: string }
 ) {
+  if (!props.options && !props.fetchOptions$) {
+    throw Error(
+      "[qwik-select] FATAL: please provide either fetchOptions$ or options prop."
+    );
+  }
+
   const containerRef = useRef<HTMLElement>();
   const inputRef = useRef<HTMLInputElement>();
   const listRef = useRef<HTMLElement>();
@@ -143,7 +164,11 @@ export function useSelect(
   const {
     filteredOptionsStore,
     actions: { filterOptions, clearFilter },
-  } = useFilteredOptionsStore(props.options, config.optionLabelKey);
+  } = useFilteredOptionsStore(
+    props.fetchOptions$
+      ? props.fetchOptions$
+      : { options: props.options!, optionLabelKey: config.optionLabelKey }
+  );
 
   const {
     hoveredOptionStore,
@@ -192,14 +217,14 @@ export function useSelect(
     }
   });
 
-  const handleInputChange = $((event: Event) => {
+  const handleInputChange = $(async (event: Event) => {
     if (!isOpenStore.value) {
       openMenu();
     }
 
     const value = (event.target as HTMLInputElement).value;
     setInputValue(value);
-    filterOptions(value);
+    await filterOptions(value);
 
     // update hovered option
     if (props.value && filteredOptionsStore.value.includes(props.value)) {

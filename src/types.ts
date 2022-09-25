@@ -3,8 +3,9 @@ import { PropFunction } from "@builder.io/qwik";
 export type SelectOption = any;
 
 export interface SelectProps {
-  options: SelectOption[];
+  options?: SelectOption[];
   value?: SelectOption;
+  fetchOptions$?: PropFunction<(text: string) => Promise<SelectOption[]>>;
   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
   onClear$?: PropFunction<() => void>;
   disabled?: boolean;
