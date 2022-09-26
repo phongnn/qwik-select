@@ -1,4 +1,4 @@
-import { component$, useStyles$, mutable } from "@builder.io/qwik";
+import { component$, useStyles$, mutable, $ } from "@builder.io/qwik";
 
 import type { SelectOption, SelectProps } from "../types";
 
@@ -18,15 +18,22 @@ const Select = component$((props: SelectProps) => {
 
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
+  // prettier-ignore
+  const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
+
+  const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
+    const element = menuElem?.querySelector("item.hover");
+    element?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
 
   const { refs, state, actions } = useSelect(props, {
     optionLabelKey,
     inputDebounceTime,
+    scrollToHoveredOption,
   });
-  const { blur } = actions;
-  // prettier-ignore
-  const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
-  const isEmpty = state.filteredOptions.length === 0;
 
   useStyles$(styles);
 
@@ -57,12 +64,14 @@ const Select = component$((props: SelectProps) => {
                     if (props.onChange$ && opt !== props.value) {
                       props.onChange$(opt);
                     }
-                    blur();
+                    actions.blur();
                   }}
                 />
               );
             })}
-            {isEmpty && <div class="empty">{noOptionsMessage}</div>}
+            {state.filteredOptions.length === 0 && (
+              <div class="empty">{noOptionsMessage}</div>
+            )}
           </div>
         )}
       </div>

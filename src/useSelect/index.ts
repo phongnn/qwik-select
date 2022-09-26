@@ -1,15 +1,20 @@
-import { useRef, useClientEffect$, $ } from "@builder.io/qwik";
+import { useRef, useClientEffect$, $, QRL } from "@builder.io/qwik";
 
-import type { SelectProps } from "../types";
+import type { SelectOption, SelectProps } from "../types";
 import { useIsOpenStore } from "./isOpenStore";
 import { useInputValueStore } from "./inputValueStore";
 import { useFilteredOptionsStore } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
-import { scrollToItem } from "./helpers";
 
 export function useSelect(
   props: SelectProps,
-  config: { optionLabelKey: string; inputDebounceTime: number }
+  config: {
+    optionLabelKey: string;
+    inputDebounceTime: number;
+    scrollToHoveredOption?: QRL<
+      (menuElem?: HTMLElement, opt?: SelectOption) => void
+    >;
+  }
 ) {
   /** CONFIGURATION */
   if (!props.options && !props.fetchOptions$) {
@@ -138,8 +143,8 @@ export function useSelect(
 
   useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(hoveredOptionStore, "hoveredOption");
-    if (hoveredOption) {
-      scrollToItem(listRef.current, ".item.hover");
+    if (hoveredOption && config.scrollToHoveredOption) {
+      config.scrollToHoveredOption(listRef.current, hoveredOption);
     }
   });
 
