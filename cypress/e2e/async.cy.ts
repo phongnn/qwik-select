@@ -17,7 +17,6 @@ it("fetches and shows options", () => {
 
 it("debounces fetch requests", () => {
   cy.visit("/async");
-  // cy.get("input").type("t").wait(100).type("w").wait(100).type("o");
   cy.get("input").type("t").wait(200);
   cy.get("input").type("h").wait(200);
   cy.get("input").type("r").wait(200);
@@ -34,4 +33,18 @@ it("debounces fetch requests", () => {
     // @ts-ignore
     assert.equal(win.__qwik_select__async_calls__[0], "three");
   });
+});
+
+it("ignores fetched data when menu already closed", () => {
+  cy.visit("/async");
+
+  // enter some text but immediately close the menu
+  cy.get("input").type("t");
+  cy.wait(500);
+  cy.get("input").click();
+
+  // reopen the menu when data fetching is done
+  cy.wait(2000);
+  cy.get("input").click();
+  cy.get(".item").should("not.exist");
 });
