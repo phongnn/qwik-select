@@ -12,4 +12,5 @@ export interface SelectProps {
   optionLabelKey?: string;
   placeholder?: string;
   noOptionsMessage?: string;
+  inputDebounceTime?: number;
 }

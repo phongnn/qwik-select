@@ -14,10 +14,15 @@ const Select = component$((props: SelectProps) => {
   const placeholder = props.placeholder ?? "Select...";
   const noOptionsMessage = props.noOptionsMessage ?? "No options";
   const optionLabelKey = props.optionLabelKey ?? "label";
+  const inputDebounceTime = props.inputDebounceTime ?? 200;
+
   // prettier-ignore
   const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
 
-  const { refs, state, actions } = useSelect(props, { optionLabelKey });
+  const { refs, state, actions } = useSelect(props, {
+    optionLabelKey,
+    inputDebounceTime,
+  });
   const { blur } = actions;
   // prettier-ignore
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;

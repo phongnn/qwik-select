@@ -9,23 +9,6 @@ import {
 
 import { SelectOption, SelectProps } from "./types";
 
-// interface UseSelectParams {
-//   options: SelectOption[];
-//   value?: SelectOption;
-//   onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
-//   optionLabelKey: string;
-// }
-
-interface FilteredOptionsStore {
-  options: SelectOption[];
-  loading: boolean;
-}
-
-interface HoveredOptionStore {
-  hoveredOptionIndex: number;
-  hoveredOption?: SelectOption;
-}
-
 export function scrollToItem(
   listElem: HTMLElement | undefined,
   selector: string
@@ -46,26 +29,24 @@ function useIsOpenStore() {
   return { isOpenStore, actions };
 }
 
+interface HoveredOptionStore {
+  hoveredOptionIndex: number;
+  hoveredOption?: SelectOption;
+}
+
 function useHoveredOptionStore(filteredOptionsStore: FilteredOptionsStore) {
   const state = useStore<HoveredOptionStore>({ hoveredOptionIndex: -1 });
 
-  const clearHoveredOption = $(() => {
-    state.hoveredOptionIndex = -1;
-    state.hoveredOption = undefined;
-  });
-
-  const hoverOption = $((opt: SelectOption) => {
-    const optIndex = filteredOptionsStore.options.indexOf(opt);
-    if (optIndex >= 0) {
-      state.hoveredOptionIndex = optIndex;
-      state.hoveredOption = opt;
-    }
-  });
-
-  const hoverFirstOption = $(() => {
+  const hoverSelectedOrFirstOption = $((opt: SelectOption | undefined) => {
     if (filteredOptionsStore.options.length > 0) {
-      state.hoveredOptionIndex = 0;
-      state.hoveredOption = filteredOptionsStore.options[0];
+      const optIndex = opt ? filteredOptionsStore.options.indexOf(opt) : -1;
+      if (optIndex > 0) {
+        state.hoveredOptionIndex = optIndex;
+        state.hoveredOption = opt;
+      } else {
+        state.hoveredOptionIndex = 0;
+        state.hoveredOption = filteredOptionsStore.options[0];
+      }
     }
   });
 
@@ -91,49 +72,81 @@ function useHoveredOptionStore(filteredOptionsStore: FilteredOptionsStore) {
     }
   });
 
+  const clearHoveredOption = $(() => {
+    state.hoveredOptionIndex = -1;
+    state.hoveredOption = undefined;
+  });
+
   const actions = {
-    hoverFirstOption,
+    hoverSelectedOrFirstOption,
     hoverNextOption,
     hoverPrevOption,
     clearHoveredOption,
-    hoverOption,
   };
   return { hoveredOptionStore: state, actions };
 }
 
-function useFilteredOptionsStore(
-  param:
-    | {
-        options: SelectOption[];
-        optionLabelKey: string;
-      }
-    | PropFunction<(text: string) => Promise<SelectOption[]>>
-) {
-  const isAsync = typeof param === "function";
+interface FilteredOptionsStore {
+  options: SelectOption[];
+  loading: boolean;
+}
+
+type FilteredOptionsStoreConfig =
+  | {
+      options: SelectOption[];
+      optionLabelKey: string;
+    }
+  | {
+      fetcher: PropFunction<(text: string) => Promise<SelectOption[]>>;
+      debounceTime: number;
+    };
+
+function useFilteredOptionsStore(config: FilteredOptionsStoreConfig) {
+  const isAsync = "fetcher" in config;
   const state = useStore<FilteredOptionsStore>({
-    options: isAsync ? [] : param.options,
+    options: isAsync ? [] : config.options,
     loading: false,
   });
+  // timeout for debouncing fetch requests
+  const internalState = useStore<{ timeout?: number }>({});
 
   const filterOptions = $(async (query: string) => {
     if (query === "") {
-      state.options = isAsync ? [] : param.options;
-    } else if (isAsync) {
-      state.options = [];
-      state.loading = true;
-      state.options = await param(query);
-      state.loading = false;
-    } else {
-      const { optionLabelKey } = param;
-      state.options = param.options.filter((opt) => {
+      state.options = isAsync ? [] : config.options;
+    } else if (!isAsync) {
+      const { optionLabelKey } = config;
+      state.options = config.options.filter((opt) => {
         const label =
           typeof opt === "string" ? opt : (opt[optionLabelKey] as string);
         return label.toLowerCase().includes(query.toLowerCase());
       });
+    } else {
+      // debounce to avoid sending too many unnecessary requests
+      state.options = [];
+      state.loading = true;
+
+      clearTimeout(internalState.timeout);
+      // @ts-ignore
+      internalState.timeout = setTimeout(async () => {
+        const fetchedData = await config.fetcher(query);
+        // only set data if menu hasn't been closed yet
+        if (state.loading) {
+          state.options = fetchedData;
+          state.loading = false;
+        }
+      }, config.debounceTime);
     }
   });
 
-  const clearFilter = $(() => (state.options = isAsync ? [] : param.options));
+  const clearFilter = $(() => {
+    if (isAsync) {
+      clearTimeout(internalState.timeout);
+      state.options = [];
+      state.loading = false;
+    } else {
+      state.options = config.options;
+    }
+  });
 
   return {
     filteredOptionsStore: state,
@@ -153,7 +166,7 @@ function useInputValueStore() {
 
 export function useSelect(
   props: SelectProps,
-  config: { optionLabelKey: string }
+  config: { optionLabelKey: string; inputDebounceTime: number }
 ) {
   if (!props.options && !props.fetchOptions$) {
     throw Error(
@@ -161,9 +174,9 @@ export function useSelect(
     );
   }
 
-  const containerRef = useRef<HTMLElement>();
-  const inputRef = useRef<HTMLInputElement>();
-  const listRef = useRef<HTMLElement>();
+  const filteredOptionsStoreConfig = props.fetchOptions$
+    ? { fetcher: props.fetchOptions$, debounceTime: config.inputDebounceTime }
+    : { options: props.options!, optionLabelKey: config.optionLabelKey };
 
   const {
     isOpenStore,
@@ -171,29 +184,28 @@ export function useSelect(
   } = useIsOpenStore();
 
   const {
+    inputValueStore,
+    actions: { setInputValue, clearInputValue },
+  } = useInputValueStore();
+
+  const {
     filteredOptionsStore,
     actions: { filterOptions, clearFilter },
-  } = useFilteredOptionsStore(
-    props.fetchOptions$
-      ? props.fetchOptions$
-      : { options: props.options!, optionLabelKey: config.optionLabelKey }
-  );
+  } = useFilteredOptionsStore(filteredOptionsStoreConfig);
 
   const {
     hoveredOptionStore,
     actions: {
-      hoverOption,
-      hoverFirstOption,
+      hoverSelectedOrFirstOption,
       hoverNextOption,
       hoverPrevOption,
       clearHoveredOption,
     },
   } = useHoveredOptionStore(filteredOptionsStore);
 
-  const {
-    inputValueStore,
-    actions: { setInputValue, clearInputValue },
-  } = useInputValueStore();
+  const containerRef = useRef<HTMLElement>();
+  const inputRef = useRef<HTMLInputElement>();
+  const listRef = useRef<HTMLElement>();
 
   const handleContainerClick = $((event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -226,21 +238,14 @@ export function useSelect(
     }
   });
 
-  const handleInputChange = $(async (event: Event) => {
+  const handleInputChange = $((event: Event) => {
     if (!isOpenStore.value) {
       openMenu();
     }
 
     const value = (event.target as HTMLInputElement).value;
     setInputValue(value);
-    await filterOptions(value);
-
-    // update hovered option
-    if (props.value && filteredOptionsStore.options.includes(props.value)) {
-      hoverOption(props.value);
-    } else if (filteredOptionsStore.options.length > 0) {
-      hoverFirstOption();
-    }
+    filterOptions(value);
   });
 
   const handleContainerPointerDown = $((event: PointerEvent) => {
@@ -272,18 +277,19 @@ export function useSelect(
     };
   });
 
-  useWatch$(function updateHoveredOptionOnListToggle({ track }) {
+  useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
+    track(filteredOptionsStore, "options");
+    hoverSelectedOrFirstOption(props.value);
+  });
+
+  useWatch$(function updateHoveredOptionOnMenuToggle({ track }) {
     const isOpen = track(isOpenStore, "value");
     if (isOpen) {
-      if (props.value) {
-        hoverOption(props.value);
-      } else {
-        hoverFirstOption();
-      }
+      hoverSelectedOrFirstOption(props.value);
     } else {
-      clearHoveredOption();
       clearInputValue();
       clearFilter();
+      clearHoveredOption();
     }
   });
 
@@ -291,7 +297,7 @@ export function useSelect(
     // scroll to the selected option whenever the list is created
     // (i.e. whenever the menu is opened)
     const elem = track(listRef, "current");
-    if (!!elem && !!props.value) {
+    if (elem && props.value) {
       scrollToItem(elem, ".item.selected");
     }
   });

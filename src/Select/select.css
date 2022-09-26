@@ -129,6 +129,12 @@ input.disabled::placeholder {
   stroke-linecap: round;
 }
 
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .menu {
   box-shadow: var(--listShadow, 0 2px 3px 0 rgba(44, 62, 80, 0.24));
   border-radius: var(--listBorderRadius, 4px);

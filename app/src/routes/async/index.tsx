@@ -15,6 +15,19 @@ export const items: Item[] = [
 ];
 
 export const filter = $((text: string) => {
+  if ("Cypress" in window) {
+    // @ts-ignore
+    if (window.__qwik_select__async_calls__) {
+      // @ts-ignore
+      window.__qwik_select__async_calls__.push(text);
+    } else {
+      // @ts-ignore
+      window.__qwik_select__async_calls__ = [text];
+    }
+  }
+
+  console.log("**** fetching options containing '" + text + "' ...");
+
   return new Promise<Item[]>((resolve) => {
     setTimeout(() => {
       const lowercaseText = text.toLowerCase();
@@ -35,6 +48,7 @@ export default component$(() => {
     <div>
       <Select
         fetchOptions$={filter}
+        inputDebounceTime={500}
         value={mutable(state.selectedItem)}
         onChange$={(it) => (state.selectedItem = it)}
       />

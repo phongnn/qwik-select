@@ -1,6 +1,6 @@
 it("fetches and shows options", () => {
   cy.visit("/async");
-  // cy.wait(500);
+  cy.wait(500);
   cy.get("input").type("t");
 
   // shows loading indicator
@@ -8,9 +8,30 @@ it("fetches and shows options", () => {
   cy.get(".spinner");
 
   // shows filtered options
-  cy.wait(1000);
+  cy.wait(2000);
   cy.get(".item").should("have.length", 2); // "Two", "Three"
 
   // hovers the first item by default
   cy.findByText("Two").should("have.class", "hover");
+});
+
+it("debounces fetch requests", () => {
+  cy.visit("/async");
+  // cy.get("input").type("t").wait(100).type("w").wait(100).type("o");
+  cy.get("input").type("t").wait(200);
+  cy.get("input").type("h").wait(200);
+  cy.get("input").type("r").wait(200);
+  cy.get("input").type("e").wait(200);
+  cy.get("input").type("e");
+  cy.wait(1000);
+  cy.get(".item").should("have.length", 1); // "Three"
+
+  cy.window().then((win) => {
+    // @ts-ignore
+    console.log(win.__qwik_select__async_calls__);
+    // @ts-ignore
+    assert.equal(win.__qwik_select__async_calls__.length, 1);
+    // @ts-ignore
+    assert.equal(win.__qwik_select__async_calls__[0], "three");
+  });
 });
