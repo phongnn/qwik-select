@@ -1,4 +1,4 @@
-import { useRef, useClientEffect$, $, useWatch$ } from "@builder.io/qwik";
+import { useRef, useClientEffect$, $ } from "@builder.io/qwik";
 
 import type { SelectProps } from "../types";
 import { useIsOpenStore } from "./isOpenStore";
@@ -101,33 +101,24 @@ export function useSelect(
     filterOptions(inputValue);
   });
 
+  // prettier-ignore
   useClientEffect$(() => {
     containerRef.current?.addEventListener("click", handleContainerClick);
-    // prettier-ignore
     containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
-
     inputRef.current?.addEventListener("keydown", handleInputKeyDown);
     inputRef.current?.addEventListener("input", handleInputChange);
     inputRef.current?.addEventListener("focusout", closeMenu);
 
     return () => {
       containerRef.current?.removeEventListener("click", handleContainerClick);
-      // prettier-ignore
       containerRef.current?.removeEventListener("pointerdown", handleContainerPointerDown);
-
       inputRef.current?.removeEventListener("keydown", handleInputKeyDown);
       inputRef.current?.removeEventListener("input", handleInputChange);
       inputRef.current?.removeEventListener("focusout", closeMenu);
     };
   });
 
-  // need to use useClientEffect$ because useWatch$ would cause "stale tracked value" error
-  useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
-    track(filteredOptionsStore, "options");
-    hoverSelectedOrFirstOption(props.value);
-  });
-
-  useWatch$(function updateHoveredOptionOnMenuToggle({ track }) {
+  useClientEffect$(function handleMenuToggle({ track }) {
     const isOpen = track(isOpenStore, "value");
     if (isOpen) {
       hoverSelectedOrFirstOption(props.value);
@@ -138,16 +129,14 @@ export function useSelect(
     }
   });
 
-  useWatch$(function scrollToSelectedOption({ track }) {
-    // scroll to the selected option whenever the list is created
-    // (i.e. whenever the menu is opened)
-    const elem = track(listRef, "current");
-    if (elem && props.value) {
-      scrollToItem(elem, ".item.selected");
+  useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
+    track(filteredOptionsStore, "options");
+    if (isOpenStore.value) {
+      hoverSelectedOrFirstOption(props.value);
     }
   });
 
-  useWatch$(function scrollToHoveredOption({ track }) {
+  useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(hoveredOptionStore, "hoveredOption");
     if (hoveredOption) {
       scrollToItem(listRef.current, ".item.hover");
