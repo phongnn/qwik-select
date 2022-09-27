@@ -14,6 +14,7 @@ interface ControlProps {
   inputValue: MutableWrapper<string>;
   loading: MutableWrapper<boolean>;
   disabled: MutableWrapper<boolean>;
+  autofocus: MutableWrapper<boolean | undefined>;
   onClear$?: PropFunction<() => void>;
 }
 
@@ -33,6 +34,7 @@ const Control = (props: ControlProps) => {
         ref={props.ref}
         value={props.inputValue.mut}
         disabled={props.disabled.mut}
+        autoFocus={props.autofocus.mut}
       />
       {clearable && <ClearButton onClick$={props.onClear$!} />}
       {props.loading.mut && <LoadingIndicator />}

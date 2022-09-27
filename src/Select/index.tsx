@@ -20,6 +20,7 @@ interface SelectProps {
   onBlur$?: PropFunction<() => any>;
   optionLabelKey?: string;
   inputDebounceTime?: number;
+  autofocus?: boolean;
   disabled?: boolean;
   placeholder?: string;
   noOptionsMessage?: string;
@@ -64,6 +65,7 @@ const Select = component$((props: SelectProps) => {
           inputValue={mutable(state.inputValue)}
           loading={mutable(state.loading)}
           disabled={mutable(disabled)}
+          autofocus={mutable(props.autofocus)}
           onClear$={props.onClear$}
         />
         {state.isOpen && (

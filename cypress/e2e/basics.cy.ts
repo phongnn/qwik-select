@@ -211,3 +211,12 @@ describe("events", () => {
     cy.findByTestId("log").should("have.text", "Blurred.");
   });
 });
+
+describe("others", () => {
+  it("sets focus to the text input on page load", () => {
+    cy.visit("/autofocus");
+
+    // cy.get("input").should("be.focused"); // strangely, this doesn't work
+    cy.get("input").should("have.attr", "autofocus");
+  });
+});
