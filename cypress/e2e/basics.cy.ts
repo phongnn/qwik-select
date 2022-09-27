@@ -92,6 +92,7 @@ describe("with no selected value", () => {
     // opens menu again and clicks on an item
     input.click();
     cy.findByText("Three").click();
+    cy.wait(500);
     cy.findByText("You've selected Three.");
 
     cy.get("input").should("not.be.focused");
@@ -170,6 +171,42 @@ describe("clearable", () => {
     cy.visit("/clearable");
     cy.findByTestId("qwik-select-clear");
     cy.get("input").type("abc");
+    cy.wait(500);
     cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+  });
+});
+
+describe("events", () => {
+  it("calls onInput$ event handler", () => {
+    cy.visit("/events");
+
+    cy.get("input").type("a");
+    cy.findByTestId("log").should("have.text", "You've entered a");
+    cy.get("input").type("b");
+    cy.findByTestId("log").should("have.text", "You've entered ab");
+    cy.get("input").type("{backspace}");
+    cy.findByTestId("log").should("have.text", "You've entered a");
+    cy.get("input").type("{esc}");
+    cy.wait(500);
+    cy.findByTestId("log").should("have.text", "");
+  });
+
+  it("calls onFocus$ and onBlur$ event handler", () => {
+    cy.visit("/events");
+
+    cy.findByTestId("log").should("have.text", "");
+
+    // workaround: a couple of clicks to get event handlers loaded
+    cy.get("input").click();
+    cy.findByTestId("log").click();
+    cy.wait(2000);
+
+    // should call onFocus$
+    cy.get("input").click();
+    cy.findByTestId("log").should("have.text", "Focused.");
+
+    // should call onBlur$
+    cy.findByTestId("log").click();
+    cy.findByTestId("log").should("have.text", "Blurred.");
   });
 });

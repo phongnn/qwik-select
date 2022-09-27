@@ -36,7 +36,7 @@ export function useSelect(
   const {
     inputValueStore,
     actions: { setInputValue, clearInputValue },
-  } = useInputValueStore();
+  } = useInputValueStore(props.onInput$);
 
   const {
     filteredOptionsStore,
@@ -67,7 +67,7 @@ export function useSelect(
   });
 
   const handleContainerPointerDown = $((event: PointerEvent) => {
-    // avoid triggering "focusout" event when user clicks on a menu item
+    // avoid triggering "blur" event when user clicks on a menu item
     // otherwise the item's click event won't fire
     if (event.target !== inputRef.current) {
       event.preventDefault();
@@ -106,20 +106,35 @@ export function useSelect(
     filterOptions(inputValue);
   });
 
+  const handleInputFocus = $(() => {
+    if (props.onFocus$) {
+      props.onFocus$();
+    }
+  });
+
+  const handleInputBlur = $(() => {
+    if (props.onBlur$) {
+      props.onBlur$();
+    }
+    closeMenu();
+  });
+
   // prettier-ignore
   useClientEffect$(() => {
     containerRef.current?.addEventListener("click", handleContainerClick);
     containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
     inputRef.current?.addEventListener("keydown", handleInputKeyDown);
     inputRef.current?.addEventListener("input", handleInputChange);
-    inputRef.current?.addEventListener("focusout", closeMenu);
+    inputRef.current?.addEventListener("focus", handleInputFocus);
+    inputRef.current?.addEventListener("blur", handleInputBlur); // focusout
 
     return () => {
       containerRef.current?.removeEventListener("click", handleContainerClick);
       containerRef.current?.removeEventListener("pointerdown", handleContainerPointerDown);
       inputRef.current?.removeEventListener("keydown", handleInputKeyDown);
       inputRef.current?.removeEventListener("input", handleInputChange);
-      inputRef.current?.removeEventListener("focusout", closeMenu);
+      inputRef.current?.removeEventListener("focus", handleInputFocus);
+      inputRef.current?.removeEventListener("blur", handleInputBlur);
     };
   });
 
