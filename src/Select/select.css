@@ -22,9 +22,9 @@
   border-color: var(--borderHoverColor, #b2b8bf);
 }
 
-/* .container.focused {
+.container:focus-within {
   border-color: var(--borderFocusColor, #006fe8);
-} */
+}
 
 .container.disabled {
   background: var(--disabledBackground, #ebedef);
@@ -94,11 +94,9 @@ input.disabled::placeholder {
   color: var(--clearButtonHoverColor, #2c3e50);
 }
 
-/*
-.container.focused .clear-button {
+.container:focus-within .clear-button {
   color: var(--clearButtonFocusColor, #3f4f5f);
 }
-*/
 
 .spinner {
   position: absolute;
