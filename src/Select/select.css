@@ -1,4 +1,4 @@
-.container {
+.qs-container {
   --internalPadding: 0 16px;
   border: var(--border, 1px solid #d8dbdf);
   border-radius: var(--borderRadius, 3px);
@@ -12,44 +12,38 @@
   margin: var(--margin, 0);
 }
 
-.container.disabled {
-  background: var(--disabledBackground, #ebedef);
-  border-color: var(--disabledBorderColor, #ebedef);
-  color: var(--disabledColor, #c1c6cc);
-}
-
-.container:hover {
+.qs-container:hover {
   border-color: var(--borderHoverColor, #b2b8bf);
 }
 
-.container:focus-within {
+.qs-container:focus-within {
   border-color: var(--borderFocusColor, #006fe8);
 }
 
-.container.disabled {
+.qs-container.qs-disabled {
   background: var(--disabledBackground, #ebedef);
   border-color: var(--disabledBorderColor, #ebedef);
   color: var(--disabledColor, #c1c6cc);
   pointer-events: none;
 }
 
-.container.disabled input::placeholder {
+.qs-container.qs-disabled input::placeholder {
   color: var(--disabledPlaceholderColor, #c1c6cc);
   opacity: var(--disabledPlaceholderOpacity, 1);
 }
 
-.selected-item-label {
+.qs-selected-item-label {
   line-height: var(--height, 42px);
   height: var(--height, 42px);
   overflow-x: hidden;
   padding: var(--selectedItemPadding, 0 20px 0 0);
 }
 
-.selected-item-label:focus {
+.qs-selected-item-label:focus {
   outline: none;
 }
 
-input {
+.qs-container input {
   cursor: default;
   border: none;
   color: var(--inputColor, #3f4f5f);
@@ -66,21 +60,21 @@ input {
   margin: var(--inputMargin, 0);
 }
 
-input::placeholder {
+.qs-container input::placeholder {
   color: var(--placeholderColor, #78848f);
   opacity: var(--placeholderOpacity, 1);
 }
 
-input:focus {
+.qs-container input:focus {
   outline: none;
 }
 
-input.disabled::placeholder {
+.qs-container input:disabled::placeholder {
   color: var(--disabledPlaceholderColor, #c1c6cc);
   opacity: var(--disabledPlaceholderOpacity, 1);
 }
 
-.clear-button {
+.qs-clear-button {
   position: absolute;
   right: var(--clearButtonRight, 10px);
   top: var(--clearButtonTop, 11px);
@@ -90,25 +84,31 @@ input.disabled::placeholder {
   flex: none !important;
 }
 
-.clear-button:hover {
+.qs-clear-button:hover {
   color: var(--clearButtonHoverColor, #2c3e50);
 }
 
-.container:focus-within .clear-button {
+.qs-container:focus-within .qs-clear-button {
   color: var(--clearButtonFocusColor, #3f4f5f);
 }
 
-.spinner {
+.qs-spinner {
   position: absolute;
   right: var(--spinnerRight, 10px);
   top: var(--spinnerLeft, 11px);
   width: var(--spinnerWidth, 20px);
   height: var(--spinnerHeight, 20px);
   color: var(--spinnerColor, #51ce6c);
-  animation: rotate 0.75s linear infinite;
+  animation: qs-spinner-rotate 0.75s linear infinite;
 }
 
-.spinner-icon {
+@keyframes qs-spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.qs-spinner-icon {
   display: block;
   height: 100%;
   transform-origin: center center;
@@ -122,18 +122,12 @@ input.disabled::placeholder {
   /* -webkit-transform: none; */
 }
 
-.spinner-path {
+.qs-spinner-path {
   stroke-dasharray: 90;
   stroke-linecap: round;
 }
 
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.menu {
+.qs-menu {
   box-shadow: var(--listShadow, 0 2px 3px 0 rgba(44, 62, 80, 0.24));
   border-radius: var(--listBorderRadius, 4px);
   max-height: var(--listMaxHeight, 250px);
@@ -148,7 +142,7 @@ input.disabled::placeholder {
   /* margin-top: var(--listMarginTop, 5px); */
 }
 
-.item {
+.qs-item {
   cursor: default;
   height: var(--height, 42px);
   line-height: var(--height, 42px);
@@ -159,34 +153,26 @@ input.disabled::placeholder {
   white-space: nowrap;
 }
 
-.item:active {
+.qs-item:active {
   background: var(--itemActiveBackground, #b9daff);
 }
 
-.item.selected {
+.qs-item.qs-selected {
   background: var(--itemSelectedBG, #007aff);
   color: var(--itemSelectedColor, #fff);
 }
 
-/* .item.notSelectable {
-    color: var(--itemIsNotSelectableColor, #999);
-} */
-
-.item.first {
-  border-radius: var(--itemFirstBorderRadius, 4px 4px 0 0);
-}
-
-.item.hover:not(.selected) {
+.qs-item.qs-hovered:not(.qs-selected) {
   background: var(--itemHoverBG, #e7f2ff);
   color: var(--itemHoverColor, inherit);
 }
 
-.item:hover:not(.selected) {
+.qs-item:hover:not(.qs-selected) {
   background: var(--itemHoverBG, #e7f2ff);
   color: var(--itemHoverColor, inherit);
 }
 
-.empty {
+.qs-empty {
   text-align: var(--listEmptyTextAlign, center);
   padding: var(--listEmptyPadding, 20px 0);
   color: var(--listEmptyColor, #78848f);

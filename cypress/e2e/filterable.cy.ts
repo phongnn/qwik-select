@@ -12,18 +12,18 @@ it("filters options as user types", () => {
   const input = cy.get("input");
 
   input.type("p");
-  cy.get(".item").should("have.length", 3); // "Apple", "Pear", "Pineapple"
+  cy.get(".qs-item").should("have.length", 3); // "Apple", "Pear", "Pineapple"
   input.type("e");
-  cy.get(".item").should("have.length", 1); // "Pear"
+  cy.get(".qs-item").should("have.length", 1); // "Pear"
 
   // shows "No options"
   input.type("p");
-  cy.get(".item").should("have.length", 0);
+  cy.get(".qs-item").should("have.length", 0);
   cy.findByText("No options");
 
   // delete last character -> "pe"
   input.type("{backspace}");
-  cy.get(".item").should("have.length", 1); // "Pear"
+  cy.get(".qs-item").should("have.length", 1); // "Pear"
 });
 
 it("allows navigation with keyboard", () => {
@@ -32,14 +32,14 @@ it("allows navigation with keyboard", () => {
   const input = cy.get("input");
 
   input.type("p"); // "Apple", "Pear", "Pineapple"
-  cy.findByText("Apple").should("have.class", "hover");
+  cy.findByText("Apple").should("have.class", "qs-hovered");
 
   // updates hovered item on arrowDown and arrowUp
   input.type("{upArrow}");
-  cy.findByText("Pineapple").should("have.class", "hover");
+  cy.findByText("Pineapple").should("have.class", "qs-hovered");
 
   input.type("{downArrow}{downArrow}");
-  cy.findByText("Pear").should("have.class", "hover");
+  cy.findByText("Pear").should("have.class", "qs-hovered");
 });
 
 it("resets text input when closing menu", () => {
@@ -79,5 +79,5 @@ it("clears filter when closing menu", () => {
 
   // reopen the menu and check if all items are available
   cy.get("input").click();
-  cy.get(".item").should("have.length", 5);
+  cy.get(".qs-item").should("have.length", 5);
 });

@@ -21,10 +21,11 @@ interface ControlProps {
 const Control = (props: ControlProps) => {
   const clearable =
     props.onClear$ && props.selectedOptionLabel.mut && !props.inputValue.mut;
+
   return (
     <div>
       <div
-        class="selected-item-label"
+        class="qs-selected-item-label"
         style={{ visibility: props.inputValue.mut ? "hidden" : "visible" }}
       >
         {props.selectedOptionLabel.mut || props.placeholder}
@@ -57,7 +58,7 @@ const ClearButton = component$(
     });
 
     return (
-      <div class="clear-button" ref={ref} data-testid="qwik-select-clear">
+      <div class="qs-clear-button" ref={ref} data-testid="qwik-select-clear">
         <svg
           width="100%"
           height="100%"
@@ -79,10 +80,10 @@ l3.641,3.641L27.641,22.688L38.564,33.61L34.923,37.251z"
 
 const LoadingIndicator = component$(() => {
   return (
-    <div class="spinner">
-      <svg class="spinner-icon" viewBox="25 25 50 50">
+    <div class="qs-spinner">
+      <svg class="qs-spinner-icon" viewBox="25 25 50 50">
         <circle
-          class="spinner-path"
+          class="qs-spinner-path"
           cx="50"
           cy="50"
           r="20"

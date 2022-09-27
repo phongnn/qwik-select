@@ -5,14 +5,14 @@ it("fetches and shows options", () => {
 
   // shows loading indicator
   cy.wait(1000);
-  cy.get(".spinner");
+  cy.get(".qs-spinner");
 
   // shows filtered options
   cy.wait(2000);
-  cy.get(".item").should("have.length", 2); // "Two", "Three"
+  cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
 
   // hovers the first item by default
-  cy.findByText("Two").should("have.class", "hover");
+  cy.findByText("Two").should("have.class", "qs-hovered");
 });
 
 it("debounces fetch requests", () => {
@@ -23,7 +23,7 @@ it("debounces fetch requests", () => {
   cy.get("input").type("e").wait(200);
   cy.get("input").type("e");
   cy.wait(1000);
-  cy.get(".item").should("have.length", 1); // "Three"
+  cy.get(".qs-item").should("have.length", 1); // "Three"
 
   cy.window().then((win) => {
     // @ts-ignore
@@ -46,5 +46,5 @@ it("ignores fetched data when menu already closed", () => {
   // reopen the menu when data fetching is done
   cy.wait(2000);
   cy.get("input").click();
-  cy.get(".item").should("not.exist");
+  cy.get(".qs-item").should("not.exist");
 });

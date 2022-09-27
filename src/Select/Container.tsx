@@ -6,7 +6,7 @@ interface ContainerProps {
 }
 
 export const Container = component$((props: ContainerProps) => {
-  const classes = `container ${props.disabled ? "disabled" : ""}`;
+  const classes = `qs-container ${props.disabled ? "qs-disabled" : ""}`;
   return (
     <div class={classes} ref={props.ref}>
       <Slot />

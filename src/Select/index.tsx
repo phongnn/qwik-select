@@ -39,7 +39,7 @@ const Select = component$((props: SelectProps) => {
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
 
   const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
-    const element = menuElem?.querySelector("item.hover");
+    const element = menuElem?.querySelector("qs-item.qs-hovered");
     element?.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -69,7 +69,7 @@ const Select = component$((props: SelectProps) => {
           onClear$={props.onClear$}
         />
         {state.isOpen && (
-          <div class="menu" ref={refs.listRef}>
+          <div class="qs-menu" ref={refs.listRef}>
             {state.filteredOptions.map((opt) => {
               const isSelected = opt === props.value;
               const isHovered = opt === state.hoveredOption;
@@ -89,7 +89,7 @@ const Select = component$((props: SelectProps) => {
               );
             })}
             {state.filteredOptions.length === 0 && (
-              <div class="empty">{noOptionsMessage}</div>
+              <div class="qs-empty">{noOptionsMessage}</div>
             )}
           </div>
         )}

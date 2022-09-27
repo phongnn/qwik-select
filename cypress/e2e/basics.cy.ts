@@ -5,7 +5,7 @@ describe("empty list of options", () => {
 
     // "force: true" because the div is actually underneath the text input
     cy.findByText("Select...").click({ force: true });
-    cy.findByText("No options").should("have.class", "empty");
+    cy.findByText("No options").should("have.class", "qs-empty");
   });
 
   it("shows custom message", () => {
@@ -26,7 +26,7 @@ describe("with no selected value", () => {
     cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
 
     // shows first item in hover state
-    cy.findByText("One").should("have.class", "hover");
+    cy.findByText("One").should("have.class", "qs-hovered");
   });
 
   it("allows navigation with keyboard", () => {
@@ -38,13 +38,13 @@ describe("with no selected value", () => {
     cy.wait(1000);
 
     // shows first item in hover state
-    cy.findByText("One").should("have.class", "hover");
+    cy.findByText("One").should("have.class", "qs-hovered");
 
     // updates hovered item on arrowDown and arrowUp
     input.type("{downArrow}{downArrow}");
-    cy.findByText("Three").should("have.class", "hover");
+    cy.findByText("Three").should("have.class", "qs-hovered");
     input.type("{upArrow}{upArrow}{upArrow}");
-    cy.findByText("Five").should("have.class", "hover");
+    cy.findByText("Five").should("have.class", "qs-hovered");
 
     // sets value on Enter
     input.type("{enter}");
@@ -58,11 +58,11 @@ describe("with no selected value", () => {
     // opens menu
     input.type("{downArrow}");
     cy.wait(500);
-    cy.findByText("One").should("have.class", "hover");
+    cy.findByText("One").should("have.class", "qs-hovered");
 
     // closes menu on Escape
     input.type("{esc}");
-    cy.get(".item").should("not.exist");
+    cy.get(".qs-item").should("not.exist");
   });
 
   it("closes menu when click outside", () => {
@@ -71,11 +71,11 @@ describe("with no selected value", () => {
 
     // opens menu
     cy.get("input").click();
-    cy.findByText("One").should("have.class", "hover");
+    cy.findByText("One").should("have.class", "qs-hovered");
 
     // closes menu when click outside
     cy.findByTestId("outside").click();
-    cy.get(".item").should("not.exist");
+    cy.get(".qs-item").should("not.exist");
   });
 
   it("sets value when click on item", () => {
@@ -103,14 +103,14 @@ describe("with selected value", () => {
   it("shows selected value", () => {
     cy.visit("/selected");
     cy.wait(500);
-    cy.findByText("Nine").should("have.class", "selected-item-label");
+    cy.findByText("Nine").should("have.class", "qs-selected-item-label");
   });
 
   it("highlights selected option in menu", () => {
     cy.visit("/selected");
     cy.wait(500);
     cy.get("input").click();
-    cy.get(".item.selected").should("have.text", "Nine");
+    cy.get(".qs-item.qs-selected").should("have.text", "Nine");
   });
 
   it("allows navigation with keyboard", () => {
@@ -120,13 +120,13 @@ describe("with selected value", () => {
 
     // hovers selected option by default
     input.click();
-    cy.get(".item.hover").should("have.text", "Nine");
+    cy.get(".qs-item.qs-hovered").should("have.text", "Nine");
 
     // navigates with arrowUp and arrowDown
     cy.get("input").type("{upArrow}");
-    cy.findByText("Eight").should("have.class", "hover");
+    cy.findByText("Eight").should("have.class", "qs-hovered");
     cy.get("input").type("{downArrow}{downArrow}{downArrow}");
-    cy.findByText("One").should("have.class", "hover");
+    cy.findByText("One").should("have.class", "qs-hovered");
 
     // updates value on Enter
     input.type("{enter}");
@@ -139,7 +139,7 @@ describe("disable/enable", () => {
     cy.visit("/disabled");
     cy.wait(500);
     cy.get("input").should("be.disabled");
-    cy.get(".container").should("have.class", "disabled");
+    cy.get(".qs-container").should("have.class", "qs-disabled");
   });
 
   it("enables the control", () => {
@@ -149,7 +149,7 @@ describe("disable/enable", () => {
     cy.wait(500);
     cy.get("input").type("t");
     cy.wait(500);
-    cy.get(".item").should("have.length", 2); // "Two", "Three"
+    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
   });
 });
 
@@ -169,7 +169,12 @@ describe("clearable", () => {
 
   it("hides clear button when user starts typing", () => {
     cy.visit("/clearable");
+    cy.wait(500);
+
+    // clear button should initially appear
     cy.findByTestId("qwik-select-clear");
+
+    // the button should disappears when user starts typing
     cy.get("input").type("abc");
     cy.wait(500);
     cy.get("[data-testid='qwik-select-clear']").should("not.exist");
