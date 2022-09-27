@@ -1,31 +1,50 @@
-import { useRef, useClientEffect$, $, QRL } from "@builder.io/qwik";
+import {
+  useRef,
+  useClientEffect$,
+  $,
+  QRL,
+  PropFunction,
+} from "@builder.io/qwik";
 
-import type { SelectOption, SelectProps } from "../types";
+import type { SelectOption } from "../types";
 import { useIsOpenStore } from "./isOpenStore";
 import { useInputValueStore } from "./inputValueStore";
 import { useFilteredOptionsStore } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
-export function useSelect(
-  props: SelectProps,
-  config: {
-    optionLabelKey: string;
-    inputDebounceTime: number;
-    scrollToHoveredOption?: QRL<
-      (menuElem?: HTMLElement, opt?: SelectOption) => void
-    >;
-  }
-) {
-  /** CONFIGURATION */
+interface UseSelectProps {
+  options?: SelectOption[];
+  value?: SelectOption;
+  fetchOptions$?: PropFunction<(text: string) => Promise<SelectOption[]>>;
+  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  onClear$?: PropFunction<() => void>;
+  onInput$?: PropFunction<(text: string) => any>;
+  onFocus$?: PropFunction<() => any>;
+  onBlur$?: PropFunction<() => any>;
+  optionLabelKey?: string;
+  inputDebounceTime?: number;
+  scrollToHoveredOption?: QRL<
+    (menuElem?: HTMLElement, opt?: SelectOption) => void
+  >;
+}
+
+export function useSelect(props: UseSelectProps) {
+  /** VALIDATE PROPS */
   if (!props.options && !props.fetchOptions$) {
     throw Error(
       "[qwik-select] FATAL: please provide either fetchOptions$ or options prop."
     );
   }
+  if (props.fetchOptions$ && !props.inputDebounceTime) {
+    throw Error("[qwik-select] FATAL: please specify inputDebounceTime.");
+  }
+  if (props.options && !props.optionLabelKey) {
+    throw Error("[qwik-select] FATAL: please specify optionLabelKey.");
+  }
 
   const filteredOptionsStoreConfig = props.fetchOptions$
-    ? { fetcher: props.fetchOptions$, debounceTime: config.inputDebounceTime }
-    : { options: props.options!, optionLabelKey: config.optionLabelKey };
+    ? { fetcher: props.fetchOptions$, debounceTime: props.inputDebounceTime! }
+    : { options: props.options!, optionLabelKey: props.optionLabelKey! };
 
   /** STATE MANAGEMENT */
   const {
@@ -158,12 +177,16 @@ export function useSelect(
 
   useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(hoveredOptionStore, "hoveredOption");
-    if (hoveredOption && config.scrollToHoveredOption) {
-      config.scrollToHoveredOption(listRef.current, hoveredOption);
+    if (hoveredOption && props.scrollToHoveredOption) {
+      props.scrollToHoveredOption(listRef.current, hoveredOption);
     }
   });
 
   /** OTHER ACTIONS (NOT RELATED TO STATE MANAGEMENT) */
+  const focus = $(() => {
+    inputRef.current?.focus();
+  });
+
   const blur = $(() => {
     inputRef.current?.blur();
   });
@@ -181,6 +204,6 @@ export function useSelect(
       loading: filteredOptionsStore.loading,
       hoveredOption: hoveredOptionStore.hoveredOption,
     },
-    actions: { blur },
+    actions: { focus, blur },
   };
 }

@@ -3,7 +3,6 @@ import { defineConfig } from "cypress";
 export default defineConfig({
   e2e: {
     setupNodeEvents: (on, config) => {
-      console.log("🚀 cypress.config.ts: process.env.CI = ", process.env.CI);
       // const isDev = config.watchForFileChanges;
       // const port = process.env.PORT ?? (isDev ? "3000" : "8811");
       const port = 5173;

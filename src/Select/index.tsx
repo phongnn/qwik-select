@@ -1,13 +1,29 @@
-import { component$, useStyles$, mutable, $ } from "@builder.io/qwik";
+// prettier-ignore
+import { component$, useStyles$, mutable, $, PropFunction } from "@builder.io/qwik";
 
-import type { SelectOption, SelectProps } from "../types";
-
+import type { SelectOption } from "../types";
 import { useSelect } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
 
 import styles from "./select.css?inline";
+
+interface SelectProps {
+  options?: SelectOption[];
+  fetchOptions$?: PropFunction<(text: string) => Promise<SelectOption[]>>;
+  value?: SelectOption;
+  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+  onClear$?: PropFunction<() => void>;
+  onInput$?: PropFunction<(text: string) => any>;
+  onFocus$?: PropFunction<() => any>;
+  onBlur$?: PropFunction<() => any>;
+  optionLabelKey?: string;
+  inputDebounceTime?: number;
+  disabled?: boolean;
+  placeholder?: string;
+  noOptionsMessage?: string;
+}
 
 const Select = component$((props: SelectProps) => {
   const disabled = props.disabled ?? false;
@@ -29,7 +45,8 @@ const Select = component$((props: SelectProps) => {
     });
   });
 
-  const { refs, state, actions } = useSelect(props, {
+  const { refs, state, actions } = useSelect({
+    ...props,
     optionLabelKey,
     inputDebounceTime,
     scrollToHoveredOption,

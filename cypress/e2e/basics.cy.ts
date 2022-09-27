@@ -88,11 +88,11 @@ describe("with no selected value", () => {
 
     // workaround: click on an item to get the event handler loaded first
     cy.findByText("Four").click();
+    cy.wait(500);
 
     // opens menu again and clicks on an item
     input.click();
     cy.findByText("Three").click();
-    cy.wait(500);
     cy.findByText("You've selected Three.");
 
     cy.get("input").should("not.be.focused");
@@ -181,6 +181,7 @@ describe("events", () => {
     cy.visit("/events");
 
     cy.get("input").type("a");
+    cy.wait(500);
     cy.findByTestId("log").should("have.text", "You've entered a");
     cy.get("input").type("b");
     cy.findByTestId("log").should("have.text", "You've entered ab");
