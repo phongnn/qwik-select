@@ -1,10 +1,5 @@
-import {
-  useRef,
-  useClientEffect$,
-  $,
-  QRL,
-  PropFunction,
-} from "@builder.io/qwik";
+// prettier-ignore
+import { useRef, useClientEffect$, $, QRL, PropFunction } from "@builder.io/qwik";
 
 import type { SelectOption } from "../types";
 import { useIsOpenStore } from "./isOpenStore";
@@ -28,7 +23,7 @@ interface UseSelectProps {
   >;
 }
 
-export function useSelect(props: UseSelectProps) {
+function useSelect(props: UseSelectProps) {
   /** VALIDATE PROPS */
   if (!props.options && !props.fetchOptions$) {
     throw Error(
@@ -207,3 +202,6 @@ export function useSelect(props: UseSelectProps) {
     actions: { focus, blur },
   };
 }
+
+export type { UseSelectProps };
+export { useSelect };

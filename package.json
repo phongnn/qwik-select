@@ -1,7 +1,7 @@
 {
   "name": "qwik-select",
   "version": "0.0.0-semantic-release",
-  "description": "A template for creating a new library for Qwik framework.",
+  "description": "A select/autocomplete component for Qwik apps.",
   "homepage": "https://phongnn.github.io/qwik-select",
   "repository": {
     "url": "https://github.com/phongnn/qwik-select.git"
@@ -9,9 +9,21 @@
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
   "types": "./dist/types/index.d.ts",
-  "qwik-select": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "module": "./dist/index.mjs",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
   "scripts": {
     "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.app.ts --mode ssr",
     "test": "vitest",
@@ -26,7 +38,6 @@
     "fmt": "prettier --write .",
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",
-    "release": "np",
     "prepare": "npx husky install",
     "prepublishOnly": "pnpm build"
   },
@@ -34,54 +45,43 @@
     "@builder.io/qwik": "^0.9.0"
   },
   "devDependencies": {
-    "@builder.io/qwik-city": "^0.0.109",
+    "@builder.io/qwik": "^0.9.0",
+    "@builder.io/qwik-city": "^0.0.111",
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
     "@faker-js/faker": "^7.5.0",
     "@testing-library/cypress": "^8.0.3",
     "@types/eslint": "8.4.6",
-    "@types/express": "^4.17.13",
-    "@types/node": "latest",
-    "@typescript-eslint/eslint-plugin": "5.34.0",
-    "@typescript-eslint/parser": "5.34.0",
-    "@vitest/coverage-c8": "^0.22.1",
-    "autoprefixer": "^10.4.9",
-    "cypress": "10.7.0",
-    "eslint": "8.22.0",
-    "eslint-plugin-qwik": "0.0.107",
-    "husky": "^8.0.0",
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.7.23",
+    "@typescript-eslint/eslint-plugin": "5.38.1",
+    "@typescript-eslint/parser": "5.38.1",
+    "@vitest/coverage-c8": "^0.23.4",
+    "autoprefixer": "^10.4.12",
+    "cypress": "10.9.0",
+    "eslint": "8.24.0",
+    "eslint-plugin-qwik": "0.9.0",
+    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "node-fetch": "3.2.10",
-    "np": "7.6.1",
     "postcss": "^8.4.16",
     "prettier": "2.7.1",
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^3.1.8",
-    "typescript": "4.7.4",
-    "vite": "3.0.9",
-    "vite-tsconfig-paths": "^3.5.0",
-    "vitest": "^0.22.1"
+    "typescript": "4.8.4",
+    "vite": "3.1.4",
+    "vite-tsconfig-paths": "^3.5.1",
+    "vitest": "^0.23.4"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": [
-      "pnpm test.ci"
-    ]
+    "src/**/*.{js,jsx,ts,tsx}": []
   }
 }

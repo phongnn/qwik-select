@@ -98,6 +98,5 @@ const Select = component$((props: SelectProps) => {
   );
 });
 
-export type { SelectProps, SelectOption };
-
+export type { SelectProps };
 export default Select;
