@@ -132,6 +132,20 @@ describe("with selected value", () => {
     input.type("{enter}");
     cy.findByText("You've selected One.");
   });
+
+  it("hovers correct item after selected option changed", () => {
+    cy.visit("/selected");
+    cy.wait(500);
+
+    // open menu and select an option
+    cy.get("input").click();
+    cy.findByText("Three").click();
+    cy.wait(500);
+
+    // reopen the menu, expect the newly selected option to be hovered
+    cy.get("input").click();
+    cy.get(".qs-item.qs-hovered").should("have.text", "Three");
+  });
 });
 
 describe("disable/enable", () => {

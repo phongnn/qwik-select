@@ -7,6 +7,7 @@ import { useInputValueStore } from "./inputValueStore";
 import { useFilteredOptionsStore } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
+// these settings are directly from the user of the Select component
 interface UseSelectProps {
   options?: SelectOption[];
   value?: SelectOption;
@@ -16,6 +17,10 @@ interface UseSelectProps {
   onInput$?: PropFunction<(text: string) => any>;
   onFocus$?: PropFunction<() => any>;
   onBlur$?: PropFunction<() => any>;
+}
+
+// these settings are from the Select component, not directly from the user
+interface UseSelectConfig {
   optionLabelKey?: string;
   inputDebounceTime?: number;
   scrollToHoveredOption?: QRL<
@@ -23,23 +28,22 @@ interface UseSelectProps {
   >;
 }
 
-function useSelect(props: UseSelectProps) {
-  /** VALIDATE PROPS */
-  if (!props.options && !props.fetchOptions$) {
-    throw Error(
-      "[qwik-select] FATAL: please provide either fetchOptions$ or options prop."
-    );
-  }
-  if (props.fetchOptions$ && !props.inputDebounceTime) {
-    throw Error("[qwik-select] FATAL: please specify inputDebounceTime.");
-  }
-  if (props.options && !props.optionLabelKey) {
-    throw Error("[qwik-select] FATAL: please specify optionLabelKey.");
-  }
+function useSelect(props: UseSelectProps, config: UseSelectConfig) {
+  // if (!props.options && !props.fetchOptions$) {
+  //   throw Error(
+  //     "[qwik-select] FATAL: please provide either fetchOptions$ or options prop."
+  //   );
+  // }
+  // if (props.fetchOptions$ && !config.inputDebounceTime) {
+  //   throw Error("[qwik-select] FATAL: please specify inputDebounceTime.");
+  // }
+  // if (props.options && !config.optionLabelKey) {
+  //   throw Error("[qwik-select] FATAL: please specify optionLabelKey.");
+  // }
 
   const filteredOptionsStoreConfig = props.fetchOptions$
-    ? { fetcher: props.fetchOptions$, debounceTime: props.inputDebounceTime! }
-    : { options: props.options!, optionLabelKey: props.optionLabelKey! };
+    ? { fetcher: props.fetchOptions$, debounceTime: config.inputDebounceTime! }
+    : { options: props.options!, optionLabelKey: config.optionLabelKey! };
 
   /** STATE MANAGEMENT */
   const {
@@ -172,8 +176,8 @@ function useSelect(props: UseSelectProps) {
 
   useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(hoveredOptionStore, "hoveredOption");
-    if (hoveredOption && props.scrollToHoveredOption) {
-      props.scrollToHoveredOption(listRef.current, hoveredOption);
+    if (hoveredOption && config.scrollToHoveredOption) {
+      config.scrollToHoveredOption(listRef.current, hoveredOption);
     }
   });
 
@@ -203,5 +207,5 @@ function useSelect(props: UseSelectProps) {
   };
 }
 
-export type { UseSelectProps };
+export type { UseSelectProps, UseSelectConfig };
 export { useSelect };

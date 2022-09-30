@@ -46,8 +46,7 @@ const Select = component$((props: SelectProps) => {
     });
   });
 
-  const { refs, state, actions } = useSelect({
-    ...props,
+  const { refs, state, actions } = useSelect(props, {
     optionLabelKey,
     inputDebounceTime,
     scrollToHoveredOption,
