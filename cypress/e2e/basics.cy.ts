@@ -99,11 +99,47 @@ describe("with no selected value", () => {
   });
 });
 
+describe("automatic menu scrolling", () => {
+  it("scrolls on arrow down/up", () => {
+    cy.visit("/scroll");
+    cy.wait(500);
+
+    // open the menu, option "Seven" is currently not visible
+    cy.get("input").type("{downArrow}");
+    cy.wait(500);
+    cy.get(".qs-item:nth-child(7)").should("not.be.visible");
+
+    // navigate to option "Seven", it should become visible
+    cy.get("input").type(
+      "{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}"
+    );
+    cy.wait(500);
+    cy.get(".qs-item:nth-child(7)")
+      .should("have.class", "qs-hovered")
+      .should("be.visible");
+  });
+
+  it("scrolls to selected option when menu opens", () => {
+    cy.visit("/scroll");
+    cy.wait(500);
+
+    // select an option
+    cy.get("input").click();
+    cy.findByText("Seven").click();
+
+    // reopen the menu, expect the selected option to be visible
+    cy.wait(500);
+    cy.get("input").click();
+    cy.wait(500);
+    cy.get(".qs-item:nth-child(7)").should("be.visible");
+  });
+});
+
 describe("with selected value", () => {
   it("shows selected value", () => {
     cy.visit("/selected");
     cy.wait(500);
-    cy.findByText("Nine").should("have.class", "qs-selected-item-label");
+    cy.get(".qs-selected-item-label").should("have.text", "Nine");
   });
 
   it("highlights selected option in menu", () => {
@@ -118,9 +154,11 @@ describe("with selected value", () => {
     cy.wait(500);
     const input = cy.get("input");
 
-    // hovers selected option by default
+    // the selected option should be hovered and visible
     input.click();
-    cy.get(".qs-item.qs-hovered").should("have.text", "Nine");
+    cy.get(".qs-item.qs-hovered")
+      .should("have.text", "Nine")
+      .should("be.visible");
 
     // navigates with arrowUp and arrowDown
     cy.get("input").type("{upArrow}");

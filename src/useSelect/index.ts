@@ -159,7 +159,8 @@ function useSelect(props: UseSelectProps, config: UseSelectConfig) {
   useClientEffect$(function handleMenuToggle({ track }) {
     const isOpen = track(isOpenStore, "value");
     if (isOpen) {
-      hoverSelectedOrFirstOption(props.value);
+      // let the menu opens first before we set the hovered state
+      setTimeout(() => hoverSelectedOrFirstOption(props.value));
     } else {
       clearInputValue();
       clearFilter();
