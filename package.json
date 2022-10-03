@@ -18,7 +18,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
-    }
+    },
+    "./style.css": "./dist/style.css"
   },
   "files": [
     "dist"
@@ -32,9 +33,10 @@
     "cy": "cypress open",
     "e2e": "start-server-and-test dev http://localhost:5173 \"npx cypress run\"",
     "typecheck": "tsc --incremental --noEmit",
-    "build": "pnpm build.lib && pnpm build.types",
+    "build": "pnpm build.lib && pnpm build.types && pnpm build.styles",
     "build.lib": "vite build --mode lib",
     "build.types": "tsc --emitDeclarationOnly",
+    "build.styles": "cp src/style.css dist",
     "fmt": "prettier --write .",
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",

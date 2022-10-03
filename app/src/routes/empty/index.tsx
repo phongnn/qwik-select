@@ -1,9 +1,11 @@
 import { component$, useStyles$ } from "@builder.io/qwik";
 import { Select } from "qwik-select";
+import originalStyles from "qwik-select/style.css";
 
 import styles from "./styles.css";
 
 export default component$(() => {
+  useStyles$(originalStyles);
   useStyles$(styles);
   return (
     <div>

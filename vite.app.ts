@@ -9,7 +9,7 @@ export default defineConfig(() => {
     root: "app",
     resolve: {
       alias: {
-        "qwik-select": path.resolve("./src/index.ts"),
+        "qwik-select": path.resolve("./src"),
       },
     },
     plugins: [qwikCity(), qwikVite(), tsconfigPaths()],

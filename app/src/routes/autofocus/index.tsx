@@ -1,5 +1,6 @@
-import { component$, useStore, mutable } from "@builder.io/qwik";
+import { component$, useStore, mutable, useStyles$ } from "@builder.io/qwik";
 import { Select } from "qwik-select";
+import styles from "qwik-select/style.css";
 
 interface Item {
   value: number;
@@ -20,6 +21,7 @@ export default component$(() => {
     selectedItem: null,
   });
 
+  useStyles$(styles);
   return (
     <div>
       <Select

@@ -1,13 +1,10 @@
-// prettier-ignore
-import { component$, useStyles$, mutable, $, PropFunction } from "@builder.io/qwik";
+import { component$, mutable, $, PropFunction } from "@builder.io/qwik";
 
 import type { SelectOption } from "../types";
 import { useSelect } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
-
-import styles from "./select.css?inline";
 
 interface SelectProps {
   options?: SelectOption[];
@@ -51,8 +48,6 @@ const Select = component$((props: SelectProps) => {
     inputDebounceTime,
     scrollToHoveredOption,
   });
-
-  useStyles$(styles);
 
   return (
     <Container ref={refs.containerRef} disabled={mutable(disabled)}>
