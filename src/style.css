@@ -1,42 +1,38 @@
 .qs-container {
-  --internalPadding: 0 16px;
-  border: var(--border, 1px solid #d8dbdf);
-  border-radius: var(--borderRadius, 3px);
+  --padding: 0 16px;
+  --height: 42px;
+  border: 1px solid #d8dbdf;
+  border-radius: 3px;
   box-sizing: border-box;
-  height: var(--height, 42px);
+  height: var(--height);
   position: relative;
   display: flex;
   align-items: center;
-  padding: var(--padding, var(--internalPadding));
-  background: var(--background, #fff);
-  margin: var(--margin, 0);
+  padding: var(--padding);
+  margin: 0;
+  background: #fff;
 }
 
 .qs-container:hover {
-  border-color: var(--borderHoverColor, #b2b8bf);
+  border-color: #b2b8bf;
 }
 
 .qs-container:focus-within {
-  border-color: var(--borderFocusColor, #006fe8);
+  border-color: #006fe8;
 }
 
-.qs-container.qs-disabled {
-  background: var(--disabledBackground, #ebedef);
-  border-color: var(--disabledBorderColor, #ebedef);
-  color: var(--disabledColor, #c1c6cc);
+.qs-container[data-disabled="true"] {
+  background: #ebedef;
+  border-color: #ebedef;
+  color: #c1c6cc;
   pointer-events: none;
 }
 
-.qs-container.qs-disabled input::placeholder {
-  color: var(--disabledPlaceholderColor, #c1c6cc);
-  opacity: var(--disabledPlaceholderOpacity, 1);
-}
-
 .qs-selected-item-label {
-  line-height: var(--height, 42px);
-  height: var(--height, 42px);
+  line-height: var(--height);
+  height: var(--height);
   overflow-x: hidden;
-  padding: var(--selectedItemPadding, 0 20px 0 0);
+  padding: 0 20px 0 0;
 }
 
 .qs-selected-item-label:focus {
@@ -46,59 +42,59 @@
 .qs-container input {
   cursor: default;
   border: none;
-  color: var(--inputColor, #3f4f5f);
-  height: var(--height, 42px);
-  line-height: var(--height, 42px);
-  padding: var(--inputPadding, var(--padding, var(--internalPadding)));
+  color: #3f4f5f;
+  height: var(--height);
+  line-height: var(--height);
+  padding: var(--padding);
   width: 100%;
   background: transparent;
-  font-size: var(--inputFontSize, 14px);
-  letter-spacing: var(--inputLetterSpacing, -0.08px);
+  font-size: 14px;
+  letter-spacing: -0.08px;
   position: absolute;
   top: 0;
-  left: var(--inputLeft, 0);
-  margin: var(--inputMargin, 0);
-}
-
-.qs-container input::placeholder {
-  color: var(--placeholderColor, #78848f);
-  opacity: var(--placeholderOpacity, 1);
+  left: 0;
+  margin: 0;
 }
 
 .qs-container input:focus {
   outline: none;
 }
 
+.qs-container input::placeholder {
+  color: #78848f;
+  opacity: 1;
+}
+
 .qs-container input:disabled::placeholder {
-  color: var(--disabledPlaceholderColor, #c1c6cc);
-  opacity: var(--disabledPlaceholderOpacity, 1);
+  color: #c1c6cc;
+  opacity: 1;
 }
 
 .qs-clear-button {
   position: absolute;
-  right: var(--clearButtonRight, 10px);
-  top: var(--clearButtonTop, 11px);
-  bottom: var(--clearButtonBottom, 11px);
-  width: var(--clearButtonWidth, 20px);
-  color: var(--clearButtonColor, #c5cacf);
+  right: 10px;
+  top: 11px;
+  bottom: 11px;
+  width: 20px;
+  color: #c5cacf;
   flex: none !important;
 }
 
 .qs-clear-button:hover {
-  color: var(--clearButtonHoverColor, #2c3e50);
+  color: #2c3e50;
 }
 
 .qs-container:focus-within .qs-clear-button {
-  color: var(--clearButtonFocusColor, #3f4f5f);
+  color: #3f4f5f;
 }
 
 .qs-spinner {
   position: absolute;
-  right: var(--spinnerRight, 10px);
-  top: var(--spinnerLeft, 11px);
-  width: var(--spinnerWidth, 20px);
-  height: var(--spinnerHeight, 20px);
-  color: var(--spinnerColor, #51ce6c);
+  right: 10px;
+  top: 11px;
+  width: 20px;
+  height: 20px;
+  color: #51ce6c;
   animation: qs-spinner-rotate 0.75s linear infinite;
 }
 
@@ -119,7 +115,6 @@
   left: 0;
   right: 0;
   margin: auto;
-  /* -webkit-transform: none; */
 }
 
 .qs-spinner-path {
@@ -128,52 +123,43 @@
 }
 
 .qs-menu {
-  box-shadow: var(--listShadow, 0 2px 3px 0 rgba(44, 62, 80, 0.24));
-  border-radius: var(--listBorderRadius, 4px);
-  max-height: var(--listMaxHeight, 250px);
+  box-shadow: 0 2px 3px 0 rgba(44, 62, 80, 0.24);
+  border-radius: 4px;
+  max-height: 250px;
   overflow-y: auto;
-  background: var(--listBackground, #fff);
-  border: var(--listBorder, none);
-  position: var(--listPosition, absolute);
-  z-index: var(--listZIndex, 2);
+  background: #fff;
+  border: none;
+  position: absolute;
+  z-index: 2;
   width: 100%;
-  left: var(--listLeft, 0);
-  right: var(--listRight, 0);
-  /* margin-top: var(--listMarginTop, 5px); */
+  left: 0;
+  right: 0;
 }
 
 .qs-item {
   cursor: default;
-  height: var(--height, 42px);
-  line-height: var(--height, 42px);
-  padding: var(--itemPadding, 0 20px);
-  color: var(--itemColor, inherit);
+  height: 42px;
+  line-height: 42px;
+  padding: 0 20px;
+  color: inherit;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.qs-item:active {
-  background: var(--itemActiveBackground, #b9daff);
+.qs-item[data-selected="true"] {
+  background: #007aff;
+  color: #fff;
 }
 
-.qs-item.qs-selected {
-  background: var(--itemSelectedBG, #007aff);
-  color: var(--itemSelectedColor, #fff);
-}
-
-.qs-item.qs-hovered:not(.qs-selected) {
-  background: var(--itemHoverBG, #e7f2ff);
-  color: var(--itemHoverColor, inherit);
-}
-
-.qs-item:hover:not(.qs-selected) {
-  background: var(--itemHoverBG, #e7f2ff);
-  color: var(--itemHoverColor, inherit);
+.qs-item:hover:not([data-selected="true"]),
+.qs-item[data-hovered="true"]:not([data-selected="true"]) {
+  background: #e7f2ff;
+  color: inherit;
 }
 
 .qs-empty {
-  text-align: var(--listEmptyTextAlign, center);
-  padding: var(--listEmptyPadding, 20px 0);
-  color: var(--listEmptyColor, #78848f);
+  text-align: center;
+  padding: 20px 0;
+  color: #78848f;
 }

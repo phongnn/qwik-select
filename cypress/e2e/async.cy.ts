@@ -12,7 +12,7 @@ it("fetches and shows options", () => {
   cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
 
   // hovers the first item by default
-  cy.findByText("Two").should("have.class", "qs-hovered");
+  cy.findByText("Two").should("have.attr", "data-hovered", "true");
 });
 
 it("debounces fetch requests", () => {

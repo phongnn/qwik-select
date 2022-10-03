@@ -11,13 +11,14 @@ interface MenuItemProps {
 }
 
 export const MenuItem = (props: MenuItemProps) => {
-  const { option, getOptionLabel, isHovered, isSelected } = props;
-  // prettier-ignore
-  const classes = `qs-item ${isSelected.mut ? "qs-selected" : ""} ${isHovered.mut ? "qs-hovered" : ""}`
-
   return (
-    <div class={classes} onClick$={props.onClick$}>
-      {getOptionLabel(option)}
+    <div
+      class="qs-item"
+      onClick$={props.onClick$}
+      data-selected={props.isSelected.mut.toString()}
+      data-hovered={props.isHovered.mut.toString()}
+    >
+      {props.getOptionLabel(props.option)}
     </div>
   );
 };

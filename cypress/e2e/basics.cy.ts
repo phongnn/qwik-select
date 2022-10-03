@@ -26,7 +26,7 @@ describe("with no selected value", () => {
     cy.findAllByText(/(One)|(Two)|(Three)/).should("have.length", 3);
 
     // shows first item in hover state
-    cy.findByText("One").should("have.class", "qs-hovered");
+    cy.findByText("One").should("have.attr", "data-hovered", "true");
   });
 
   it("allows navigation with keyboard", () => {
@@ -38,13 +38,13 @@ describe("with no selected value", () => {
     cy.wait(1000);
 
     // shows first item in hover state
-    cy.findByText("One").should("have.class", "qs-hovered");
+    cy.findByText("One").should("have.attr", "data-hovered", "true");
 
     // updates hovered item on arrowDown and arrowUp
     input.type("{downArrow}{downArrow}");
-    cy.findByText("Three").should("have.class", "qs-hovered");
+    cy.findByText("Three").should("have.attr", "data-hovered", "true");
     input.type("{upArrow}{upArrow}{upArrow}");
-    cy.findByText("Five").should("have.class", "qs-hovered");
+    cy.findByText("Five").should("have.attr", "data-hovered", "true");
 
     // sets value on Enter
     input.type("{enter}");
@@ -58,7 +58,7 @@ describe("with no selected value", () => {
     // opens menu
     input.type("{downArrow}");
     cy.wait(500);
-    cy.findByText("One").should("have.class", "qs-hovered");
+    cy.findByText("One").should("have.attr", "data-hovered", "true");
 
     // closes menu on Escape
     input.type("{esc}");
@@ -71,7 +71,7 @@ describe("with no selected value", () => {
 
     // opens menu
     cy.get("input").click();
-    cy.findByText("One").should("have.class", "qs-hovered");
+    cy.findByText("One").should("have.attr", "data-hovered", "true");
 
     // closes menu when click outside
     cy.findByTestId("outside").click();
@@ -115,7 +115,7 @@ describe("automatic menu scrolling", () => {
     );
     cy.wait(500);
     cy.get(".qs-item:nth-child(7)")
-      .should("have.class", "qs-hovered")
+      .should("have.attr", "data-hovered", "true")
       .should("be.visible");
   });
 
@@ -146,7 +146,7 @@ describe("with selected value", () => {
     cy.visit("/selected");
     cy.wait(500);
     cy.get("input").click();
-    cy.get(".qs-item.qs-selected").should("have.text", "Nine");
+    cy.get('.qs-item[data-selected="true"]').should("have.text", "Nine");
   });
 
   it("allows navigation with keyboard", () => {
@@ -156,15 +156,15 @@ describe("with selected value", () => {
 
     // the selected option should be hovered and visible
     input.click();
-    cy.get(".qs-item.qs-hovered")
+    cy.get('.qs-item[data-hovered="true"]')
       .should("have.text", "Nine")
       .should("be.visible");
 
     // navigates with arrowUp and arrowDown
     cy.get("input").type("{upArrow}");
-    cy.findByText("Eight").should("have.class", "qs-hovered");
+    cy.findByText("Eight").should("have.attr", "data-hovered", "true");
     cy.get("input").type("{downArrow}{downArrow}{downArrow}");
-    cy.findByText("One").should("have.class", "qs-hovered");
+    cy.findByText("One").should("have.attr", "data-hovered", "true");
 
     // updates value on Enter
     input.type("{enter}");
@@ -182,7 +182,7 @@ describe("with selected value", () => {
 
     // reopen the menu, expect the newly selected option to be hovered
     cy.get("input").click();
-    cy.get(".qs-item.qs-hovered").should("have.text", "Three");
+    cy.get('.qs-item[data-hovered="true"]').should("have.text", "Three");
   });
 });
 
@@ -191,7 +191,7 @@ describe("disable/enable", () => {
     cy.visit("/disabled");
     cy.wait(500);
     cy.get("input").should("be.disabled");
-    cy.get(".qs-container").should("have.class", "qs-disabled");
+    cy.get(".qs-container").should("have.attr", "data-disabled", "true");
   });
 
   it("enables the control", () => {

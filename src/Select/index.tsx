@@ -36,7 +36,7 @@ const Select = component$((props: SelectProps) => {
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
 
   const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
-    const element = menuElem?.querySelector(".qs-item.qs-hovered");
+    const element = menuElem?.querySelector('.qs-item[data-hovered="true"]');
     element?.scrollIntoView({
       behavior: "smooth",
       block: "center",

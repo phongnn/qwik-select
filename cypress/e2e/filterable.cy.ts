@@ -32,14 +32,14 @@ it("allows navigation with keyboard", () => {
   const input = cy.get("input");
 
   input.type("p"); // "Apple", "Pear", "Pineapple"
-  cy.findByText("Apple").should("have.class", "qs-hovered");
+  cy.findByText("Apple").should("have.attr", "data-hovered", "true");
 
   // updates hovered item on arrowDown and arrowUp
   input.type("{upArrow}");
-  cy.findByText("Pineapple").should("have.class", "qs-hovered");
+  cy.findByText("Pineapple").should("have.attr", "data-hovered", "true");
 
   input.type("{downArrow}{downArrow}");
-  cy.findByText("Pear").should("have.class", "qs-hovered");
+  cy.findByText("Pear").should("have.attr", "data-hovered", "true");
 });
 
 it("resets text input when closing menu", () => {
