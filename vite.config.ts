@@ -7,7 +7,7 @@ export default defineConfig(() => {
       target: "es2020",
       outDir: "dist",
       minify: false,
-      sourcemap: true,
+      // sourcemap: true,
       lib: {
         entry: "./src/index.ts",
         formats: ["es", "cjs"],
