@@ -1,19 +1,19 @@
 import { useStore, $, PropFunction } from "@builder.io/qwik";
 
-import { SelectOption } from "../types";
+import { OptionLabelKey } from "./types";
 
-interface FilteredOptionsStore {
-  options: SelectOption[];
+interface FilteredOptionsStore<Option> {
+  options: Option[];
   loading: boolean;
 }
 
-type FilteredOptionsStoreConfig =
+type FilteredOptionsStoreConfig<Option> =
   | {
-      options: SelectOption[];
-      optionLabelKey: string;
+      options: Option[];
+      optionLabelKey: OptionLabelKey<Option>;
     }
   | {
-      fetcher: PropFunction<(text: string) => Promise<SelectOption[]>>;
+      fetcher: PropFunction<(text: string) => Promise<Option[]>>;
       debounceTime: number;
     };
 
@@ -22,9 +22,11 @@ interface InternalState {
   lastQuery?: string;
 }
 
-export function useFilteredOptionsStore(config: FilteredOptionsStoreConfig) {
+export function useFilteredOptionsStore<Option>(
+  config: FilteredOptionsStoreConfig<Option>
+) {
   const isAsync = "fetcher" in config;
-  const state = useStore<FilteredOptionsStore>({
+  const state = useStore<FilteredOptionsStore<Option>>({
     options: isAsync ? [] : config.options,
     loading: false,
   });

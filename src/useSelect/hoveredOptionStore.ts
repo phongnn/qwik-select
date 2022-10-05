@@ -1,18 +1,18 @@
 import { useStore, $ } from "@builder.io/qwik";
 
-import { SelectOption } from "../types";
-
-interface HoveredOptionStore {
+interface HoveredOptionStore<Option> {
   hoveredOptionIndex: number;
-  hoveredOption?: SelectOption;
+  hoveredOption?: Option;
 }
 
-export function useHoveredOptionStore(filteredOptionsStore: {
-  options: SelectOption[];
+export function useHoveredOptionStore<Option>(filteredOptionsStore: {
+  options: Option[];
 }) {
-  const state = useStore<HoveredOptionStore>({ hoveredOptionIndex: -1 });
+  const state = useStore<HoveredOptionStore<Option>>({
+    hoveredOptionIndex: -1,
+  });
 
-  const hoverSelectedOrFirstOption = $((opt: SelectOption | undefined) => {
+  const hoverSelectedOrFirstOption = $((opt: Option | undefined) => {
     if (filteredOptionsStore.options.length > 0) {
       const optIndex = opt ? filteredOptionsStore.options.indexOf(opt) : -1;
       if (optIndex > 0) {

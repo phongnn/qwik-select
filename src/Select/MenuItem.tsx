@@ -1,16 +1,14 @@
 import { MutableWrapper, PropFunction } from "@builder.io/qwik";
 
-import { SelectOption } from "../types";
-
-interface MenuItemProps {
-  option: SelectOption;
-  getOptionLabel: (opt: SelectOption) => string;
+interface MenuItemProps<Option> {
+  option: Option;
+  getOptionLabel: (opt: Option) => string;
   isSelected: MutableWrapper<boolean>;
   isHovered: MutableWrapper<boolean>;
   onClick$: PropFunction<() => void>;
 }
 
-export const MenuItem = (props: MenuItemProps) => {
+function MenuItem<Option>(props: MenuItemProps<Option>) {
   return (
     <div
       class="qs-item"
@@ -21,6 +19,6 @@ export const MenuItem = (props: MenuItemProps) => {
       {props.getOptionLabel(props.option)}
     </div>
   );
-};
+}
 
 export default MenuItem;

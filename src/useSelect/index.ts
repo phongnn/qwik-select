@@ -1,18 +1,18 @@
 // prettier-ignore
-import { useRef, useClientEffect$, $, QRL, PropFunction } from "@builder.io/qwik";
+import { useRef, useClientEffect$, $, QRL, Ref, PropFunction } from "@builder.io/qwik";
 
-import type { SelectOption } from "../types";
+import type { OptionLabelKey } from "./types";
 import { useIsOpenStore } from "./isOpenStore";
 import { useInputValueStore } from "./inputValueStore";
 import { useFilteredOptionsStore } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
 // these settings are directly from the user of the Select component
-interface UseSelectProps {
-  options?: SelectOption[];
-  value?: SelectOption;
-  fetchOptions$?: PropFunction<(text: string) => Promise<SelectOption[]>>;
-  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+interface UseSelectProps<Option> {
+  options?: Option[];
+  value?: Option;
+  fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
+  onChange$?: PropFunction<(value: Option | undefined) => void>;
   onClear$?: PropFunction<() => void>;
   onInput$?: PropFunction<(text: string) => any>;
   onFocus$?: PropFunction<() => any>;
@@ -20,27 +20,16 @@ interface UseSelectProps {
 }
 
 // these settings are from the Select component, not directly from the user
-interface UseSelectConfig {
-  optionLabelKey?: string;
+interface UseSelectConfig<Option> {
+  optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
-  scrollToHoveredOption?: QRL<
-    (menuElem?: HTMLElement, opt?: SelectOption) => void
-  >;
+  scrollToHoveredOption?: QRL<(menuElem?: HTMLElement, opt?: Option) => void>;
 }
 
-function useSelect(props: UseSelectProps, config: UseSelectConfig) {
-  // if (!props.options && !props.fetchOptions$) {
-  //   throw Error(
-  //     "[qwik-select] FATAL: please provide either fetchOptions$ or options prop."
-  //   );
-  // }
-  // if (props.fetchOptions$ && !config.inputDebounceTime) {
-  //   throw Error("[qwik-select] FATAL: please specify inputDebounceTime.");
-  // }
-  // if (props.options && !config.optionLabelKey) {
-  //   throw Error("[qwik-select] FATAL: please specify optionLabelKey.");
-  // }
-
+function useSelect<Option>(
+  props: UseSelectProps<Option>,
+  config: UseSelectConfig<Option>
+) {
   const filteredOptionsStoreConfig = props.fetchOptions$
     ? { fetcher: props.fetchOptions$, debounceTime: config.inputDebounceTime! }
     : { options: props.options!, optionLabelKey: config.optionLabelKey! };
@@ -72,9 +61,9 @@ function useSelect(props: UseSelectProps, config: UseSelectConfig) {
   } = useHoveredOptionStore(filteredOptionsStore);
 
   /** EVENT HANDLERS */
-  const containerRef = useRef<HTMLElement>();
-  const inputRef = useRef<HTMLInputElement>();
-  const listRef = useRef<HTMLElement>();
+  const containerRef: Ref<HTMLElement> = useRef<HTMLElement>();
+  const inputRef: Ref<HTMLInputElement> = useRef<HTMLInputElement>();
+  const listRef: Ref<HTMLElement> = useRef<HTMLElement>();
 
   const handleContainerClick = $((event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -183,6 +172,7 @@ function useSelect(props: UseSelectProps, config: UseSelectConfig) {
   });
 
   /** OTHER ACTIONS (NOT RELATED TO STATE MANAGEMENT) */
+  // NOTE: these actions are QRLs so they are serializable and can be called within event handlers
   const focus = $(() => {
     inputRef.current?.focus();
   });
@@ -208,5 +198,5 @@ function useSelect(props: UseSelectProps, config: UseSelectConfig) {
   };
 }
 
-export type { UseSelectProps, UseSelectConfig };
+export type { UseSelectProps, UseSelectConfig, OptionLabelKey };
 export { useSelect };

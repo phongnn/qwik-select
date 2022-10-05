@@ -1,21 +1,21 @@
 import { component$, mutable, $, PropFunction } from "@builder.io/qwik";
 
-import type { SelectOption } from "../types";
+import type { OptionLabelKey } from "../useSelect";
 import { useSelect } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
 
-interface SelectProps {
-  options?: SelectOption[];
-  fetchOptions$?: PropFunction<(text: string) => Promise<SelectOption[]>>;
-  value?: SelectOption;
-  onChange$?: PropFunction<(value: SelectOption | undefined) => void>;
+interface SelectProps<Option> {
+  options?: Option[];
+  fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
+  value?: Option;
+  onChange$?: PropFunction<(value: Option | undefined) => void>;
   onClear$?: PropFunction<() => void>;
   onInput$?: PropFunction<(text: string) => any>;
   onFocus$?: PropFunction<() => any>;
   onBlur$?: PropFunction<() => any>;
-  optionLabelKey?: string;
+  optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   autofocus?: boolean;
   disabled?: boolean;
@@ -23,15 +23,19 @@ interface SelectProps {
   noOptionsMessage?: string;
 }
 
-const Select = component$((props: SelectProps) => {
+// NOTE: the weird <Option, > syntax is to avoid error as JSX and TypeScript syntaxes clash.
+// We could use a normal function instead of an arrow function, but that would cause
+// "props is undefined" error in MenuItem's click event.
+const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const disabled = props.disabled ?? false;
   const placeholder = props.placeholder ?? "Select...";
   const noOptionsMessage = props.noOptionsMessage ?? "No options";
-  const optionLabelKey = props.optionLabelKey ?? "label";
+  const optionLabelKey =
+    props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
   const inputDebounceTime = props.inputDebounceTime ?? 200;
 
   // prettier-ignore
-  const getOptionLabel = (opt: SelectOption) => typeof opt === "string" ? opt : opt[optionLabelKey];
+  const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
   // prettier-ignore
   const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
 
@@ -43,7 +47,7 @@ const Select = component$((props: SelectProps) => {
     });
   });
 
-  const { refs, state, actions } = useSelect(props, {
+  const { refs, state, actions } = useSelect<Option>(props, {
     optionLabelKey,
     inputDebounceTime,
     scrollToHoveredOption,
