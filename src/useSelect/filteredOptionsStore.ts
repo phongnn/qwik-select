@@ -17,14 +17,18 @@ type FilteredOptionsStoreConfig =
       debounceTime: number;
     };
 
+interface InternalState {
+  inputDebounceTimer?: number;
+  lastQuery?: string;
+}
+
 export function useFilteredOptionsStore(config: FilteredOptionsStoreConfig) {
   const isAsync = "fetcher" in config;
   const state = useStore<FilteredOptionsStore>({
     options: isAsync ? [] : config.options,
     loading: false,
   });
-  // use setTimeout to debounce fetch requests
-  const internalState = useStore<{ timer?: number }>({});
+  const internalState = useStore<InternalState>({});
 
   const filterOptions = $(async (query: string) => {
     if (query === "") {
@@ -37,16 +41,19 @@ export function useFilteredOptionsStore(config: FilteredOptionsStoreConfig) {
         return label.toLowerCase().includes(query.toLowerCase());
       });
     } else {
-      // debounce to avoid sending too many unnecessary requests
       state.options = [];
       state.loading = true;
 
-      clearTimeout(internalState.timer);
+      // debounce to avoid sending too many unnecessary requests
+      clearTimeout(internalState.inputDebounceTimer);
       // @ts-ignore
-      internalState.timer = setTimeout(async () => {
+      internalState.inputDebounceTimer = setTimeout(async () => {
+        internalState.lastQuery = query;
         const fetchedData = await config.fetcher(query);
-        // only set data if menu hasn't been closed yet
-        if (state.loading) {
+
+        // take the last query's data only (ignore prev queries),
+        // and only set data if menu hasn't been closed yet
+        if (state.loading && query === internalState.lastQuery) {
           state.options = fetchedData;
           state.loading = false;
         }
@@ -56,7 +63,7 @@ export function useFilteredOptionsStore(config: FilteredOptionsStoreConfig) {
 
   const clearFilter = $(() => {
     if (isAsync) {
-      clearTimeout(internalState.timer);
+      clearTimeout(internalState.inputDebounceTimer);
       state.options = [];
       state.loading = false;
     } else {
