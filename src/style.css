@@ -33,10 +33,15 @@
   height: var(--height);
   overflow-x: hidden;
   padding: 0 20px 0 0;
+  color: #78848f;
 }
 
 .qs-selected-item-label:focus {
   outline: none;
+}
+
+.qs-container[data-disabled="true"] .qs-selected-item-label {
+  color: #c1c6cc;
 }
 
 .qs-container input {
@@ -58,16 +63,6 @@
 
 .qs-container input:focus {
   outline: none;
-}
-
-.qs-container input::placeholder {
-  color: #78848f;
-  opacity: 1;
-}
-
-.qs-container input:disabled::placeholder {
-  color: #c1c6cc;
-  opacity: 1;
 }
 
 .qs-clear-button {
