@@ -1,27 +1,19 @@
-import { component$, mutable, $, PropFunction } from "@builder.io/qwik";
+import { component$, mutable, $ } from "@builder.io/qwik";
 
-import type { OptionLabelKey } from "../useSelect";
+import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
 import Container from "./Container";
 import Control from "./Control";
 import MenuItem from "./MenuItem";
 
-interface SelectProps<Option> {
-  options?: Option[];
-  fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
-  value?: Option;
-  onChange$?: PropFunction<(value: Option) => any>;
-  onClear$?: PropFunction<() => any>;
-  onInput$?: PropFunction<(text: string) => any>;
-  onFocus$?: PropFunction<() => any>;
-  onBlur$?: PropFunction<() => any>;
+type SelectProps<Option> = UseSelectProps<Option> & {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   autofocus?: boolean;
   disabled?: boolean;
   placeholder?: string;
   noOptionsMessage?: string;
-}
+};
 
 // NOTE: the weird <Option, > syntax is to avoid error as JSX and TypeScript syntaxes clash.
 // We could use a normal function instead of an arrow function, but that would cause

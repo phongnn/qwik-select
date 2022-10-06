@@ -2,7 +2,7 @@
 
 A select/autocomplete component for Qwik apps.
 
-You can use the built-in component (customizable with CSS variables) or build your own UI with our core hook.
+You can use the built-in unstyled component or build your own UI component with the core hook.
 
 - Single select
 - Multi-select (coming soon)
@@ -19,26 +19,31 @@ You can use the built-in component (customizable with CSS variables) or build yo
 ## Usage
 
 ```javascript
-import { component$, useStore, mutable } from "@builder.io/qwik";
+import { component$, useStyles$, useStore, mutable } from "@builder.io/qwik";
 import { Select } from "qwik-select";
+import styles from "qwik-select/style.css";
 
 export default component$(() => {
   const state = useStore({
     items: ["One", "Two", "Three", "Four", "Five"],
-    selectedItem: null,
+    selectedItem: undefined,
   });
 
+  useStyles$(styles);
   return (
     <div>
       <Select
         options={state.items}
         value={mutable(state.selectedItem)}
         onChange$={(it) => (state.selectedItem = it)}
+        onClear$={() => (state.selectedItem = undefined)}
       />
     </div>
   );
 });
 ```
+
+See the [documentation](https://phongnn.github.io/qwik-select) for more examples.
 
 ## Acknowledgements
 
