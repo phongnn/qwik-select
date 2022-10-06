@@ -42,7 +42,7 @@ export const filter = $((text: string) => {
 
 export default component$(() => {
   const state = useStore({
-    selectedItem: null,
+    selectedItem: undefined as Item | undefined,
   });
 
   useStyles$(styles);

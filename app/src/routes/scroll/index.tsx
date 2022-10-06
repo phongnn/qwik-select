@@ -20,7 +20,7 @@ export const items: Item[] = [
 export default component$(() => {
   const state = useStore({
     items: items,
-    selectedItem: null,
+    selectedItem: undefined as Item | undefined,
   });
 
   useStyles$(styles);

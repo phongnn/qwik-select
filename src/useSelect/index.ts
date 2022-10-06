@@ -12,8 +12,8 @@ interface UseSelectProps<Option> {
   options?: Option[];
   value?: Option;
   fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
-  onChange$?: PropFunction<(value: Option | undefined) => void>;
-  onClear$?: PropFunction<() => void>;
+  onChange$?: PropFunction<(value: Option) => any>;
+  onClear$?: PropFunction<() => any>;
   onInput$?: PropFunction<(text: string) => any>;
   onFocus$?: PropFunction<() => any>;
   onBlur$?: PropFunction<() => any>;

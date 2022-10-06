@@ -10,8 +10,8 @@ interface SelectProps<Option> {
   options?: Option[];
   fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
   value?: Option;
-  onChange$?: PropFunction<(value: Option | undefined) => void>;
-  onClear$?: PropFunction<() => void>;
+  onChange$?: PropFunction<(value: Option) => any>;
+  onClear$?: PropFunction<() => any>;
   onInput$?: PropFunction<(text: string) => any>;
   onFocus$?: PropFunction<() => any>;
   onBlur$?: PropFunction<() => any>;
