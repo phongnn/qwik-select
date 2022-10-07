@@ -28,8 +28,6 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
-  // prettier-ignore
-  const selectedOptionLabel = props.value ? getOptionLabel(props.value) : undefined;
 
   const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
     const element = menuElem?.querySelector('.qs-item[data-hovered="true"]');
@@ -51,12 +49,13 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
-          selectedOptionLabel={mutable(selectedOptionLabel)}
-          inputValue={mutable(state.inputValue)}
-          loading={mutable(state.loading)}
+          selectedOptions={mutable(props.value)}
           disabled={mutable(disabled)}
           autofocus={mutable(props.autofocus)}
+          inputValue={mutable(state.inputValue)}
+          loading={mutable(state.loading)}
           onClear$={props.onClear$}
+          getOptionLabel={getOptionLabel}
         />
         {state.isOpen && (
           <div class="qs-menu" ref={refs.listRef}>

@@ -44,6 +44,55 @@
   color: #c1c6cc;
 }
 
+.qs-multi-value {
+  background: #ebedef;
+  margin: 5px 5px 0 0;
+  border-radius: 16px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  cursor: default;
+  padding: 0 10px 0 15px;
+  max-width: 100%;
+}
+
+.qs-multi-value:hover {
+  background-color: #006fff;
+  color: #fff;
+}
+
+.qs-multi-value-label {
+  margin: 0 5px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qs-multi-value-clear {
+  border-radius: 50%;
+  background: #52616f;
+  min-width: 16px;
+  max-width: 16px;
+  height: 16px;
+  position: relative;
+  top: 8px;
+  text-align: center;
+  padding: 1px;
+}
+
+.qs-multi-value-clear:hover {
+  background: #fff;
+}
+
+.qs-multi-value-clear svg {
+  fill: #ebedef;
+  vertical-align: top;
+}
+
+.qs-multi-value-clear:hover svg {
+  fill: #006fff;
+}
+
 .qs-container input {
   cursor: default;
   border: none;

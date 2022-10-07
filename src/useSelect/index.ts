@@ -10,7 +10,7 @@ import { useHoveredOptionStore } from "./hoveredOptionStore";
 // these settings are directly from the user of the Select component
 interface UseSelectProps<Option> {
   options?: Option[];
-  value?: Option;
+  value?: Option | Option[];
   fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
   onChange$?: PropFunction<(value: Option) => any>;
   onClear$?: PropFunction<() => any>;

@@ -12,17 +12,26 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
     hoveredOptionIndex: -1,
   });
 
-  const hoverSelectedOrFirstOption = $((opt: Option | undefined) => {
-    if (filteredOptionsStore.options.length > 0) {
-      const optIndex = opt ? filteredOptionsStore.options.indexOf(opt) : -1;
+  // prettier-ignore
+  const hoverSelectedOrFirstOption = $((selectedVal: Option | Option[] | undefined) => {
+    // empty list, no option to hover
+    if (filteredOptionsStore.options.length === 0) {
+      return;
+    }
+
+    // single selected option, hover if found in the list
+    if (selectedVal !== undefined && !Array.isArray(selectedVal)) {
+      const optIndex = filteredOptionsStore.options.indexOf(selectedVal);
       if (optIndex > 0) {
         state.hoveredOptionIndex = optIndex;
-        state.hoveredOption = opt;
-      } else {
-        state.hoveredOptionIndex = 0;
-        state.hoveredOption = filteredOptionsStore.options[0];
+        state.hoveredOption = selectedVal;
+        return;
       }
     }
+
+    // otherwise, hover the first option
+    state.hoveredOptionIndex = 0;
+    state.hoveredOption = filteredOptionsStore.options[0];
   });
 
   const hoverNextOption = $(() => {
