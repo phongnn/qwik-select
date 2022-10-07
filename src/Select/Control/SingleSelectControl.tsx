@@ -28,7 +28,7 @@ const SingleSelectControl = <Option,>(
   const shouldShowClearBtn = hasClearHandler && shouldShowValue;
 
   return (
-    <div>
+    <div class="qs-single-control">
       {shouldShowValue && (
         <div class="qs-single-value">
           {props.getOptionLabel(selectedOption)}

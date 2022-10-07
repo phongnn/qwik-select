@@ -4,13 +4,10 @@
   border: 1px solid #d8dbdf;
   border-radius: 3px;
   box-sizing: border-box;
-  height: var(--height);
-  position: relative;
-  display: flex;
-  align-items: center;
   padding: var(--padding);
-  margin: 0;
   background: #fff;
+  /* height: var(--height); */
+  /* margin: 0; */
 }
 
 .qs-container:hover {
@@ -28,6 +25,15 @@
   pointer-events: none;
 }
 
+.qs-single-control,
+.qs-multi-control {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  /* height: var(--height); */
+  /* align-items: stretch; */
+}
+
 .qs-placeholder,
 .qs-single-value {
   line-height: var(--height);
@@ -37,25 +43,21 @@
   color: #78848f;
 }
 
-/* .qs-selected-item-label:focus {
-  outline: none;
-} */
-
 .qs-container[data-disabled="true"] .qs-placeholder,
 .qs-container[data-disabled="true"] .qs-single-value {
   color: #c1c6cc;
 }
 
 .qs-multi-value {
-  background: #ebedef;
-  margin: 5px 5px 0 0;
-  border-radius: 16px;
-  height: 32px;
   line-height: 32px;
-  display: flex;
-  cursor: default;
+  background: #ebedef;
+  border-radius: 16px;
   padding: 0 10px 0 15px;
-  max-width: 100%;
+  margin: 3px;
+  display: flex;
+  /* height: 32px; */
+  /* max-width: 100%; */
+  /* cursor: default; */
 }
 
 .qs-multi-value:hover {
@@ -76,10 +78,10 @@
   min-width: 16px;
   max-width: 16px;
   height: 16px;
-  position: relative;
-  top: 8px;
   text-align: center;
   padding: 1px;
+  position: relative;
+  top: 8px;
 }
 
 .qs-multi-value-clear:hover {
@@ -96,24 +98,33 @@
 }
 
 .qs-container input {
-  cursor: default;
-  border: none;
-  color: #3f4f5f;
-  height: var(--height);
-  line-height: var(--height);
-  padding: var(--padding);
   width: 100%;
+  border: none;
   background: transparent;
-  font-size: 14px;
+  color: #3f4f5f;
+  line-height: var(--height);
   letter-spacing: -0.08px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0;
+  font-size: 14px;
+  /* cursor: default; */
+  /* height: var(--height); */
+  /* padding: var(--padding); */
+  /* margin: 0; */
 }
 
 .qs-container input:focus {
   outline: none;
+}
+
+.qs-single-control input {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.qs-multi-control input {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 50px;
 }
 
 .qs-clear-button {
@@ -180,6 +191,7 @@
   width: 100%;
   left: 0;
   right: 0;
+  margin-top: 5px;
 }
 
 .qs-item {

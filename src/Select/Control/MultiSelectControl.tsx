@@ -19,25 +19,16 @@ const MultiSelectControl = <Option,>(
   props: MultiSelectControlProps<Option>
 ) => {
   const selectedOptions = props.value.mut;
-  const isBlankTextInput = props.inputValue.mut === "";
   const shouldShowLoading = props.loading.mut;
   const hasClearHandler = props.onClear$ !== undefined;
   const hasValues = selectedOptions.length > 0;
   const shouldShowClearBtn = hasClearHandler && hasValues;
 
   return (
-    <div>
+    <div class="qs-multi-control">
       {selectedOptions.map((opt) => (
         <MultiValue label={props.getOptionLabel(opt)} />
       ))}
-      {!hasValues && (
-        <div
-          class="qs-placeholder"
-          style={{ visibility: isBlankTextInput ? "visible" : "hidden" }}
-        >
-          {props.placeholder}
-        </div>
-      )}
 
       <input
         type="text"
@@ -45,6 +36,7 @@ const MultiSelectControl = <Option,>(
         value={props.inputValue.mut}
         disabled={props.disabled.mut}
         autoFocus={props.autofocus.mut}
+        placeholder={hasValues ? "" : props.placeholder}
       />
 
       {shouldShowClearBtn && <ClearButton onClick$={props.onClear$!} />}
