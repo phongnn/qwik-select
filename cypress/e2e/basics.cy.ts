@@ -139,7 +139,7 @@ describe("with selected value", () => {
   it("shows selected value", () => {
     cy.visit("/selected");
     cy.wait(500);
-    cy.get(".qs-selected-item-label").should("have.text", "Nine");
+    cy.get(".qs-single-value").should("have.text", "Nine");
   });
 
   it("highlights selected option in menu", () => {

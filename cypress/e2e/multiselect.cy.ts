@@ -1,3 +1,9 @@
+it("shows the placeholder", () => {
+  cy.visit("/multi");
+  cy.wait(500);
+  cy.findByText("Select...");
+});
+
 it("allows user to select multiple values", () => {
   cy.visit("/multi");
   cy.wait(500);

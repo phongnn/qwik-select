@@ -3,7 +3,8 @@ import { component$, mutable, $ } from "@builder.io/qwik";
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
 import Container from "./Container";
-import Control from "./Control";
+import SingleSelectControl from "./Control/SingleSelectControl";
+import MultiSelectControl from "./Control/MultiSelectControl";
 import MenuItem from "./MenuItem";
 
 type SelectProps<Option> = UseSelectProps<Option> & {
@@ -28,7 +29,6 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
-
   const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
     const element = menuElem?.querySelector('.qs-item[data-hovered="true"]');
     element?.scrollIntoView({
@@ -43,13 +43,17 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     scrollToHoveredOption,
   });
 
+  const Control = Array.isArray(props.value)
+    ? MultiSelectControl
+    : SingleSelectControl;
+
   return (
     <Container ref={refs.containerRef} disabled={mutable(disabled)}>
       <div>
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
-          selectedOptions={mutable(props.value)}
+          value={mutable(props.value) as any}
           disabled={mutable(disabled)}
           autofocus={mutable(props.autofocus)}
           inputValue={mutable(state.inputValue)}

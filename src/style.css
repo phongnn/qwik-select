@@ -28,7 +28,8 @@
   pointer-events: none;
 }
 
-.qs-selected-item-label {
+.qs-placeholder,
+.qs-single-value {
   line-height: var(--height);
   height: var(--height);
   overflow-x: hidden;
@@ -36,11 +37,12 @@
   color: #78848f;
 }
 
-.qs-selected-item-label:focus {
+/* .qs-selected-item-label:focus {
   outline: none;
-}
+} */
 
-.qs-container[data-disabled="true"] .qs-selected-item-label {
+.qs-container[data-disabled="true"] .qs-placeholder,
+.qs-container[data-disabled="true"] .qs-single-value {
   color: #c1c6cc;
 }
 
