@@ -1,4 +1,10 @@
-import { useStore, $, PropFunction } from "@builder.io/qwik";
+import {
+  useStore,
+  $,
+  PropFunction,
+  QRL,
+  useClientEffect$,
+} from "@builder.io/qwik";
 
 import { OptionLabelKey } from "./types";
 
@@ -11,10 +17,12 @@ type FilteredOptionsStoreConfig<Option> =
   | {
       options: Option[];
       optionLabelKey: OptionLabelKey<Option>;
+      extraFilter?: QRL<(options: Option[]) => Option[]>;
     }
   | {
       fetcher: PropFunction<(text: string) => Promise<Option[]>>;
       debounceTime: number;
+      extraFilter?: QRL<(options: Option[]) => Option[]>;
     };
 
 interface InternalState {
@@ -22,26 +30,47 @@ interface InternalState {
   lastQuery?: string;
 }
 
-export function useFilteredOptionsStore<Option>(
+function useFilteredOptionsStore<Option>(
   config: FilteredOptionsStoreConfig<Option>
 ) {
   const isAsync = "fetcher" in config;
   const state = useStore<FilteredOptionsStore<Option>>({
-    options: isAsync ? [] : config.options,
+    options: isAsync || config.extraFilter !== undefined ? [] : config.options,
     loading: false,
   });
   const internalState = useStore<InternalState>({});
 
+  useClientEffect$(async () => {
+    if (!isAsync && config.extraFilter !== undefined) {
+      state.options = await config.extraFilter(config.options);
+    }
+  });
+
+  const clearFilter = $(async () => {
+    if (isAsync) {
+      clearTimeout(internalState.inputDebounceTimer);
+      state.options = [];
+      state.loading = false;
+    } else {
+      state.options = config.extraFilter
+        ? await config.extraFilter(config.options)
+        : config.options;
+    }
+  });
+
   const filterOptions = $(async (query: string) => {
     if (query === "") {
-      state.options = isAsync ? [] : config.options;
+      await clearFilter();
     } else if (!isAsync) {
-      const { optionLabelKey } = config;
-      state.options = config.options.filter((opt) => {
+      const { optionLabelKey, extraFilter } = config;
+      const filteredOptions = config.options.filter((opt) => {
         const label =
           typeof opt === "string" ? opt : (opt[optionLabelKey] as string);
         return label.toLowerCase().includes(query.toLowerCase());
       });
+      state.options = extraFilter
+        ? await extraFilter(filteredOptions)
+        : filteredOptions;
     } else {
       state.options = [];
       state.loading = true;
@@ -50,26 +79,19 @@ export function useFilteredOptionsStore<Option>(
       clearTimeout(internalState.inputDebounceTimer);
       // @ts-ignore
       internalState.inputDebounceTimer = setTimeout(async () => {
+        const { fetcher, extraFilter } = config;
         internalState.lastQuery = query;
-        const fetchedData = await config.fetcher(query);
+        const fetchedData = await fetcher(query);
 
         // take the last query's data only (ignore prev queries),
         // and only set data if menu hasn't been closed yet
         if (state.loading && query === internalState.lastQuery) {
-          state.options = fetchedData;
+          state.options = extraFilter
+            ? await extraFilter(fetchedData)
+            : fetchedData;
           state.loading = false;
         }
       }, config.debounceTime);
-    }
-  });
-
-  const clearFilter = $(() => {
-    if (isAsync) {
-      clearTimeout(internalState.inputDebounceTimer);
-      state.options = [];
-      state.loading = false;
-    } else {
-      state.options = config.options;
     }
   });
 
@@ -78,3 +100,6 @@ export function useFilteredOptionsStore<Option>(
     actions: { filterOptions, clearFilter },
   };
 }
+
+export type { FilteredOptionsStoreConfig };
+export { useFilteredOptionsStore };

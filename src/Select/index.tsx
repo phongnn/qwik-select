@@ -14,6 +14,7 @@ type SelectProps<Option> = UseSelectProps<Option> & {
   disabled?: boolean;
   placeholder?: string;
   noOptionsMessage?: string;
+  shouldFilterSelectedOptions?: boolean;
 };
 
 // NOTE: the weird <Option, > syntax is to avoid error as JSX and TypeScript syntaxes clash.
@@ -26,6 +27,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
   const inputDebounceTime = props.inputDebounceTime ?? 200;
+  const shouldFilterSelectedOptions = props.shouldFilterSelectedOptions ?? true;
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
@@ -41,6 +43,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     optionLabelKey,
     inputDebounceTime,
     scrollToHoveredOption,
+    shouldFilterSelectedOptions,
   });
 
   const Control = Array.isArray(props.value)

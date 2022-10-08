@@ -4,7 +4,10 @@ import { useRef, useClientEffect$, $, QRL, Ref, PropFunction } from "@builder.io
 import type { OptionLabelKey } from "./types";
 import { useIsOpenStore } from "./isOpenStore";
 import { useInputValueStore } from "./inputValueStore";
-import { useFilteredOptionsStore } from "./filteredOptionsStore";
+import {
+  useFilteredOptionsStore,
+  FilteredOptionsStoreConfig,
+} from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
 // these settings are directly from the user of the Select component
@@ -23,6 +26,7 @@ interface UseSelectProps<Option> {
 interface UseSelectConfig<Option> {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
+  shouldFilterSelectedOptions?: boolean;
   scrollToHoveredOption?: QRL<(menuElem?: HTMLElement, opt?: Option) => void>;
 }
 
@@ -30,9 +34,19 @@ function useSelect<Option>(
   props: UseSelectProps<Option>,
   config: UseSelectConfig<Option>
 ) {
-  const filteredOptionsStoreConfig = props.fetchOptions$
-    ? { fetcher: props.fetchOptions$, debounceTime: config.inputDebounceTime! }
-    : { options: props.options!, optionLabelKey: config.optionLabelKey! };
+  const filteredOptionsStoreConfig: FilteredOptionsStoreConfig<Option> =
+    props.fetchOptions$ !== undefined
+      ? {
+          fetcher: props.fetchOptions$,
+          debounceTime: config.inputDebounceTime!,
+        }
+      : { options: props.options!, optionLabelKey: config.optionLabelKey! };
+
+  if (Array.isArray(props.value) && config.shouldFilterSelectedOptions) {
+    filteredOptionsStoreConfig.extraFilter = $((options: Option[]) =>
+      options.filter((opt) => (props.value as Option[]).includes(opt) === false)
+    );
+  }
 
   /** STATE MANAGEMENT */
   const {
