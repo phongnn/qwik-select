@@ -108,10 +108,10 @@ function useSelect<Option>(
       hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
-        closeMenu();
         if (props.onChange$) {
           props.onChange$(hoveredOptionStore.hoveredOption);
         }
+        closeMenu();
       }
     } else if (event.key === "Escape") {
       closeMenu();

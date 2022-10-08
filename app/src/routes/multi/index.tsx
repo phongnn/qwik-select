@@ -18,7 +18,7 @@ export const items: Item[] = [
 export default component$(() => {
   const state = useStore({
     items: items,
-    selectedItems: [] as Item[],
+    selectedItems: [items[3]], // "Four"
   });
 
   useStyles$(styles);

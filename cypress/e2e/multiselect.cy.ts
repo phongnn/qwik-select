@@ -1,8 +1,8 @@
-it("shows the placeholder", () => {
-  cy.visit("/multi");
-  cy.wait(500);
-  cy.findByPlaceholderText("Select...");
-});
+// it("shows the placeholder", () => {
+//   cy.visit("/multi");
+//   cy.wait(500);
+//   cy.findByPlaceholderText("Select...");
+// });
 
 it("allows user to select multiple values", () => {
   cy.visit("/multi");
@@ -18,22 +18,47 @@ it("allows user to select multiple values", () => {
   // menu should be closed
   cy.get(".qs-item").should("not.exist");
 
-  // selected values: Three and Five
-  cy.findAllByText(/(Three)|(Five)/).should("have.length", 2);
+  // selected values: Four, Three and Five
+  cy.findAllByText(/(Four)|(Three)|(Five)/).should("have.length", 3);
 });
 
 describe("shouldFilterSelectedOption", () => {
+  it("filters initial selected options", () => {
+    cy.visit("/multi");
+    cy.wait(500);
+
+    cy.get("input").click();
+    cy.get(".qs-item").should("have.length", 4); // "One" to "Five" without "Four"
+  });
+
   it("filters selected options", () => {
     cy.visit("/multi");
     cy.wait(500);
 
     cy.get("input").click();
-    cy.get(".qs-item").should("have.length", 5);
+    cy.get(".qs-item").should("have.length", 4); // "One" to "Five" without "Four"
     cy.findByText("Three").click();
 
     cy.wait(500);
     cy.get("input").click();
-    cy.get(".qs-item").should("have.length", 4); // no longer shows "Three"
+    cy.get(".qs-item").should("have.length", 3); // no longer shows "Three"
+  });
+
+  it("filters selected options when select with keyboard", () => {
+    cy.visit("/multi");
+    cy.wait(500);
+
+    // open menu
+    cy.get("input").type("{downArrow}");
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 4); // "One" to "Five" without "Four"
+
+    // select "Two"
+    cy.get("input").type("{downArrow}{enter}");
+    cy.wait(500);
+
+    cy.get("input").click();
+    cy.get(".qs-item").should("have.length", 3); // no longer shows "Two"
   });
 
   it("works with async options", () => {
