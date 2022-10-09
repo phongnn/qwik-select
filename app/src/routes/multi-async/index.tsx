@@ -29,7 +29,7 @@ export const filter = $((text: string) => {
 
 export default component$(() => {
   const state = useStore({
-    selectedItems: [] as Item[],
+    selectedItems: [items[2]], // "Three"
   });
 
   useStyles$(styles);

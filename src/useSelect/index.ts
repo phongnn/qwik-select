@@ -34,6 +34,20 @@ function useSelect<Option>(
   props: UseSelectProps<Option>,
   config: UseSelectConfig<Option>
 ) {
+  // filter selected options for multi-select
+  const filterSelectedOptions = $((options: Option[]) =>
+    options.filter((opt) => {
+      const selectedOptions = props.value as Option[];
+      if (typeof opt === "string") {
+        return selectedOptions.includes(opt) === false;
+      } else {
+        return selectedOptions.every(
+          (so) => so[config.optionLabelKey!] !== opt[config.optionLabelKey!]
+        );
+      }
+    })
+  );
+
   const filteredOptionsStoreConfig: FilteredOptionsStoreConfig<Option> =
     props.fetchOptions$ !== undefined
       ? {
@@ -43,9 +57,7 @@ function useSelect<Option>(
       : { options: props.options!, optionLabelKey: config.optionLabelKey! };
 
   if (Array.isArray(props.value) && config.shouldFilterSelectedOptions) {
-    filteredOptionsStoreConfig.extraFilter = $((options: Option[]) =>
-      options.filter((opt) => (props.value as Option[]).includes(opt) === false)
-    );
+    filteredOptionsStoreConfig.extraFilter = filterSelectedOptions;
   }
 
   /** STATE MANAGEMENT */

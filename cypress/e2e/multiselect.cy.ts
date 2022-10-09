@@ -65,17 +65,19 @@ describe("shouldFilterSelectedOption", () => {
     cy.visit("/multi-async");
     cy.wait(500);
 
-    // select "Three"
+    // selected value is "Three" => expect it not to appear in the menu
     cy.get("input").type("t");
     cy.wait(500);
-    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
-    cy.findByText("Three").click();
+    cy.get(".qs-item").should("have.length", 1); // "Two" only
+
+    // select "Two"
+    cy.findByText("Two").click();
     cy.wait(500);
 
-    // expect "Three" no longer appears in the menu
+    // expect "Two" no longer appears in the menu
     cy.get("input").type("t");
     cy.wait(500);
-    cy.get(".qs-item").should("have.length", 1); // "Two"
+    cy.get(".qs-item").should("not.exist");
   });
 
   it("doesn't filter when shouldFilterSelectedOptions is false", () => {
