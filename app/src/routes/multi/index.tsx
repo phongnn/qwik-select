@@ -28,6 +28,10 @@ export default component$(() => {
         options={state.items}
         value={mutable(state.selectedItems)}
         onChange$={(it) => (state.selectedItems = [...state.selectedItems, it])}
+        onClear$={() => (state.selectedItems = [])}
+        onUnselect$={(opt) =>
+          (state.selectedItems = state.selectedItems.filter((it) => it !== opt))
+        }
       />
     </div>
   );

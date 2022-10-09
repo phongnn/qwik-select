@@ -1,9 +1,3 @@
-// it("shows the placeholder", () => {
-//   cy.visit("/multi");
-//   cy.wait(500);
-//   cy.findByPlaceholderText("Select...");
-// });
-
 it("allows user to select multiple values", () => {
   cy.visit("/multi");
   cy.wait(500);
@@ -22,7 +16,7 @@ it("allows user to select multiple values", () => {
   cy.findAllByText(/(Four)|(Three)|(Five)/).should("have.length", 3);
 });
 
-describe("shouldFilterSelectedOption", () => {
+describe("filtering selected options", () => {
   it("filters initial selected options", () => {
     cy.visit("/multi");
     cy.wait(500);
@@ -92,4 +86,26 @@ describe("shouldFilterSelectedOption", () => {
     cy.get("input").click();
     cy.get(".qs-item").should("have.length", 5);
   });
+});
+
+it("removes a selected value when click on button", () => {
+  cy.visit("/multi");
+  cy.wait(500);
+
+  cy.get(".qs-multi-value-clear").click();
+  cy.wait(500);
+  cy.findByPlaceholderText("Select...");
+});
+
+it("clears selected values", () => {
+  cy.visit("/multi");
+  cy.wait(500);
+
+  // clear selected values
+  cy.findByTestId("qwik-select-clear").click();
+  cy.wait(500);
+  cy.findByPlaceholderText("Select...");
+
+  // hide the clear button
+  cy.get("[data-testid='qwik-select-clear']").should("not.exist");
 });

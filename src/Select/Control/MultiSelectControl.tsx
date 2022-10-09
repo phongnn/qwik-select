@@ -1,68 +1,100 @@
-import { MutableWrapper, PropFunction, Ref } from "@builder.io/qwik";
+// prettier-ignore
+import { PropFunction, Ref, component$, useRef, useClientEffect$, mutable } from "@builder.io/qwik";
 
+import type { OptionLabelKey } from "../../useSelect";
 import ClearButton from "./ClearButton";
 import LoadingIndicator from "./LoadingIndicator";
 
 interface MultiSelectControlProps<Option> {
   ref: Ref<HTMLInputElement>;
   placeholder: string;
-  value: MutableWrapper<Option[]>;
-  inputValue: MutableWrapper<string>;
-  loading: MutableWrapper<boolean>;
-  disabled: MutableWrapper<boolean>;
-  autofocus: MutableWrapper<boolean | undefined>;
-  onClear$?: PropFunction<() => void>;
-  getOptionLabel: (opt: Option) => string;
+  value: Option[];
+  inputValue: string;
+  loading: boolean;
+  disabled: boolean;
+  autofocus?: boolean;
+  onUnselect$?: PropFunction<(opt: Option) => any>;
+  onClear$?: PropFunction<() => any>;
+  optionLabelKey?: OptionLabelKey<Option>;
 }
 
-const MultiSelectControl = <Option,>(
-  props: MultiSelectControlProps<Option>
-) => {
-  const selectedOptions = props.value.mut;
-  const shouldShowLoading = props.loading.mut;
-  const hasClearHandler = props.onClear$ !== undefined;
-  const hasValues = selectedOptions.length > 0;
-  const shouldShowClearBtn = hasClearHandler && hasValues;
+const MultiSelectControl = component$(
+  <Option,>(props: MultiSelectControlProps<Option>) => {
+    const selectedOptions = props.value;
+    const shouldShowLoading = props.loading;
+    const hasClearHandler = props.onClear$ !== undefined;
+    const hasValues = selectedOptions.length > 0;
+    const shouldShowClearBtn = hasClearHandler && hasValues;
 
-  return (
-    <div class="qs-multi-control">
-      {selectedOptions.map((opt) => (
-        <MultiValue label={props.getOptionLabel(opt)} />
-      ))}
+    return (
+      <div class="qs-multi-control">
+        {selectedOptions.map((opt) => {
+          const label =
+            typeof opt === "string"
+              ? opt
+              : (opt[props.optionLabelKey!] as string);
+          return (
+            <MultiValue
+              label={mutable(label)}
+              onClear$={() => {
+                if (props.onUnselect$) {
+                  props.onUnselect$(opt);
+                }
+              }}
+            />
+          );
+        })}
 
-      <input
-        type="text"
-        ref={props.ref}
-        value={props.inputValue.mut}
-        disabled={props.disabled.mut}
-        autoFocus={props.autofocus.mut}
-        placeholder={hasValues ? "" : props.placeholder}
-      />
+        <input
+          type="text"
+          ref={props.ref}
+          value={props.inputValue}
+          disabled={props.disabled}
+          autoFocus={props.autofocus}
+          placeholder={hasValues ? "" : props.placeholder}
+        />
 
-      {shouldShowClearBtn && <ClearButton onClick$={props.onClear$!} />}
-      {shouldShowLoading && <LoadingIndicator />}
-    </div>
-  );
-};
-
-const MultiValue = (props: { label: string }) => {
-  return (
-    <div class="qs-multi-value">
-      <div class="qs-multi-value-label">{props.label}</div>
-      <div class="qs-multi-value-clear">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="-2 -2 50 50"
-          focusable="false"
-          aria-hidden="true"
-          role="presentation"
-        >
-          <path d="M34.923,37.251L24,26.328L13.077,37.251L9.436,33.61l10.923-10.923L9.436,11.765l3.641-3.641L24,19.047L34.923,8.124 l3.641,3.641L27.641,22.688L38.564,33.61L34.923,37.251z" />
-        </svg>
+        {shouldShowClearBtn && <ClearButton onClick$={props.onClear$!} />}
+        {shouldShowLoading && <LoadingIndicator />}
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
+
+export const MultiValue = component$(
+  (props: { label: string; onClear$?: PropFunction<() => any> }) => {
+    // we use synchronous event here to stop it from propagating
+    // to the container which would toggle the menu
+    const clearBtnRef = useRef<HTMLElement>();
+    useClientEffect$(() => {
+      const handler = (event: Event) => {
+        event.stopPropagation();
+        if (props.onClear$) {
+          props.onClear$();
+        }
+      };
+      clearBtnRef.current!.addEventListener("click", handler);
+      return () => clearBtnRef.current!.removeEventListener("click", handler);
+    });
+
+    return (
+      <div class="qs-multi-value">
+        <div class="qs-multi-value-label">{props.label}</div>
+        <div class="qs-multi-value-clear" ref={clearBtnRef}>
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="-2 -2 50 50"
+            focusable="false"
+            aria-hidden="true"
+            role="presentation"
+          >
+            <path d="M34.923,37.251L24,26.328L13.077,37.251L9.436,33.61l10.923-10.923L9.436,11.765l3.641-3.641L24,19.047L34.923,8.124 l3.641,3.641L27.641,22.688L38.564,33.61L34.923,37.251z" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+);
 
 export default MultiSelectControl;

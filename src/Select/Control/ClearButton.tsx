@@ -2,9 +2,9 @@
 import { component$, PropFunction, useRef, useClientEffect$ } from "@builder.io/qwik";
 
 const ClearButton = component$(
-  (props: { onClick$: PropFunction<() => void> }) => {
+  (props: { onClick$: PropFunction<() => any> }) => {
     // we use synchronous event here to stop it from propagating
-    // to the container which would open the menu
+    // to the container which would toggle the menu
     const ref = useRef<HTMLElement>();
     useClientEffect$(() => {
       const handler = (event: Event) => {

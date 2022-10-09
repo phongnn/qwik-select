@@ -52,42 +52,45 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
 
   return (
     <Container ref={refs.containerRef} disabled={mutable(disabled)}>
-      <Control
-        placeholder={placeholder}
-        ref={refs.inputRef}
-        value={mutable(props.value) as any}
-        disabled={mutable(disabled)}
-        autofocus={mutable(props.autofocus)}
-        inputValue={mutable(state.inputValue)}
-        loading={mutable(state.loading)}
-        onClear$={props.onClear$}
-        getOptionLabel={getOptionLabel}
-      />
-      {state.isOpen && (
-        <div class="qs-menu" ref={refs.listRef}>
-          {state.filteredOptions.map((opt) => {
-            const isSelected = opt === props.value;
-            const isHovered = opt === state.hoveredOption;
-            return (
-              <MenuItem
-                option={opt}
-                getOptionLabel={getOptionLabel}
-                isSelected={mutable(isSelected)}
-                isHovered={mutable(isHovered)}
-                onClick$={async () => {
-                  if (props.onChange$ && opt !== props.value) {
-                    props.onChange$(opt);
-                  }
-                  actions.blur();
-                }}
-              />
-            );
-          })}
-          {state.filteredOptions.length === 0 && (
-            <div class="qs-empty">{noOptionsMessage}</div>
-          )}
-        </div>
-      )}
+      <div>
+        <Control
+          placeholder={placeholder}
+          ref={refs.inputRef}
+          value={mutable(props.value) as any}
+          disabled={mutable(disabled)}
+          autofocus={mutable(props.autofocus)}
+          inputValue={mutable(state.inputValue)}
+          loading={mutable(state.loading)}
+          onUnselect$={props.onUnselect$}
+          onClear$={props.onClear$}
+          optionLabelKey={optionLabelKey as any}
+        />
+        {state.isOpen && (
+          <div class="qs-menu" ref={refs.listRef}>
+            {state.filteredOptions.map((opt) => {
+              const isSelected = opt === props.value;
+              const isHovered = opt === state.hoveredOption;
+              return (
+                <MenuItem
+                  option={opt}
+                  getOptionLabel={getOptionLabel}
+                  isSelected={mutable(isSelected)}
+                  isHovered={mutable(isHovered)}
+                  onClick$={async () => {
+                    if (props.onChange$ && opt !== props.value) {
+                      props.onChange$(opt);
+                    }
+                    actions.blur();
+                  }}
+                />
+              );
+            })}
+            {state.filteredOptions.length === 0 && (
+              <div class="qs-empty">{noOptionsMessage}</div>
+            )}
+          </div>
+        )}
+      </div>
     </Container>
   );
 });
