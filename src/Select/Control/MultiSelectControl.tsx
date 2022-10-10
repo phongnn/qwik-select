@@ -28,22 +28,24 @@ const MultiSelectControl = component$(
 
     return (
       <div class="qs-multi-control">
-        {selectedOptions.map((opt) => {
-          const label =
-            typeof opt === "string"
-              ? opt
-              : (opt[props.optionLabelKey!] as string);
-          return (
-            <MultiValue
-              label={mutable(label)}
-              onClear$={() => {
-                if (props.onUnselect$) {
-                  props.onUnselect$(opt);
-                }
-              }}
-            />
-          );
-        })}
+        <div style={{ display: "contents" }}>
+          {selectedOptions.map((opt) => {
+            const label =
+              typeof opt === "string"
+                ? opt
+                : (opt[props.optionLabelKey!] as string);
+            return (
+              <MultiValue
+                label={mutable(label)}
+                onClear$={() => {
+                  if (props.onUnselect$) {
+                    props.onUnselect$(opt);
+                  }
+                }}
+              />
+            );
+          })}
+        </div>
 
         <input
           type="text"
