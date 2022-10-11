@@ -51,18 +51,11 @@
 .qs-multi-value {
   line-height: 32px;
   background: #ebedef;
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 0 10px 0 15px;
   margin: 3px;
   display: flex;
-  /* height: 32px; */
-  /* max-width: 100%; */
-  /* cursor: default; */
-}
-
-.qs-multi-value:hover {
-  background-color: #006fff;
-  color: #fff;
+  align-items: center;
 }
 
 .qs-multi-value-label {
@@ -74,27 +67,17 @@
 
 .qs-multi-value-clear {
   border-radius: 50%;
-  background: #52616f;
   min-width: 16px;
   max-width: 16px;
   height: 16px;
-  text-align: center;
-  padding: 1px;
-  position: relative;
-  top: 8px;
 }
 
 .qs-multi-value-clear:hover {
   background: #fff;
 }
 
-.qs-multi-value-clear svg {
-  fill: #ebedef;
-  vertical-align: top;
-}
-
 .qs-multi-value-clear:hover svg {
-  fill: #006fff;
+  fill: red;
 }
 
 .qs-container input {
