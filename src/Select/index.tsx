@@ -46,6 +46,20 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     shouldFilterSelectedOptions,
   });
 
+  const handleOptionUnselect = $((opt: Option) => {
+    if (props.onUnselect$ !== undefined) {
+      props.onUnselect$(opt);
+    }
+    actions.blur();
+  });
+
+  const handleClear = $(() => {
+    if (props.onClear$ !== undefined) {
+      props.onClear$();
+    }
+    actions.blur();
+  });
+
   const Control = Array.isArray(props.value)
     ? MultiSelectControl
     : SingleSelectControl;
@@ -61,8 +75,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
           autofocus={mutable(props.autofocus)}
           inputValue={mutable(state.inputValue)}
           loading={mutable(state.loading)}
-          onUnselect$={props.onUnselect$}
-          onClear$={props.onClear$}
+          onUnselect$={handleOptionUnselect}
+          onClear$={handleClear}
           optionLabelKey={optionLabelKey as any}
         />
         {state.isOpen && (
@@ -77,7 +91,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
                   isSelected={mutable(isSelected)}
                   isHovered={mutable(isHovered)}
                   onClick$={async () => {
-                    if (props.onChange$ && opt !== props.value) {
+                    if (props.onChange$ !== undefined && opt !== props.value) {
                       props.onChange$(opt);
                     }
                     actions.blur();

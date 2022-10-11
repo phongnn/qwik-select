@@ -168,8 +168,11 @@ function useSelect<Option>(
           // single-select: clear selected option
           props.onClear$();
         } else if (Array.isArray(props.value) && props.value.length > 0 && props.onUnselect$ !== undefined) {
-          // multi-select: remove last selected option
+          // multi-select: remove the last selected option
           props.onUnselect$(props.value[props.value.length - 1]);
+        }
+        if (isOpenStore.value) {
+          closeMenu()
         }
       }
     } else if (event.key === "Escape") {

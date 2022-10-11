@@ -89,35 +89,70 @@ describe("filtering selected options", () => {
   });
 });
 
-it("removes a selected value when click on button", () => {
-  cy.visit("/multi");
-  cy.wait(500);
+describe("removing a selected option", () => {
+  it("removes selected value when click on button", () => {
+    cy.visit("/multi");
+    cy.wait(500);
 
-  cy.get(".qs-multi-value-clear").click();
-  cy.wait(500);
+    cy.get(".qs-multi-value-clear").click();
+    cy.wait(500);
 
-  // expect the menu to show all options
-  cy.findByPlaceholderText("Select...").type("{downArrow}");
-  cy.get(".qs-item").should("have.length", 5);
-});
+    // expect the menu to show all options
+    cy.findByPlaceholderText("Select...").type("{downArrow}");
+    cy.get(".qs-item").should("have.length", 5);
+  });
 
-it("removes a selected value on Delete/Backspace", () => {
-  cy.visit("/multi");
-  cy.wait(500);
+  it("removes selected value and closes menu when click on button", () => {
+    cy.visit("/multi");
+    cy.wait(500);
 
-  // remove selected option ("Three") with Backspace
-  cy.get("input").type("{backspace}");
-  cy.wait(500);
+    // open the menu
+    cy.get("input").click();
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 4); // "One" to "Five" without "Four"
 
-  // select "One"
-  const input = cy.findByPlaceholderText("Select...").type("o");
-  cy.wait(500);
-  input.type("{enter}");
-  cy.wait(500);
+    // remove the selected value
+    cy.get(".qs-multi-value-clear").click();
+    cy.wait(500);
 
-  // remove selected option ("One") with Delete
-  cy.get("input").type("{del}");
-  cy.findByPlaceholderText("Select...");
+    // expect the menu to be closed and focus is removed
+    cy.get(".qs-item").should("not.exist");
+    cy.findByPlaceholderText("Select...").should("not.be.focused");
+  });
+
+  it("removes selected value on Delete/Backspace", () => {
+    cy.visit("/multi");
+    cy.wait(500);
+
+    // remove selected option ("Three") with Backspace
+    cy.get("input").type("{backspace}");
+    cy.wait(500);
+
+    // select "One"
+    const input = cy.findByPlaceholderText("Select...").type("o");
+    cy.wait(500);
+    input.type("{enter}");
+    cy.wait(500);
+
+    // remove selected option ("One") with Delete
+    cy.get("input").type("{del}");
+    cy.findByPlaceholderText("Select...");
+  });
+
+  it("removes selected value and closes menu on Delete/Backspace", () => {
+    cy.visit("/multi");
+    cy.wait(500);
+
+    // open the menu then press Delete
+    cy.get("input").type("{downArrow}").wait(500);
+    cy.get(".qs-item").should("have.length", 4);
+    cy.get("input").type("{del}");
+
+    // input is cleared, menu is closed but focus is still maintained
+    cy.findByPlaceholderText("Select...");
+    cy.get(".qs-item").should("not.exist");
+    cy.get("input").should("be.focused");
+  });
 });
 
 it("clears selected values", () => {

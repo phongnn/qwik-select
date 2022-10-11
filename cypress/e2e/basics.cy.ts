@@ -209,14 +209,31 @@ describe("clearable", () => {
   it("clears selected value", () => {
     cy.visit("/clearable");
     cy.wait(500);
+
     cy.findByTestId("qwik-select-clear").click();
-
-    // clear selected value
     cy.wait(500);
-    cy.findByText("Select an item.");
 
+    cy.findByText("Select an item.");
     // hide the clear button
     cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+  });
+
+  it("clears selected value and removes focus", () => {
+    cy.visit("/clearable");
+    cy.wait(500);
+
+    // open the menu
+    cy.get("input").click();
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 5);
+
+    // clear selected value
+    cy.findByTestId("qwik-select-clear").click();
+    cy.wait(500);
+
+    cy.findByText("Select an item.");
+    cy.get(".qs-item").should("not.exist");
+    cy.get("input").should("not.be.focused");
   });
 
   it("hides clear button when user starts typing", () => {
@@ -236,10 +253,26 @@ describe("clearable", () => {
     cy.visit("/clearable");
     cy.wait(500);
 
+    // open the menu then press Delete
     cy.get("input").type("{del}");
     cy.wait(500);
 
+    // input is cleared but focus is still maintained
     cy.findByText("Select an item.");
+    cy.get("input").should("be.focused");
+  });
+
+  it("clears selected value and closes menu on Delete/Backspace", () => {
+    cy.visit("/clearable");
+    cy.wait(500);
+
+    // open the menu then press Delete
+    cy.get("input").type("{downArrow}").wait(500).type("{del}");
+
+    // input is cleared, menu is closed but focus is still maintained
+    cy.findByText("Select an item.");
+    cy.get(".qs-item").should("not.exist");
+    cy.get("input").should("be.focused");
   });
 });
 
