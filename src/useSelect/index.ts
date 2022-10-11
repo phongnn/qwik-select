@@ -1,14 +1,29 @@
 // prettier-ignore
-import { useRef, useClientEffect$, $, QRL, Ref, PropFunction } from "@builder.io/qwik";
+import { useRef, useClientEffect$, $, QRL, Ref, PropFunction, useStore } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "./types";
-import { useIsOpenStore } from "./isOpenStore";
-import { useInputValueStore } from "./inputValueStore";
 import {
   useFilteredOptionsStore,
   FilteredOptionsStoreConfig,
 } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
+
+function useIsOpenStore() {
+  const state = useStore({ value: false });
+  const setMenuOpen = $((open: boolean) => (state.value = open));
+  return { isOpenStore: state, actions: { setMenuOpen } };
+}
+
+function useInputValueStore(onInput$?: PropFunction<(text: string) => any>) {
+  const state = useStore({ value: "" });
+  const setInputValue = $((val: string) => {
+    if (onInput$ && val !== state.value) {
+      onInput$(val);
+    }
+    state.value = val;
+  });
+  return { inputValueStore: state, actions: { setInputValue } };
+}
 
 // these settings are directly from the user of the Select component
 interface UseSelectProps<Option> {
@@ -35,20 +50,6 @@ function useSelect<Option>(
   props: UseSelectProps<Option>,
   config: UseSelectConfig<Option>
 ) {
-  // filter selected options for multi-select
-  const filterSelectedOptions = $((options: Option[]) =>
-    options.filter((opt) => {
-      const selectedOptions = props.value as Option[];
-      if (typeof opt === "string") {
-        return selectedOptions.includes(opt) === false;
-      } else {
-        return selectedOptions.every(
-          (so) => so[config.optionLabelKey!] !== opt[config.optionLabelKey!]
-        );
-      }
-    })
-  );
-
   const filteredOptionsStoreConfig: FilteredOptionsStoreConfig<Option> =
     props.fetchOptions$ !== undefined
       ? {
@@ -57,19 +58,19 @@ function useSelect<Option>(
         }
       : { options: props.options!, optionLabelKey: config.optionLabelKey! };
 
-  if (Array.isArray(props.value) && config.shouldFilterSelectedOptions) {
-    filteredOptionsStoreConfig.extraFilter = filterSelectedOptions;
-  }
+  // filter selected options for multi-select
+  const shouldFilterSelectedOptions =
+    Array.isArray(props.value) && config.shouldFilterSelectedOptions;
 
   /** STATE MANAGEMENT */
   const {
     isOpenStore,
-    actions: { toggleMenu, openMenu, closeMenu },
+    actions: { setMenuOpen },
   } = useIsOpenStore();
 
   const {
     inputValueStore,
-    actions: { setInputValue, clearInputValue },
+    actions: { setInputValue },
   } = useInputValueStore(props.onInput$);
 
   const {
@@ -87,6 +88,36 @@ function useSelect<Option>(
     },
   } = useHoveredOptionStore(filteredOptionsStore);
 
+  /** PRIVATE ACTIONS */
+  const filterSelectedOptions = shouldFilterSelectedOptions
+    ? $((options: Option[]) =>
+        options.filter((opt) => {
+          const selectedOptions = props.value as Option[];
+          if (typeof opt === "string") {
+            return selectedOptions.includes(opt) === false;
+          } else {
+            return selectedOptions.every(
+              (so) => so[config.optionLabelKey!] !== opt[config.optionLabelKey!]
+            );
+          }
+        })
+      )
+    : undefined;
+
+  const openMenu = $(async () => {
+    // filter options before opening the menu to avoid flashing of "No options" message
+    await filterOptions(inputValueStore.value, filterSelectedOptions);
+    await setMenuOpen(true);
+    await hoverSelectedOrFirstOption(props.value);
+  });
+
+  const closeMenu = $(async () => {
+    setMenuOpen(false);
+    setInputValue("");
+    clearFilter();
+    clearHoveredOption();
+  });
+
   /** EVENT HANDLERS */
   const containerRef: Ref<HTMLElement> = useRef<HTMLElement>();
   const inputRef: Ref<HTMLInputElement> = useRef<HTMLInputElement>();
@@ -96,7 +127,11 @@ function useSelect<Option>(
     const target = event.target as HTMLElement;
     if (!listRef.current?.contains(target)) {
       inputRef.current?.focus();
-      toggleMenu();
+      if (isOpenStore.value) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     }
   });
 
@@ -131,13 +166,14 @@ function useSelect<Option>(
     }
   });
 
-  const handleInputChange = $((event: Event) => {
-    if (!isOpenStore.value) {
+  const handleInputChange = $(async (event: Event) => {
+    const inputValue = (event.target as HTMLInputElement).value;
+    await setInputValue(inputValue);
+    if (isOpenStore.value) {
+      filterOptions(inputValue, filterSelectedOptions);
+    } else {
       openMenu();
     }
-    const inputValue = (event.target as HTMLInputElement).value;
-    setInputValue(inputValue);
-    filterOptions(inputValue);
   });
 
   const handleInputFocus = $(() => {
@@ -170,18 +206,6 @@ function useSelect<Option>(
       inputRef.current?.removeEventListener("focus", handleInputFocus);
       inputRef.current?.removeEventListener("blur", handleInputBlur);
     };
-  });
-
-  useClientEffect$(function handleMenuToggle({ track }) {
-    const isOpen = track(isOpenStore, "value");
-    if (isOpen) {
-      // let the menu opens first before we set the hovered state
-      setTimeout(() => hoverSelectedOrFirstOption(props.value));
-    } else {
-      clearInputValue();
-      clearFilter();
-      clearHoveredOption();
-    }
   });
 
   useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {

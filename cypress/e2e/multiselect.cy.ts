@@ -65,7 +65,8 @@ describe("filtering selected options", () => {
     cy.get(".qs-item").should("have.length", 1); // "Two" only
 
     // select "Two"
-    cy.findByText("Two").click();
+    // cy.findByText("Two").click();
+    cy.get("input").type("{enter}");
     cy.wait(500);
 
     // expect "Two" no longer appears in the menu
@@ -94,7 +95,10 @@ it("removes a selected value when click on button", () => {
 
   cy.get(".qs-multi-value-clear").click();
   cy.wait(500);
-  cy.findByPlaceholderText("Select...");
+
+  // expect the menu to show all options
+  cy.findByPlaceholderText("Select...").type("{downArrow}");
+  cy.get(".qs-item").should("have.length", 5);
 });
 
 it("clears selected values", () => {
@@ -104,8 +108,12 @@ it("clears selected values", () => {
   // clear selected values
   cy.findByTestId("qwik-select-clear").click();
   cy.wait(500);
-  cy.findByPlaceholderText("Select...");
+  const input = cy.findByPlaceholderText("Select...");
 
   // hide the clear button
   cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+
+  // expect the menu to show all options
+  input.type("{downArrow}");
+  cy.get(".qs-item").should("have.length", 5);
 });
