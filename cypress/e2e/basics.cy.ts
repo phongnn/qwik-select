@@ -231,6 +231,16 @@ describe("clearable", () => {
     cy.wait(500);
     cy.get("[data-testid='qwik-select-clear']").should("not.exist");
   });
+
+  it("clears selected value on Delete/Backspace", () => {
+    cy.visit("/clearable");
+    cy.wait(500);
+
+    cy.get("input").type("{del}");
+    cy.wait(500);
+
+    cy.findByText("Select an item.");
+  });
 });
 
 describe("events", () => {

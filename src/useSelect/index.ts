@@ -161,6 +161,17 @@ function useSelect<Option>(
         }
         closeMenu();
       }
+    } else if (event.key === "Backspace" || event.key === "Delete") {
+      // prettier-ignore
+      if (inputValueStore.value === "") {
+        if (props.value !== undefined && !Array.isArray(props.value) && props.onClear$ !== undefined) {
+          // single-select: clear selected option
+          props.onClear$();
+        } else if (Array.isArray(props.value) && props.value.length > 0 && props.onUnselect$ !== undefined) {
+          // multi-select: remove last selected option
+          props.onUnselect$(props.value[props.value.length - 1]);
+        }
+      }
     } else if (event.key === "Escape") {
       closeMenu();
     }

@@ -47,7 +47,7 @@ it("resets text input when closing menu", () => {
   cy.wait(500);
 
   // on Escape
-  cy.get("input").type("b{esc}"); // banana
+  cy.get("input").type("b").wait(500).type("{esc}"); // banana
   cy.get("input").should("have.value", "");
 
   // click on the text input to close menu

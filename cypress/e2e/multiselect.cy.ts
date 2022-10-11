@@ -101,6 +101,25 @@ it("removes a selected value when click on button", () => {
   cy.get(".qs-item").should("have.length", 5);
 });
 
+it("removes a selected value on Delete/Backspace", () => {
+  cy.visit("/multi");
+  cy.wait(500);
+
+  // remove selected option ("Three") with Backspace
+  cy.get("input").type("{backspace}");
+  cy.wait(500);
+
+  // select "One"
+  const input = cy.findByPlaceholderText("Select...").type("o");
+  cy.wait(500);
+  input.type("{enter}");
+  cy.wait(500);
+
+  // remove selected option ("One") with Delete
+  cy.get("input").type("{del}");
+  cy.findByPlaceholderText("Select...");
+});
+
 it("clears selected values", () => {
   cy.visit("/multi");
   cy.wait(500);
