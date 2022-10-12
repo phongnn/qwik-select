@@ -43,7 +43,7 @@ interface UseSelectConfig<Option> {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   shouldFilterSelectedOptions?: boolean;
-  scrollToHoveredOption?: QRL<(menuElem?: HTMLElement, opt?: Option) => void>;
+  onOptionHover$?: QRL<(opt: Option, ctx: { menuEl: HTMLElement }) => void>;
 }
 
 function useSelect<Option>(
@@ -82,8 +82,7 @@ function useSelect<Option>(
     hoveredOptionStore,
     actions: {
       hoverSelectedOrFirstOption,
-      hoverNextOption,
-      hoverPrevOption,
+      hoverAdjacentOption,
       clearHoveredOption,
     },
   } = useHoveredOptionStore(filteredOptionsStore);
@@ -121,11 +120,11 @@ function useSelect<Option>(
   /** EVENT HANDLERS */
   const containerRef: Ref<HTMLElement> = useRef<HTMLElement>();
   const inputRef: Ref<HTMLInputElement> = useRef<HTMLInputElement>();
-  const listRef: Ref<HTMLElement> = useRef<HTMLElement>();
+  const menuRef: Ref<HTMLElement> = useRef<HTMLElement>();
 
   const handleContainerClick = $((event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!listRef.current?.contains(target)) {
+    if (!menuRef.current?.contains(target)) {
       inputRef.current?.focus();
       if (isOpenStore.value) {
         closeMenu();
@@ -144,16 +143,13 @@ function useSelect<Option>(
   });
 
   const handleInputKeyDown = $((event: KeyboardEvent) => {
-    if (event.key === "ArrowDown") {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       if (isOpenStore.value) {
-        hoverNextOption();
+        hoverAdjacentOption(event.key.slice(5) as any); // remove "Arrow" prefix
       } else {
         openMenu();
       }
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      hoverPrevOption();
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
         if (props.onChange$) {
@@ -229,15 +225,15 @@ function useSelect<Option>(
     }
   });
 
-  useClientEffect$(function scrollToHoveredOption({ track }) {
+  useClientEffect$(function triggerOptionHovered({ track }) {
     const hoveredOption = track(hoveredOptionStore, "hoveredOption");
-    if (hoveredOption && config.scrollToHoveredOption) {
-      config.scrollToHoveredOption(listRef.current, hoveredOption);
+    if (hoveredOption && config.onOptionHover$) {
+      config.onOptionHover$(hoveredOption, { menuEl: menuRef.current! });
     }
   });
 
   /** OTHER ACTIONS (NOT RELATED TO STATE MANAGEMENT) */
-  // NOTE: these actions are QRLs so they are serializable and can be called within event handlers
+  // these actions are QRLs (serializable) so they can be called from within event handlers
   const focus = $(() => {
     inputRef.current?.focus();
   });
@@ -250,7 +246,7 @@ function useSelect<Option>(
     refs: {
       containerRef,
       inputRef,
-      listRef,
+      menuRef,
     },
     state: {
       isOpen: isOpenStore.value,

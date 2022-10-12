@@ -31,9 +31,9 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
-  const scrollToHoveredOption = $((menuElem?: HTMLElement) => {
-    const element = menuElem?.querySelector('.qs-item[data-hovered="true"]');
-    element?.scrollIntoView({
+  const scrollToHoveredOption = $((_: Option, ctx: { menuEl: HTMLElement }) => {
+    const itemEl = ctx.menuEl.querySelector('.qs-item[data-hovered="true"]');
+    itemEl?.scrollIntoView({
       behavior: "smooth",
       block: "center",
     });
@@ -42,8 +42,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const { refs, state, actions } = useSelect<Option>(props, {
     optionLabelKey,
     inputDebounceTime,
-    scrollToHoveredOption,
     shouldFilterSelectedOptions,
+    onOptionHover$: scrollToHoveredOption,
   });
 
   const handleOptionUnselect = $((opt: Option) => {
@@ -80,7 +80,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
           optionLabelKey={optionLabelKey as any}
         />
         {state.isOpen && (
-          <div class="qs-menu" ref={refs.listRef}>
+          <div class="qs-menu" ref={refs.menuRef}>
             {state.filteredOptions.map((opt) => {
               const isSelected = opt === props.value;
               const isHovered = opt === state.hoveredOption;

@@ -34,26 +34,19 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
     state.hoveredOption = filteredOptionsStore.options[0];
   });
 
-  const hoverNextOption = $(() => {
-    if (state.hoveredOptionIndex >= 0) {
-      let index = state.hoveredOptionIndex + 1;
-      if (index > filteredOptionsStore.options.length - 1) {
-        index = 0;
-      }
-      state.hoveredOptionIndex = index;
-      state.hoveredOption = filteredOptionsStore.options[index];
+  const hoverAdjacentOption = $((direction: "Up" | "Down") => {
+    if (state.hoveredOptionIndex < 0) {
+      return;
     }
-  });
-
-  const hoverPrevOption = $(() => {
-    if (state.hoveredOptionIndex >= 0) {
-      let index = state.hoveredOptionIndex - 1;
-      if (index < 0) {
-        index = filteredOptionsStore.options.length - 1;
-      }
-      state.hoveredOptionIndex = index;
-      state.hoveredOption = filteredOptionsStore.options[index];
+    const delta = direction === "Down" ? 1 : -1;
+    let index = state.hoveredOptionIndex + delta;
+    if (index > filteredOptionsStore.options.length - 1) {
+      index = 0;
+    } else if (index < 0) {
+      index = filteredOptionsStore.options.length - 1;
     }
+    state.hoveredOptionIndex = index;
+    state.hoveredOption = filteredOptionsStore.options[index];
   });
 
   const clearHoveredOption = $(() => {
@@ -63,8 +56,7 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
 
   const actions = {
     hoverSelectedOrFirstOption,
-    hoverNextOption,
-    hoverPrevOption,
+    hoverAdjacentOption,
     clearHoveredOption,
   };
   return { hoveredOptionStore: state, actions };
