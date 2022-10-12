@@ -51,7 +51,7 @@ function useSelect<Option>(
   config: UseSelectConfig<Option>
 ) {
   const filteredOptionsStoreConfig: FilteredOptionsStoreConfig<Option> =
-    props.fetchOptions$ !== undefined
+    props.fetchOptions$
       ? {
           fetcher: props.fetchOptions$,
           debounceTime: config.inputDebounceTime!,
@@ -160,10 +160,10 @@ function useSelect<Option>(
     } else if (event.key === "Backspace" || event.key === "Delete") {
       // prettier-ignore
       if (inputValueStore.value === "") {
-        if (props.value !== undefined && !Array.isArray(props.value) && props.onClear$ !== undefined) {
+        if (props.value && !Array.isArray(props.value) && props.onClear$) {
           // single-select: clear selected option
           props.onClear$();
-        } else if (Array.isArray(props.value) && props.value.length > 0 && props.onUnselect$ !== undefined) {
+        } else if (Array.isArray(props.value) && props.value.length > 0 && props.onUnselect$) {
           // multi-select: remove the last selected option
           props.onUnselect$(props.value[props.value.length - 1]);
         }

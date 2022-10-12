@@ -20,7 +20,7 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
     }
 
     // single selected option, hover if found in the list
-    if (selectedVal !== undefined && !Array.isArray(selectedVal)) {
+    if (selectedVal && !Array.isArray(selectedVal)) {
       const optIndex = filteredOptionsStore.options.indexOf(selectedVal);
       if (optIndex > 0) {
         state.hoveredOptionIndex = optIndex;

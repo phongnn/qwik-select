@@ -22,7 +22,7 @@ const MultiSelectControl = component$(
   <Option,>(props: MultiSelectControlProps<Option>) => {
     const selectedOptions = props.value;
     const shouldShowLoading = props.loading;
-    const hasClearHandler = props.onClear$ !== undefined;
+    const hasClearHandler = !!props.onClear$;
     const hasValues = selectedOptions.length > 0;
     const shouldShowClearBtn = hasClearHandler && hasValues;
 

@@ -47,14 +47,14 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   });
 
   const handleOptionUnselect = $((opt: Option) => {
-    if (props.onUnselect$ !== undefined) {
+    if (props.onUnselect$) {
       props.onUnselect$(opt);
     }
     actions.blur();
   });
 
   const handleClear = $(() => {
-    if (props.onClear$ !== undefined) {
+    if (props.onClear$) {
       props.onClear$();
     }
     actions.blur();
@@ -91,7 +91,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
                   isSelected={mutable(isSelected)}
                   isHovered={mutable(isHovered)}
                   onClick$={async () => {
-                    if (props.onSelect$ !== undefined && opt !== props.value) {
+                    if (props.onSelect$ && opt !== props.value) {
                       props.onSelect$(opt);
                     }
                     actions.blur();

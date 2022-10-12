@@ -19,9 +19,9 @@ interface SingleSelectControlProps<Option> {
 const SingleSelectControl = component$(
   <Option,>(props: SingleSelectControlProps<Option>) => {
     const selectedOption = props.value;
-    const hasValue = selectedOption !== undefined;
+    const hasValue = !!selectedOption;
     const isBlankTextInput = props.inputValue === "";
-    const hasClearHandler = props.onClear$ !== undefined;
+    const hasClearHandler = !!props.onClear$;
     const shouldShowLoading = props.loading;
     const shouldShowValue = hasValue && isBlankTextInput;
     const shouldShowPlaceholder = !hasValue && isBlankTextInput;
