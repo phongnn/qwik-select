@@ -27,7 +27,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "node --inspect node_modules/vite/bin/vite.js --config vite.app.ts --mode ssr",
+    "dev": "node --inspect node_modules/vite/bin/vite.js --config app/vite.config.ts --mode ssr",
     "test": "vitest",
     "test.ci": "vitest run --passWithNoTests",
     "coverage": "vitest run --coverage",

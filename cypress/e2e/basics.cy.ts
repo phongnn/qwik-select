@@ -1,21 +1,3 @@
-describe("empty list of options", () => {
-  it("shows a text input and a 'no options' message", () => {
-    cy.visit("/empty");
-    cy.wait(500);
-
-    // "force: true" because the div is actually underneath the text input
-    cy.findByText("Select...").click({ force: true });
-    cy.findByText("No options").should("have.class", "qs-empty");
-  });
-
-  it("shows custom message", () => {
-    cy.visit("/empty");
-    cy.wait(500);
-    cy.findByText("-- Select an option --").click({ force: true });
-    cy.findByText("No options available!!!");
-  });
-});
-
 describe("with no selected value", () => {
   it("opens menu when click on text input", () => {
     cy.visit("/basics");
@@ -186,25 +168,6 @@ describe("with selected value", () => {
   });
 });
 
-describe("disable/enable", () => {
-  it("disables the control", () => {
-    cy.visit("/disabled");
-    cy.wait(500);
-    cy.get("input").should("be.disabled");
-    cy.get(".qs-container").should("have.attr", "data-disabled", "true");
-  });
-
-  it("enables the control", () => {
-    cy.visit("/disabled");
-    // cy.wait(500);
-    cy.findByText("Enable Select").click();
-    cy.wait(500);
-    cy.get("input").type("t");
-    cy.wait(500);
-    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
-  });
-});
-
 describe("clearable", () => {
   it("clears selected value", () => {
     cy.visit("/clearable");
@@ -312,11 +275,49 @@ describe("events", () => {
   });
 });
 
+describe("disable/enable", () => {
+  it("disables the control", () => {
+    cy.visit("/disabled");
+    cy.wait(500);
+    cy.get("input").should("be.disabled");
+    cy.get(".qs-container").should("have.attr", "data-disabled", "true");
+  });
+
+  it("enables the control", () => {
+    cy.visit("/disabled");
+    // cy.wait(500);
+    cy.findByText("Enable Select").click();
+    cy.wait(500);
+    cy.get("input").type("t");
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
+  });
+});
+
 describe("others", () => {
+  it("shows custom placeholder", () => {
+    cy.visit("/empty");
+    cy.findByText("-- Select an option --");
+  });
+
   it("sets focus to the text input on page load", () => {
     cy.visit("/autofocus");
 
     // cy.get("input").should("be.focused"); // strangely, this doesn't work
     cy.get("input").should("have.attr", "autofocus");
+  });
+
+  it("supports custom optionLabelKey", () => {
+    cy.visit("/custom-label-key");
+
+    // filter options
+    cy.get("input").type("t");
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
+
+    // select "Three"
+    cy.findByText("Three").click();
+    cy.wait(500);
+    cy.get(".qs-single-value").should("have.text", "Three");
   });
 });

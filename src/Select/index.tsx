@@ -8,26 +8,29 @@ import MultiSelectControl from "./Control/MultiSelectControl";
 import MenuItem from "./MenuItem";
 
 type SelectProps<Option> = UseSelectProps<Option> & {
-  optionLabelKey?: OptionLabelKey<Option>;
-  inputDebounceTime?: number;
+  placeholder?: string;
   autofocus?: boolean;
   disabled?: boolean;
-  placeholder?: string;
-  noOptionsMessage?: string;
+  optionLabelKey?: OptionLabelKey<Option>;
+  inputDebounceTime?: number;
   shouldFilterSelectedOptions?: boolean;
+  // noOptionsMessage?: string;
 };
 
 // NOTE: the weird <Option, > syntax is to avoid error as JSX and TypeScript syntaxes clash.
 // We could use a normal function instead of an arrow function, but that would cause
 // "props is undefined" error in MenuItem's click event.
 const Select = component$(<Option,>(props: SelectProps<Option>) => {
-  const disabled = props.disabled ?? false;
   const placeholder = props.placeholder ?? "Select...";
-  const noOptionsMessage = props.noOptionsMessage ?? "No options";
+  const disabled = props.disabled ?? false;
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
   const inputDebounceTime = props.inputDebounceTime ?? 200;
   const shouldFilterSelectedOptions = props.shouldFilterSelectedOptions ?? true;
+
+  // TODO: define a Slot for "No options"
+  // 12-Oct-2022: slot fallback content doesn't work - seems like a bug in Qwik
+  const noOptionsMessage = "No options";
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
