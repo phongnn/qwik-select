@@ -27,7 +27,7 @@ export default component$(() => {
       <Select
         options={state.items}
         value={mutable(state.selectedItem)}
-        onChange$={(it) => (state.selectedItem = it)}
+        onSelect$={(it) => (state.selectedItem = it)}
       />
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>

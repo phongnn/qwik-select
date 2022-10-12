@@ -52,7 +52,7 @@ export default component$(() => {
         fetchOptions$={filter}
         inputDebounceTime={500}
         value={mutable(state.selectedItem)}
-        onChange$={(it) => (state.selectedItem = it)}
+        onSelect$={(it) => (state.selectedItem = it)}
       />
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>

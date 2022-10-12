@@ -29,7 +29,7 @@ You can use the unstyled `Select` component or develop your own UI component wit
 
 ### Select component
 
-`Select` is a controlled input, so you usually need to set the `value` prop and handle the `onChange$` and probably `onClear$` events.
+`Select` is a controlled input, so you usually need to set the `value` prop and handle the `onSelect$` and probably `onClear$` events.
 
 ```javascript
 import { component$, useStyles$, useStore, mutable } from "@builder.io/qwik";
@@ -48,7 +48,7 @@ export default component$(() => {
       <Select
         options={state.items}
         value={mutable(state.selectedItem)}
-        onChange$={(it) => (state.selectedItem = it)}
+        onSelect$={(it) => (state.selectedItem = it)}
         onClear$={() => (state.selectedItem = undefined)}
       />
     </div>
@@ -74,7 +74,7 @@ export default component$(() => {
 
 | Event     | Callback               | Description                                  |
 | --------- | ---------------------- | -------------------------------------------- |
-| onChange$ | (value: Option) => any | fires when an option is selected.            |
+| onSelect$ | (value: Option) => any | fires when an option is selected.            |
 | onClear$  | () => any              | fires when the Select component is cleared.  |
 | onInput$  | (text: string) => any  | fires when the user types in the text input. |
 | onFocus$  | () => any              | fires when the text input gets focused.      |

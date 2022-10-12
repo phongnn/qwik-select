@@ -91,8 +91,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
                   isSelected={mutable(isSelected)}
                   isHovered={mutable(isHovered)}
                   onClick$={async () => {
-                    if (props.onChange$ !== undefined && opt !== props.value) {
-                      props.onChange$(opt);
+                    if (props.onSelect$ !== undefined && opt !== props.value) {
+                      props.onSelect$(opt);
                     }
                     actions.blur();
                   }}

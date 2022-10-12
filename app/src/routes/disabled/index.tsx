@@ -34,7 +34,7 @@ export default component$(() => {
       <Select
         options={state.items}
         value={mutable(state.selectedItem)}
-        onChange$={(it) => (state.selectedItem = it)}
+        onSelect$={(it) => (state.selectedItem = it)}
         disabled={mutable(state.disabled)}
       />
       {state.selectedItem && (

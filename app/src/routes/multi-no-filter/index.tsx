@@ -27,7 +27,7 @@ export default component$(() => {
       <Select
         options={state.items}
         value={mutable(state.selectedItems)}
-        onChange$={(it) => (state.selectedItems = [...state.selectedItems, it])}
+        onSelect$={(it) => (state.selectedItems = [...state.selectedItems, it])}
         shouldFilterSelectedOptions={false}
       />
     </div>

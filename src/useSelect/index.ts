@@ -30,7 +30,7 @@ interface UseSelectProps<Option> {
   options?: Option[];
   value?: Option | Option[];
   fetchOptions$?: PropFunction<(text: string) => Promise<Option[]>>;
-  onChange$?: PropFunction<(opt: Option) => any>;
+  onSelect$?: PropFunction<(opt: Option) => any>;
   onUnselect$?: PropFunction<(opt: Option) => any>;
   onClear$?: PropFunction<() => any>;
   onInput$?: PropFunction<(text: string) => any>;
@@ -152,8 +152,8 @@ function useSelect<Option>(
       }
     } else if (event.key === "Enter" || event.key === "Tab") {
       if (hoveredOptionStore.hoveredOption) {
-        if (props.onChange$) {
-          props.onChange$(hoveredOptionStore.hoveredOption);
+        if (props.onSelect$) {
+          props.onSelect$(hoveredOptionStore.hoveredOption);
         }
         closeMenu();
       }

@@ -38,7 +38,7 @@ export default component$(() => {
       <Select
         fetchOptions$={filter}
         value={mutable(state.selectedItems)}
-        onChange$={(it) => (state.selectedItems = [...state.selectedItems, it])}
+        onSelect$={(it) => (state.selectedItems = [...state.selectedItems, it])}
       />
     </div>
   );
