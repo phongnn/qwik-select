@@ -275,25 +275,6 @@ describe("events", () => {
   });
 });
 
-describe("disable/enable", () => {
-  it("disables the control", () => {
-    cy.visit("/disabled");
-    cy.wait(500);
-    cy.get("input").should("be.disabled");
-    cy.get(".qs-container").should("have.attr", "data-disabled", "true");
-  });
-
-  it("enables the control", () => {
-    cy.visit("/disabled");
-    // cy.wait(500);
-    cy.findByText("Enable Select").click();
-    cy.wait(500);
-    cy.get("input").type("t");
-    cy.wait(500);
-    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
-  });
-});
-
 describe("others", () => {
   it("shows custom placeholder", () => {
     cy.visit("/empty");
@@ -305,6 +286,22 @@ describe("others", () => {
 
     // cy.get("input").should("be.focused"); // strangely, this doesn't work
     cy.get("input").should("have.attr", "autofocus");
+  });
+
+  it("disables/enables the control", () => {
+    cy.visit("/disabled");
+    cy.wait(500);
+
+    // disabled state
+    cy.get("input").should("be.disabled");
+    cy.get(".qs-container").should("have.attr", "data-disabled", "true");
+
+    // enable the control
+    cy.findByText("Enable Select").click();
+    cy.wait(500);
+    cy.get("input").type("t");
+    cy.wait(500);
+    cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
   });
 
   it("supports custom optionLabelKey", () => {

@@ -12,6 +12,7 @@ interface SingleSelectControlProps<Option> {
   loading: boolean;
   disabled?: boolean;
   autofocus?: boolean;
+  clearable: boolean;
   onClear$?: PropFunction<() => void>;
   optionLabelKey?: OptionLabelKey<Option>;
 }
@@ -21,11 +22,10 @@ const SingleSelectControl = component$(
     const selectedOption = props.value;
     const hasValue = !!selectedOption;
     const isBlankTextInput = props.inputValue === "";
-    const hasClearHandler = !!props.onClear$;
     const shouldShowLoading = props.loading;
     const shouldShowValue = hasValue && isBlankTextInput;
     const shouldShowPlaceholder = !hasValue && isBlankTextInput;
-    const shouldShowClearBtn = hasClearHandler && shouldShowValue;
+    const shouldShowClearBtn = props.clearable && shouldShowValue;
     const label =
       selectedOption === undefined
         ? undefined

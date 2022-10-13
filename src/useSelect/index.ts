@@ -43,7 +43,7 @@ interface UseSelectConfig<Option> {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   shouldFilterSelectedOptions?: boolean;
-  onOptionHover$?: QRL<(opt: Option, ctx: { menuEl: HTMLElement }) => void>;
+  onOptionHover$?: QRL<(opt: Option, ctx: { menuEl?: HTMLElement }) => void>;
 }
 
 function useSelect<Option>(
@@ -219,16 +219,16 @@ function useSelect<Option>(
   });
 
   useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
-    track(filteredOptionsStore, "options");
+    track(() => filteredOptionsStore.options);
     if (isOpenStore.value) {
       hoverSelectedOrFirstOption(props.value);
     }
   });
 
   useClientEffect$(function triggerOptionHovered({ track }) {
-    const hoveredOption = track(hoveredOptionStore, "hoveredOption");
+    const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
     if (hoveredOption && config.onOptionHover$) {
-      config.onOptionHover$(hoveredOption, { menuEl: menuRef.current! });
+      config.onOptionHover$(hoveredOption, { menuEl: menuRef.current });
     }
   });
 

@@ -33,13 +33,15 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
 
   // prettier-ignore
   const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
-  const scrollToHoveredOption = $((_: Option, ctx: { menuEl: HTMLElement }) => {
-    const itemEl = ctx.menuEl.querySelector('.qs-item[data-hovered="true"]');
-    itemEl?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  });
+  const scrollToHoveredOption = $(
+    (_: Option, ctx: { menuEl?: HTMLElement }) => {
+      const itemEl = ctx.menuEl?.querySelector('.qs-item[data-hovered="true"]');
+      itemEl?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  );
 
   const { refs, state, actions } = useSelect<Option>(props, {
     optionLabelKey,
@@ -77,6 +79,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
           autofocus={props.autofocus}
           inputValue={state.inputValue}
           loading={state.loading}
+          clearable={!!props.onClear$}
           onUnselect$={handleOptionUnselect}
           onClear$={handleClear}
           optionLabelKey={optionLabelKey as any}
