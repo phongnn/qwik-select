@@ -1,13 +1,10 @@
 .qs-container {
-  --padding: 0 16px;
   --height: 42px;
   border: 1px solid #d8dbdf;
   border-radius: 3px;
   box-sizing: border-box;
-  padding: var(--padding);
+  padding: 0 16px;
   background: #fff;
-  /* height: var(--height); */
-  /* margin: 0; */
 }
 
 .qs-container:hover {
@@ -30,8 +27,6 @@
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  /* height: var(--height); */
-  /* align-items: stretch; */
 }
 
 .qs-placeholder,
@@ -66,18 +61,15 @@
 }
 
 .qs-multi-value-clear {
-  border-radius: 50%;
-  min-width: 16px;
-  max-width: 16px;
-  height: 16px;
+  height: 20px;
 }
 
-.qs-multi-value-clear:hover {
-  background: #fff;
+.qs-multi-value-clear svg {
+  fill: #c5cacf;
 }
 
 .qs-multi-value-clear:hover svg {
-  fill: red;
+  fill: #2c3e50;
 }
 
 .qs-container input {
@@ -88,10 +80,6 @@
   line-height: var(--height);
   letter-spacing: -0.08px;
   font-size: 14px;
-  /* cursor: default; */
-  /* height: var(--height); */
-  /* padding: var(--padding); */
-  /* margin: 0; */
 }
 
 .qs-container input:focus {
@@ -117,7 +105,6 @@
   bottom: 11px;
   width: 20px;
   color: #c5cacf;
-  flex: none !important;
 }
 
 .qs-clear-button:hover {

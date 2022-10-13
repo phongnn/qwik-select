@@ -86,7 +86,7 @@ export const MultiValue = component$(
           <svg
             width="100%"
             height="100%"
-            viewBox="-2 -2 50 50"
+            viewBox="-2 -2 60 60"
             focusable="false"
             aria-hidden="true"
             role="presentation"
