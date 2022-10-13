@@ -19,7 +19,7 @@ You can use the built-in unstyled component or build your own UI component with 
 ## Usage
 
 ```javascript
-import { component$, useStyles$, useStore, mutable } from "@builder.io/qwik";
+import { component$, useStyles$, useStore } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 import styles from "qwik-select/style.css";
 
@@ -34,7 +34,7 @@ export default component$(() => {
     <div>
       <Select
         options={state.items}
-        value={mutable(state.selectedItem)}
+        value={state.selectedItem}
         onSelect$={(it) => (state.selectedItem = it)}
         onClear$={() => (state.selectedItem = undefined)}
       />

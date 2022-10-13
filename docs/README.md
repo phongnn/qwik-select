@@ -32,7 +32,7 @@ You can use the unstyled `Select` component or develop your own UI component wit
 `Select` is a controlled input, so you usually need to set the `value` prop and handle the `onSelect$` and probably `onClear$` events.
 
 ```javascript
-import { component$, useStyles$, useStore, mutable } from "@builder.io/qwik";
+import { component$, useStyles$, useStore } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 import styles from "qwik-select/style.css";
 
@@ -47,7 +47,7 @@ export default component$(() => {
     <div>
       <Select
         options={state.items}
-        value={mutable(state.selectedItem)}
+        value={state.selectedItem}
         onSelect$={(it) => (state.selectedItem = it)}
         onClear$={() => (state.selectedItem = undefined)}
       />

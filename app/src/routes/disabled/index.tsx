@@ -1,4 +1,4 @@
-import { component$, useStore, mutable, useStyles$ } from "@builder.io/qwik";
+import { component$, useStore, useStyles$ } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 import styles from "qwik-select/style.css";
 
@@ -33,9 +33,9 @@ export default component$(() => {
 
       <Select
         options={state.items}
-        value={mutable(state.selectedItem)}
+        value={state.selectedItem}
         onSelect$={(it) => (state.selectedItem = it)}
-        disabled={mutable(state.disabled)}
+        disabled={state.disabled}
       />
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>

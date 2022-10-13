@@ -10,7 +10,7 @@ interface SingleSelectControlProps<Option> {
   value?: Option;
   inputValue: string;
   loading: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   autofocus?: boolean;
   onClear$?: PropFunction<() => void>;
   optionLabelKey?: OptionLabelKey<Option>;

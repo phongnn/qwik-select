@@ -1,5 +1,5 @@
 // prettier-ignore
-import { PropFunction, Ref, component$, useRef, useClientEffect$, mutable } from "@builder.io/qwik";
+import { PropFunction, Ref, component$, useRef, useClientEffect$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "../../useSelect";
 import ClearButton from "./ClearButton";
@@ -11,7 +11,7 @@ interface MultiSelectControlProps<Option> {
   value: Option[];
   inputValue: string;
   loading: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   autofocus?: boolean;
   onUnselect$?: PropFunction<(opt: Option) => any>;
   onClear$?: PropFunction<() => any>;
@@ -36,7 +36,7 @@ const MultiSelectControl = component$(
                 : (opt[props.optionLabelKey!] as string);
             return (
               <MultiValue
-                label={mutable(label)}
+                label={label}
                 onClear$={() => {
                   if (props.onUnselect$) {
                     props.onUnselect$(opt);

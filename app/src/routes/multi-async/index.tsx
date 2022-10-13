@@ -1,4 +1,4 @@
-import { component$, useStore, mutable, $, useStyles$ } from "@builder.io/qwik";
+import { component$, useStore, $, useStyles$ } from "@builder.io/qwik";
 import { Select } from "qwik-select";
 import styles from "qwik-select/style.css";
 
@@ -37,7 +37,7 @@ export default component$(() => {
     <div>
       <Select
         fetchOptions$={filter}
-        value={mutable(state.selectedItems)}
+        value={state.selectedItems}
         onSelect$={(it) => (state.selectedItems = [...state.selectedItems, it])}
       />
     </div>

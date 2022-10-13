@@ -1,4 +1,4 @@
-import { component$, mutable, $ } from "@builder.io/qwik";
+import { component$, $ } from "@builder.io/qwik";
 
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
@@ -22,7 +22,6 @@ type SelectProps<Option> = UseSelectProps<Option> & {
 // "props is undefined" error in MenuItem's click event.
 const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const placeholder = props.placeholder ?? "Select...";
-  const disabled = props.disabled ?? false;
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
   const inputDebounceTime = props.inputDebounceTime ?? 200;
@@ -68,16 +67,16 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     : SingleSelectControl;
 
   return (
-    <Container ref={refs.containerRef} disabled={mutable(disabled)}>
+    <Container ref={refs.containerRef} disabled={props.disabled}>
       <div>
         <Control
           placeholder={placeholder}
           ref={refs.inputRef}
-          value={mutable(props.value) as any}
-          disabled={mutable(disabled)}
-          autofocus={mutable(props.autofocus)}
-          inputValue={mutable(state.inputValue)}
-          loading={mutable(state.loading)}
+          value={props.value as any}
+          disabled={props.disabled}
+          autofocus={props.autofocus}
+          inputValue={state.inputValue}
+          loading={state.loading}
           onUnselect$={handleOptionUnselect}
           onClear$={handleClear}
           optionLabelKey={optionLabelKey as any}
@@ -91,8 +90,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
                 <MenuItem
                   option={opt}
                   getOptionLabel={getOptionLabel}
-                  isSelected={mutable(isSelected)}
-                  isHovered={mutable(isHovered)}
+                  isSelected={isSelected}
+                  isHovered={isHovered}
                   onClick$={async () => {
                     if (props.onSelect$ && opt !== props.value) {
                       props.onSelect$(opt);
