@@ -16,7 +16,7 @@ const ClearButton = component$(
     });
 
     return (
-      <div class="qs-clear-button" ref={ref} data-testid="qwik-select-clear">
+      <div class="qs-clear-button" ref={ref}>
         <svg
           width="100%"
           height="100%"

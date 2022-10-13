@@ -56,7 +56,7 @@ describe("with no selected value", () => {
     cy.findByText("One").should("have.attr", "data-hovered", "true");
 
     // closes menu when click outside
-    cy.findByTestId("outside").click();
+    cy.get("#outside").click();
     cy.get(".qs-item").should("not.exist");
   });
 
@@ -173,12 +173,12 @@ describe("clearable", () => {
     cy.visit("/clearable");
     cy.wait(500);
 
-    cy.findByTestId("qwik-select-clear").click();
+    cy.get(".qs-clear-button").click();
     cy.wait(500);
 
     cy.findByText("Select an item.");
     // hide the clear button
-    cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+    cy.get(".qs-clear-button").should("not.exist");
   });
 
   it("clears selected value and removes focus", () => {
@@ -191,7 +191,7 @@ describe("clearable", () => {
     cy.get(".qs-item").should("have.length", 5);
 
     // clear selected value
-    cy.findByTestId("qwik-select-clear").click();
+    cy.get(".qs-clear-button").click();
     cy.wait(500);
 
     cy.findByText("Select an item.");
@@ -204,12 +204,12 @@ describe("clearable", () => {
     cy.wait(500);
 
     // clear button should initially appear
-    cy.findByTestId("qwik-select-clear");
+    cy.get(".qs-clear-button");
 
     // the button should disappears when user starts typing
     cy.get("input").type("abc");
     cy.wait(500);
-    cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+    cy.get(".qs-clear-button").should("not.exist");
   });
 
   it("clears selected value on Delete/Backspace", () => {
@@ -245,33 +245,33 @@ describe("events", () => {
 
     cy.get("input").type("a");
     cy.wait(500);
-    cy.findByTestId("log").should("have.text", "You've entered a");
+    cy.get("#log").should("have.text", "You've entered a");
     cy.get("input").type("b");
-    cy.findByTestId("log").should("have.text", "You've entered ab");
+    cy.get("#log").should("have.text", "You've entered ab");
     cy.get("input").type("{backspace}");
-    cy.findByTestId("log").should("have.text", "You've entered a");
+    cy.get("#log").should("have.text", "You've entered a");
     cy.get("input").type("{esc}");
     cy.wait(500);
-    cy.findByTestId("log").should("have.text", "");
+    cy.get("#log").should("have.text", "");
   });
 
   it("calls onFocus$ and onBlur$ event handler", () => {
     cy.visit("/events");
 
-    cy.findByTestId("log").should("have.text", "");
+    cy.get("#log").should("have.text", "");
 
     // workaround: a couple of clicks to get event handlers loaded
     cy.get("input").click();
-    cy.findByTestId("log").click();
+    cy.get("#log").click();
     cy.wait(2000);
 
     // should call onFocus$
     cy.get("input").click();
-    cy.findByTestId("log").should("have.text", "Focused.");
+    cy.get("#log").should("have.text", "Focused.");
 
     // should call onBlur$
-    cy.findByTestId("log").click();
-    cy.findByTestId("log").should("have.text", "Blurred.");
+    cy.get("#log").click();
+    cy.get("#log").should("have.text", "Blurred.");
   });
 });
 

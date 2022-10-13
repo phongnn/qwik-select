@@ -160,12 +160,12 @@ it("clears selected values", () => {
   cy.wait(500);
 
   // clear selected values
-  cy.findByTestId("qwik-select-clear").click();
+  cy.get(".qs-clear-button").click();
   cy.wait(500);
   const input = cy.findByPlaceholderText("Select...");
 
   // hide the clear button
-  cy.get("[data-testid='qwik-select-clear']").should("not.exist");
+  cy.get(".qs-clear-button").should("not.exist");
 
   // expect the menu to show all options
   input.type("{downArrow}");

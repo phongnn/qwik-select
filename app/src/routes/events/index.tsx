@@ -36,7 +36,7 @@ export default component$(() => {
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>
       )}
-      <div data-testid="log" class="mt-96 h-1">
+      <div id="log" style={{ marginTop: "24rem", height: "1rem" }}>
         {state.log}
       </div>
     </div>

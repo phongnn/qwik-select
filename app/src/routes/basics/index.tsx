@@ -32,7 +32,7 @@ export default component$(() => {
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>
       )}
-      <div data-testid="outside" class="mt-96 h-1"></div>
+      <div id="outside" style={{ marginTop: "24rem", height: "1rem" }}></div>
     </div>
   );
 });
