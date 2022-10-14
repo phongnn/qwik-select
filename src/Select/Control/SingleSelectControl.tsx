@@ -25,7 +25,8 @@ const SingleSelectControl = component$(
     const shouldShowLoading = props.loading;
     const shouldShowValue = hasValue && isBlankTextInput;
     const shouldShowPlaceholder = !hasValue && isBlankTextInput;
-    const shouldShowClearBtn = props.clearable && shouldShowValue;
+    const shouldShowClearBtn =
+      props.clearable && shouldShowValue && !shouldShowLoading;
     const label =
       selectedOption === undefined
         ? undefined

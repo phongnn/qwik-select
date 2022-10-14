@@ -53,6 +53,7 @@ export default component$(() => {
         inputDebounceTime={500}
         value={state.selectedItem}
         onSelect$={(it) => (state.selectedItem = it)}
+        onClear$={() => (state.selectedItem = undefined)}
       />
       {state.selectedItem && (
         <p>You've selected {(state.selectedItem as Item).label}.</p>

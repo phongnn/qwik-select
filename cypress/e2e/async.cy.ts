@@ -19,6 +19,23 @@ it("fetches and shows options", () => {
   cy.findByText("Two").should("have.attr", "data-hovered", "true");
 });
 
+it("hides clear button while loading", () => {
+  cy.visit("/async");
+  cy.wait(500);
+
+  // select an option, expect to see clear button
+  cy.get("input").click();
+  cy.wait(2000);
+  cy.findByText("Two").click();
+  cy.wait(500);
+  cy.get(".qs-clear-button");
+
+  // reopen the menu, expect to see the loading indicator, not the clear button
+  cy.get("input").click();
+  cy.get(".qs-clear-button").should("not.exist");
+  cy.get(".qs-spinner");
+});
+
 it("debounces fetch requests", () => {
   cy.visit("/async");
   cy.get("input").type("t").wait(200);

@@ -39,6 +39,7 @@ export default component$(() => {
         fetchOptions$={filter}
         value={state.selectedItems}
         onSelect$={(it) => (state.selectedItems = [...state.selectedItems, it])}
+        onClear$={() => (state.selectedItems = [])}
       />
     </div>
   );

@@ -24,7 +24,8 @@ const MultiSelectControl = component$(
     const selectedOptions = props.value;
     const shouldShowLoading = props.loading;
     const hasValues = selectedOptions.length > 0;
-    const shouldShowClearBtn = props.clearable && hasValues;
+    const shouldShowClearBtn =
+      props.clearable && hasValues && !shouldShowLoading;
 
     return (
       <div class="qs-multi-control">
