@@ -1,11 +1,9 @@
 // prettier-ignore
-import { useRef, useClientEffect$, $, QRL, Ref, PropFunction, useStore } from "@builder.io/qwik";
+import { useRef, useClientEffect$, $, Ref, PropFunction, useStore } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "./types";
-import {
-  useFilteredOptionsStore,
-  FilteredOptionsStoreConfig,
-} from "./filteredOptionsStore";
+// prettier-ignore
+import { useFilteredOptionsStore, FilteredOptionsStoreConfig } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
 function useIsOpenStore() {
@@ -43,7 +41,6 @@ interface UseSelectConfig<Option> {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   shouldFilterSelectedOptions?: boolean;
-  onOptionHover$?: QRL<(opt: Option, ctx: { menuEl?: HTMLElement }) => void>;
 }
 
 function useSelect<Option>(
@@ -225,13 +222,6 @@ function useSelect<Option>(
     }
   });
 
-  useClientEffect$(function triggerOptionHovered({ track }) {
-    const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
-    if (hoveredOption && config.onOptionHover$) {
-      config.onOptionHover$(hoveredOption, { menuEl: menuRef.current });
-    }
-  });
-
   /** OTHER ACTIONS (NOT RELATED TO STATE MANAGEMENT) */
   // these actions are QRLs (serializable) so they can be called from within event handlers
   const focus = $(() => {
@@ -248,12 +238,11 @@ function useSelect<Option>(
       inputRef,
       menuRef,
     },
-    state: {
-      isOpen: isOpenStore.value,
-      inputValue: inputValueStore.value,
-      filteredOptions: filteredOptionsStore.options,
-      loading: filteredOptionsStore.loading,
-      hoveredOption: hoveredOptionStore.hoveredOption,
+    stores: {
+      isOpenStore,
+      inputValueStore,
+      filteredOptionsStore,
+      hoveredOptionStore,
     },
     actions: { focus, blur },
   };

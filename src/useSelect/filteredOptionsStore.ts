@@ -57,7 +57,7 @@ function useFilteredOptionsStore<Option>(
         state.options = [];
         state.loading = true;
 
-        // debounce to avoid sending too many unnecessary requests
+        // debounce to avoid sending too many requests
         clearTimeout(internalState.inputDebounceTimer);
         // @ts-ignore
         internalState.inputDebounceTimer = setTimeout(async () => {
@@ -84,5 +84,5 @@ function useFilteredOptionsStore<Option>(
   };
 }
 
-export type { FilteredOptionsStoreConfig };
+export type { FilteredOptionsStoreConfig, FilteredOptionsStore };
 export { useFilteredOptionsStore };

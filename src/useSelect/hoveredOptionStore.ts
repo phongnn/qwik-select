@@ -5,7 +5,7 @@ interface HoveredOptionStore<Option> {
   hoveredOption?: Option;
 }
 
-export function useHoveredOptionStore<Option>(filteredOptionsStore: {
+function useHoveredOptionStore<Option>(filteredOptionsStore: {
   options: Option[];
 }) {
   const state = useStore<HoveredOptionStore<Option>>({
@@ -41,8 +41,9 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
     const delta = direction === "Down" ? 1 : -1;
     let index = state.hoveredOptionIndex + delta;
     if (index > filteredOptionsStore.options.length - 1) {
-      index = 0;
+      index = 0; // eslint-disable-line
     } else if (index < 0) {
+      // eslint-disable-next-line
       index = filteredOptionsStore.options.length - 1;
     }
     state.hoveredOptionIndex = index;
@@ -61,3 +62,6 @@ export function useHoveredOptionStore<Option>(filteredOptionsStore: {
   };
   return { hoveredOptionStore: state, actions };
 }
+
+export type { HoveredOptionStore };
+export { useHoveredOptionStore };

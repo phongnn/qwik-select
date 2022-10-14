@@ -1,4 +1,4 @@
-import { component$, $ } from "@builder.io/qwik";
+import { component$, $, useClientEffect$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
@@ -24,6 +24,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const placeholder = props.placeholder ?? "Select...";
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
+  // prettier-ignore
+  const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
   const inputDebounceTime = props.inputDebounceTime ?? 200;
   const shouldFilterSelectedOptions = props.shouldFilterSelectedOptions ?? true;
 
@@ -31,23 +33,25 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   // 12-Oct-2022: slot fallback content doesn't work - seems like a bug in Qwik
   const noOptionsMessage = "No options";
 
+  const { refs, stores, actions } = useSelect<Option>(props, {
+    optionLabelKey,
+    inputDebounceTime,
+    shouldFilterSelectedOptions,
+  });
   // prettier-ignore
-  const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
-  const scrollToHoveredOption = $(
-    (_: Option, ctx: { menuEl?: HTMLElement }) => {
-      const itemEl = ctx.menuEl?.querySelector('.qs-item[data-hovered="true"]');
+  const { isOpenStore, inputValueStore, filteredOptionsStore, hoveredOptionStore } = stores;
+
+  useClientEffect$(function scrollToHoveredOption({ track }) {
+    const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
+    if (hoveredOption) {
+      const itemEl = refs.menuRef.current?.querySelector(
+        '.qs-item[data-hovered="true"]'
+      );
       itemEl?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }
-  );
-
-  const { refs, state, actions } = useSelect<Option>(props, {
-    optionLabelKey,
-    inputDebounceTime,
-    shouldFilterSelectedOptions,
-    onOptionHover$: scrollToHoveredOption,
   });
 
   const handleOptionUnselect = $((opt: Option) => {
@@ -77,18 +81,18 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
           value={props.value as any}
           disabled={props.disabled}
           autofocus={props.autofocus}
-          inputValue={state.inputValue}
-          loading={state.loading}
+          inputValue={inputValueStore.value}
+          loading={filteredOptionsStore.loading}
           clearable={!!props.onClear$}
           onUnselect$={handleOptionUnselect}
           onClear$={handleClear}
           optionLabelKey={optionLabelKey as any}
         />
-        {state.isOpen && (
+        {isOpenStore.value === true && (
           <div class="qs-menu" ref={refs.menuRef}>
-            {state.filteredOptions.map((opt) => {
+            {filteredOptionsStore.options.map((opt) => {
               const isSelected = opt === props.value;
-              const isHovered = opt === state.hoveredOption;
+              const isHovered = opt === hoveredOptionStore.hoveredOption;
               return (
                 <MenuItem
                   option={opt}
@@ -104,7 +108,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
                 />
               );
             })}
-            {state.filteredOptions.length === 0 && (
+            {filteredOptionsStore.options.length === 0 && (
               <div class="qs-empty">{noOptionsMessage}</div>
             )}
           </div>
