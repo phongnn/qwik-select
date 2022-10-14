@@ -53,6 +53,19 @@ it("ignores fetched data when menu already closed", () => {
   cy.get(".qs-item").should("not.exist");
 });
 
+it("shows correct list when click then type", () => {
+  // NOTE: it's a race condition:
+  // click -> openMenu() -> filterOptions() returns all options
+  // type -> filterOptions() returns a subset of options
+  // expect: menu shows a subset of options
+  cy.visit("/async");
+  cy.wait(500);
+  cy.get("input").click().type("t");
+
+  cy.wait(2000);
+  cy.get(".qs-item").should("have.length", 2); // "Two", "Three"
+});
+
 it("can handle race condition", () => {
   cy.visit("/race-condition");
   cy.wait(500);

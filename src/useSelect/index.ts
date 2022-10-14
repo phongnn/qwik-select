@@ -3,7 +3,7 @@ import { useRef, useClientEffect$, $, Ref, PropFunction, useStore } from "@build
 
 import type { OptionLabelKey } from "./types";
 // prettier-ignore
-import { useFilteredOptionsStore, FilteredOptionsStoreConfig } from "./filteredOptionsStore";
+import { useFilteredOptionsStore, useAsyncFilteredOptionsStore } from "./filteredOptionsStore";
 import { useHoveredOptionStore } from "./hoveredOptionStore";
 
 function useIsOpenStore() {
@@ -47,14 +47,7 @@ function useSelect<Option>(
   props: UseSelectProps<Option>,
   config: UseSelectConfig<Option>
 ) {
-  const filteredOptionsStoreConfig: FilteredOptionsStoreConfig<Option> =
-    props.fetchOptions$
-      ? {
-          fetcher: props.fetchOptions$,
-          debounceTime: config.inputDebounceTime!,
-        }
-      : { options: props.options!, optionLabelKey: config.optionLabelKey! };
-
+  const isAsync = props.fetchOptions$ !== undefined;
   // filter selected options for multi-select
   const shouldFilterSelectedOptions =
     Array.isArray(props.value) && config.shouldFilterSelectedOptions;
@@ -73,7 +66,12 @@ function useSelect<Option>(
   const {
     filteredOptionsStore,
     actions: { filterOptions, clearFilter },
-  } = useFilteredOptionsStore(filteredOptionsStoreConfig);
+  } = isAsync
+    ? useAsyncFilteredOptionsStore({ fetcher: props.fetchOptions$! })
+    : useFilteredOptionsStore({
+        options: props.options!,
+        optionLabelKey: config.optionLabelKey!,
+      });
 
   const {
     hoveredOptionStore,
@@ -83,6 +81,8 @@ function useSelect<Option>(
       clearHoveredOption,
     },
   } = useHoveredOptionStore(filteredOptionsStore);
+
+  const internalState = useStore<{ inputDebounceTimer?: number }>({});
 
   /** PRIVATE ACTIONS */
   const filterSelectedOptions = shouldFilterSelectedOptions
@@ -101,10 +101,15 @@ function useSelect<Option>(
     : undefined;
 
   const openMenu = $(async () => {
-    // filter options before opening the menu to avoid flashing of "No options" message
-    await filterOptions(inputValueStore.value, filterSelectedOptions);
-    await setMenuOpen(true);
-    await hoverSelectedOrFirstOption(props.value);
+    if (!isAsync) {
+      // filter options before opening the menu to avoid flashing of "No options" message
+      await filterOptions(inputValueStore.value, filterSelectedOptions);
+      await setMenuOpen(true);
+      await hoverSelectedOrFirstOption(props.value);
+    } else {
+      filterOptions(inputValueStore.value, filterSelectedOptions);
+      await setMenuOpen(true);
+    }
   });
 
   const closeMenu = $(async () => {
@@ -175,11 +180,25 @@ function useSelect<Option>(
 
   const handleInputChange = $(async (event: Event) => {
     const inputValue = (event.target as HTMLInputElement).value;
+    const isMenuOpen = isOpenStore.value;
     await setInputValue(inputValue);
-    if (isOpenStore.value) {
-      filterOptions(inputValue, filterSelectedOptions);
+
+    if (!isAsync) {
+      if (isMenuOpen) {
+        filterOptions(inputValue, filterSelectedOptions);
+      } else {
+        openMenu();
+      }
     } else {
-      openMenu();
+      // debounce to avoid sending too many requests
+      clearTimeout(internalState.inputDebounceTimer);
+      // @ts-ignore
+      internalState.inputDebounceTimer = setTimeout(() => {
+        filterOptions(inputValue, filterSelectedOptions);
+      }, config.inputDebounceTime);
+      if (!isMenuOpen) {
+        setMenuOpen(true);
+      }
     }
   });
 
