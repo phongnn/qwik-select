@@ -2,7 +2,7 @@ import { component$, $, useClientEffect$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
-import Container from "./Container";
+// import Container from "./Container";
 import SingleSelectControl from "./Control/SingleSelectControl";
 import MultiSelectControl from "./Control/MultiSelectControl";
 import MenuItem from "./MenuItem";
@@ -22,6 +22,7 @@ type SelectProps<Option> = UseSelectProps<Option> & {
 // "props is undefined" error in MenuItem's click event.
 const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const placeholder = props.placeholder ?? "Select...";
+  const disabled = (props.disabled ?? false).toString();
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
   // prettier-ignore
@@ -38,13 +39,14 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     inputDebounceTime,
     shouldFilterSelectedOptions,
   });
+  const { containerRef, inputRef, menuRef } = refs;
   // prettier-ignore
   const { isOpenStore, inputValueStore, filteredOptionsStore, hoveredOptionStore } = stores;
 
   useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
     if (hoveredOption) {
-      const itemEl = refs.menuRef.current?.querySelector(
+      const itemEl = refs.menuRef.value?.querySelector(
         '.qs-item[data-hovered="true"]'
       );
       itemEl?.scrollIntoView({
@@ -73,48 +75,46 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
     : SingleSelectControl;
 
   return (
-    <Container ref={refs.containerRef} disabled={props.disabled}>
-      <div>
-        <Control
-          placeholder={placeholder}
-          ref={refs.inputRef}
-          value={props.value as any}
-          disabled={props.disabled}
-          autofocus={props.autofocus}
-          inputValue={inputValueStore.value}
-          loading={filteredOptionsStore.loading}
-          clearable={!!props.onClear$}
-          onUnselect$={handleOptionUnselect}
-          onClear$={handleClear}
-          optionLabelKey={optionLabelKey as any}
-        />
-        {isOpenStore.value === true && (
-          <div class="qs-menu" ref={refs.menuRef}>
-            {filteredOptionsStore.options.map((opt) => {
-              const isSelected = opt === props.value;
-              const isHovered = opt === hoveredOptionStore.hoveredOption;
-              return (
-                <MenuItem
-                  option={opt}
-                  getOptionLabel={getOptionLabel}
-                  isSelected={isSelected}
-                  isHovered={isHovered}
-                  onClick$={async () => {
-                    if (props.onSelect$ && opt !== props.value) {
-                      props.onSelect$(opt);
-                    }
-                    actions.blur();
-                  }}
-                />
-              );
-            })}
-            {filteredOptionsStore.options.length === 0 && (
-              <div class="qs-empty">{noOptionsMessage}</div>
-            )}
-          </div>
-        )}
-      </div>
-    </Container>
+    <div class="qs-container" ref={containerRef} data-disabled={disabled}>
+      <Control
+        placeholder={placeholder}
+        ref={inputRef}
+        value={props.value as any}
+        disabled={props.disabled}
+        autofocus={props.autofocus}
+        inputValue={inputValueStore.value}
+        loading={filteredOptionsStore.loading}
+        clearable={!!props.onClear$}
+        onUnselect$={handleOptionUnselect}
+        onClear$={handleClear}
+        optionLabelKey={optionLabelKey as any}
+      />
+      {isOpenStore.value === true && (
+        <div class="qs-menu" ref={menuRef}>
+          {filteredOptionsStore.options.map((opt) => {
+            const isSelected = opt === props.value;
+            const isHovered = opt === hoveredOptionStore.hoveredOption;
+            return (
+              <MenuItem
+                option={opt}
+                getOptionLabel={getOptionLabel}
+                isSelected={isSelected}
+                isHovered={isHovered}
+                onClick$={async () => {
+                  if (props.onSelect$ && opt !== props.value) {
+                    props.onSelect$(opt);
+                  }
+                  actions.blur();
+                }}
+              />
+            );
+          })}
+          {filteredOptionsStore.options.length === 0 && (
+            <div class="qs-empty">{noOptionsMessage}</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 });
 

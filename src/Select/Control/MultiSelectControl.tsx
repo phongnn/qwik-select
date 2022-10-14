@@ -1,12 +1,12 @@
 // prettier-ignore
-import { PropFunction, Ref, component$, useRef, useClientEffect$ } from "@builder.io/qwik";
+import { PropFunction, Signal, component$, useSignal, useClientEffect$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "../../useSelect";
 import ClearButton from "./ClearButton";
 import LoadingIndicator from "./LoadingIndicator";
 
 interface MultiSelectControlProps<Option> {
-  ref: Ref<HTMLInputElement>;
+  ref: Signal<HTMLInputElement | undefined>;
   placeholder: string;
   value: Option[];
   inputValue: string;
@@ -68,7 +68,7 @@ export const MultiValue = component$(
   (props: { label: string; onClear$?: PropFunction<() => any> }) => {
     // we use synchronous event here to stop it from propagating
     // to the container which would toggle the menu
-    const clearBtnRef = useRef<HTMLElement>();
+    const clearBtnRef = useSignal<HTMLElement>();
     useClientEffect$(() => {
       const handler = (event: Event) => {
         event.stopPropagation();
@@ -76,8 +76,8 @@ export const MultiValue = component$(
           props.onClear$();
         }
       };
-      clearBtnRef.current!.addEventListener("click", handler);
-      return () => clearBtnRef.current!.removeEventListener("click", handler);
+      clearBtnRef.value!.addEventListener("click", handler);
+      return () => clearBtnRef.value!.removeEventListener("click", handler);
     });
 
     return (

@@ -1,5 +1,5 @@
 // prettier-ignore
-import { useRef, useClientEffect$, $, Ref, PropFunction, useStore } from "@builder.io/qwik";
+import { useSignal, useClientEffect$, $, PropFunction, useStore } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "./types";
 // prettier-ignore
@@ -120,14 +120,14 @@ function useSelect<Option>(
   });
 
   /** EVENT HANDLERS */
-  const containerRef: Ref<HTMLElement> = useRef<HTMLElement>();
-  const inputRef: Ref<HTMLInputElement> = useRef<HTMLInputElement>();
-  const menuRef: Ref<HTMLElement> = useRef<HTMLElement>();
+  const containerRef = useSignal<HTMLElement | undefined>();
+  const inputRef = useSignal<HTMLInputElement | undefined>();
+  const menuRef = useSignal<HTMLElement | undefined>();
 
   const handleContainerClick = $((event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!menuRef.current?.contains(target)) {
-      inputRef.current?.focus();
+    if (!menuRef.value?.contains(target)) {
+      inputRef.value?.focus();
       if (isOpenStore.value) {
         closeMenu();
       } else {
@@ -139,7 +139,7 @@ function useSelect<Option>(
   const handleContainerPointerDown = $((event: PointerEvent) => {
     // avoid triggering "blur" event when user clicks on a menu item
     // otherwise the item's click event won't fire
-    if (event.target !== inputRef.current) {
+    if (event.target !== inputRef.value) {
       event.preventDefault();
     }
   });
@@ -217,20 +217,20 @@ function useSelect<Option>(
 
   // prettier-ignore
   useClientEffect$(() => {
-    containerRef.current?.addEventListener("click", handleContainerClick);
-    containerRef.current?.addEventListener("pointerdown", handleContainerPointerDown);
-    inputRef.current?.addEventListener("keydown", handleInputKeyDown);
-    inputRef.current?.addEventListener("input", handleInputChange);
-    inputRef.current?.addEventListener("focus", handleInputFocus);
-    inputRef.current?.addEventListener("blur", handleInputBlur); // focusout
+    containerRef.value?.addEventListener("click", handleContainerClick);
+    containerRef.value?.addEventListener("pointerdown", handleContainerPointerDown);
+    inputRef.value?.addEventListener("keydown", handleInputKeyDown);
+    inputRef.value?.addEventListener("input", handleInputChange);
+    inputRef.value?.addEventListener("focus", handleInputFocus);
+    inputRef.value?.addEventListener("blur", handleInputBlur); // focusout
 
     return () => {
-      containerRef.current?.removeEventListener("click", handleContainerClick);
-      containerRef.current?.removeEventListener("pointerdown", handleContainerPointerDown);
-      inputRef.current?.removeEventListener("keydown", handleInputKeyDown);
-      inputRef.current?.removeEventListener("input", handleInputChange);
-      inputRef.current?.removeEventListener("focus", handleInputFocus);
-      inputRef.current?.removeEventListener("blur", handleInputBlur);
+      containerRef.value?.removeEventListener("click", handleContainerClick);
+      containerRef.value?.removeEventListener("pointerdown", handleContainerPointerDown);
+      inputRef.value?.removeEventListener("keydown", handleInputKeyDown);
+      inputRef.value?.removeEventListener("input", handleInputChange);
+      inputRef.value?.removeEventListener("focus", handleInputFocus);
+      inputRef.value?.removeEventListener("blur", handleInputBlur);
     };
   });
 
@@ -244,11 +244,11 @@ function useSelect<Option>(
   /** OTHER ACTIONS (NOT RELATED TO STATE MANAGEMENT) */
   // these actions are QRLs (serializable) so they can be called from within event handlers
   const focus = $(() => {
-    inputRef.current?.focus();
+    inputRef.value?.focus();
   });
 
   const blur = $(() => {
-    inputRef.current?.blur();
+    inputRef.value?.blur();
   });
 
   return {
