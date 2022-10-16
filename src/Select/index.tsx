@@ -2,10 +2,8 @@ import { component$, $, useClientEffect$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
-// import Container from "./Container";
-import SingleSelectControl from "./Control/SingleSelectControl";
-import MultiSelectControl from "./Control/MultiSelectControl";
-import MenuItem from "./MenuItem";
+import SingleSelectControl from "./SingleSelectControl";
+import MultiSelectControl from "./MultiSelectControl";
 
 type SelectProps<Option> = UseSelectProps<Option> & {
   placeholder?: string;
@@ -14,7 +12,6 @@ type SelectProps<Option> = UseSelectProps<Option> & {
   optionLabelKey?: OptionLabelKey<Option>;
   inputDebounceTime?: number;
   shouldFilterSelectedOptions?: boolean;
-  // noOptionsMessage?: string;
 };
 
 // NOTE: the weird <Option, > syntax is to avoid error as JSX and TypeScript syntaxes clash.
@@ -25,8 +22,6 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   const disabled = (props.disabled ?? false).toString();
   const optionLabelKey =
     props.optionLabelKey ?? ("label" as OptionLabelKey<Option>);
-  // prettier-ignore
-  const getOptionLabel = (opt: Option) => typeof opt === "string" ? opt : opt[optionLabelKey] as string;
   const inputDebounceTime = props.inputDebounceTime ?? 200;
   const shouldFilterSelectedOptions = props.shouldFilterSelectedOptions ?? true;
 
@@ -46,9 +41,8 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   useClientEffect$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
     if (hoveredOption) {
-      const itemEl = refs.menuRef.value?.querySelector(
-        '.qs-item[data-hovered="true"]'
-      );
+      // prettier-ignore
+      const itemEl = menuRef.value?.querySelector('.qs-item[data-hovered="true"]');
       itemEl?.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -94,19 +88,22 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
           {filteredOptionsStore.options.map((opt) => {
             const isSelected = opt === props.value;
             const isHovered = opt === hoveredOptionStore.hoveredOption;
+            // prettier-ignore
+            const label = typeof opt === "string" ? opt : opt[optionLabelKey] as string;
             return (
-              <MenuItem
-                option={opt}
-                getOptionLabel={getOptionLabel}
-                isSelected={isSelected}
-                isHovered={isHovered}
+              <div
+                class="qs-item"
+                data-selected={isSelected.toString()}
+                data-hovered={isHovered.toString()}
                 onClick$={async () => {
                   if (props.onSelect$ && opt !== props.value) {
                     props.onSelect$(opt);
                   }
                   actions.blur();
                 }}
-              />
+              >
+                {label}
+              </div>
             );
           })}
           {filteredOptionsStore.options.length === 0 && (

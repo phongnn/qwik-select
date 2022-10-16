@@ -1,7 +1,7 @@
 // prettier-ignore
 import { PropFunction, Signal, component$, useSignal, useClientEffect$ } from "@builder.io/qwik";
 
-import type { OptionLabelKey } from "../../useSelect";
+import type { OptionLabelKey } from "../useSelect";
 import ClearButton from "./ClearButton";
 import LoadingIndicator from "./LoadingIndicator";
 
@@ -31,10 +31,8 @@ const MultiSelectControl = component$(
       <div class="qs-multi-control">
         <div style={{ display: "contents" }}>
           {selectedOptions.map((opt) => {
-            const label =
-              typeof opt === "string"
-                ? opt
-                : (opt[props.optionLabelKey!] as string);
+            // prettier-ignore
+            const label = typeof opt === "string" ? opt : (opt[props.optionLabelKey!] as string);
             return (
               <MultiValue
                 label={label}

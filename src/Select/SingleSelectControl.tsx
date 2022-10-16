@@ -1,6 +1,6 @@
 import { PropFunction, Signal, component$ } from "@builder.io/qwik";
 
-import type { OptionLabelKey } from "../../useSelect";
+import type { OptionLabelKey } from "../useSelect";
 import ClearButton from "./ClearButton";
 import LoadingIndicator from "./LoadingIndicator";
 
