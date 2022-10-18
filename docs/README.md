@@ -3,7 +3,7 @@
 A select/autocomplete component for Qwik apps.
 
 - Single select
-- Multi-select (coming soon)
+- Multi-select
 - Typeahead
 - Async support (dynamically fetching data)
 - Zero dependencies
@@ -25,11 +25,11 @@ A select/autocomplete component for Qwik apps.
 
 ## Documentation
 
-You can use the unstyled `Select` component or develop your own UI component with the `useSelect` hook.
+Use the unstyled `Select` component or develop your own UI component with the `useSelect` hook.
 
 ### Select component
 
-`Select` is a controlled input, so you usually need to set the `value` prop and handle the `onSelect$` and probably `onClear$` events.
+`Select` is a controlled input, so you usually need to set the `value` prop and handle the `onSelect$`, `onClear$` and probably `onUnselect$` events. Note that `value` can be an array in case of multi-select.
 
 ```javascript
 import { component$, useStyles$, useStore } from "@builder.io/qwik";
@@ -58,27 +58,28 @@ export default component$(() => {
 
 #### Props
 
-| Prop              | Type                                | Description                                                                                                          |
-| ----------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| options           | Option[]                            | Required unless `fetchOptions$` is provided. List of selectable options. Options can be plain strings or objects.    |
-| fetchOptions$     | (text: string) => Promise<Option[]> | Required unless `options` is provided. Asynchronously fetches a list of options as the user types in the text input. |
-| value             | Option \| `undefined`               | The selected option.                                                                                                 |
-| autofocus         | boolean                             | Optional. The text input should get focus when the page loads. Default: false.                                       |
-| disabled          | boolean                             | Optional. The Select component should be disabled. Default: false.                                                   |
-| placeholder       | string                              | Optional. The placeholder text. Default: "Select...".                                                                |
-| noOptionsMessage  | string                              | Optional. The text to display when no options are available. Default: "No options".                                  |
-| optionLabelKey    | OptionLabelKey&lt;Option&gt;        | Optional. Only needed when options are objects. Default: "label".                                                    |
-| inputDebounceTime | number                              | Optional. Only needed when `fetchOptions$` is provided. Default: 200 (milliseconds).                                 |
+| Prop                        | Type                                | Description                                                                                                          |
+| --------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| options                     | Option[]                            | Required unless `fetchOptions$` is provided. List of selectable options. Options can be plain strings or objects.    |
+| fetchOptions$               | (text: string) => Promise<Option[]> | Required unless `options` is provided. Asynchronously fetches a list of options as the user types in the text input. |
+| value                       | Option[] \| Option \| `undefined`   | Required. The selected option(s).                                                                                    |
+| autofocus                   | boolean                             | Optional. The text input should get focus when the page loads. Default: false.                                       |
+| disabled                    | boolean                             | Optional. The Select component should be disabled. Default: false.                                                   |
+| placeholder                 | string                              | Optional. The placeholder text. Default: "Select...".                                                                |
+| optionLabelKey              | `keyof` Option                      | Optional. Only needed when options are objects. Default: "label".                                                    |
+| inputDebounceTime           | number                              | Optional. Only needed when `fetchOptions$` is provided. Default: 200 (milliseconds).                                 |
+| shouldFilterSelectedOptions | boolean                             | Optional. Don't show selected options in the menu. Applicable for multi-select only. Default: true.                  |
 
 #### Events
 
-| Event     | Callback               | Description                                  |
-| --------- | ---------------------- | -------------------------------------------- |
-| onSelect$ | (value: Option) => any | fires when an option is selected.            |
-| onClear$  | () => any              | fires when the Select component is cleared.  |
-| onInput$  | (text: string) => any  | fires when the user types in the text input. |
-| onFocus$  | () => any              | fires when the text input gets focused.      |
-| onBlur$   | () => any              | fires when the text input has lost focus.    |
+| Event      | Callback               | Description                                                           |
+| ---------- | ---------------------- | --------------------------------------------------------------------- |
+| onSelect$  | (value: Option) => any | fires when an option is selected.                                     |
+| onClear$   | () => any              | fires when the Select component is cleared.                           |
+| onUnselect | (value: Option) => any | fires when an option is unselected. Applicable for multi-select only. |
+| onInput$   | (text: string) => any  | fires when the user types in the text input.                          |
+| onFocus$   | () => any              | fires when the text input gets focused.                               |
+| onBlur$    | () => any              | fires when the text input has lost focus.                             |
 
 #### Styling
 
@@ -102,7 +103,7 @@ export default component$(() => {
 
 ### useSelect hook
 
-If the built-in `Select` component doesn't meet your requirements, you can opt to use the `useSelect` hook which provides the core functionality without UI. For an example of how to use the hook, check out the [`Select` component's source code](https://github.com/phongnn/qwik-select/blob/release/src/Select/index.tsx).
+If the built-in `Select` component doesn't meet your requirements, you can opt to use the `useSelect` hook which provides the core functionality without an UI. For an example of how to use the hook, check out the [`Select` component's source code](https://github.com/phongnn/qwik-select/blob/release/src/Select/index.tsx).
 
 ## Acknowledgements
 

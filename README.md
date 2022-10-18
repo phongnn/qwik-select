@@ -5,7 +5,7 @@ A select/autocomplete component for Qwik apps.
 You can use the built-in unstyled component or build your own UI component with the core hook.
 
 - Single select
-- Multi-select (coming soon)
+- Multi-select
 - Typeahead
 - Async support (dynamically fetching data)
 - Zero dependencies
