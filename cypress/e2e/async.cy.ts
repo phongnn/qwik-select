@@ -104,3 +104,14 @@ it("can handle race condition", () => {
   // it should display the result of the 2nd request
   cy.get(".qs-item").should("have.length", 1); // "Three"
 });
+
+it("scrolls to selected option when menu opens", () => {
+  cy.visit("/async-scroll");
+  cy.wait(500);
+
+  // open the menu, wait for items to be loaded
+  // expect the selected option to be visible
+  cy.get("input").click();
+  cy.wait(1000);
+  cy.get(".qs-item:nth-child(8)").should("be.visible"); // "Eight"
+});

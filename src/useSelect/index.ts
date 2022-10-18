@@ -48,9 +48,10 @@ function useSelect<Option>(
   config: UseSelectConfig<Option>
 ) {
   const isAsync = props.fetchOptions$ !== undefined;
-  // filter selected options for multi-select
-  const shouldFilterSelectedOptions =
-    Array.isArray(props.value) && config.shouldFilterSelectedOptions;
+  const isMultiSelect = Array.isArray(props.value);
+  const hasSingleValue = !isMultiSelect && !!props.value;
+  // prettier-ignore
+  const shouldFilterSelectedOptions = isMultiSelect && config.shouldFilterSelectedOptions;
 
   /** STATE MANAGEMENT */
   const {
@@ -89,7 +90,7 @@ function useSelect<Option>(
     ? $((options: Option[]) =>
         options.filter((opt) => {
           const selectedOptions = props.value as Option[];
-          if (typeof opt === "string") {
+          if (!isAsync || typeof opt === "string") {
             return selectedOptions.includes(opt) === false;
           } else {
             return selectedOptions.every(
@@ -162,12 +163,10 @@ function useSelect<Option>(
     } else if (event.key === "Backspace" || event.key === "Delete") {
       // prettier-ignore
       if (inputValueStore.value === "") {
-        if (props.value && !Array.isArray(props.value) && props.onClear$) {
-          // single-select: clear selected option
+        if (hasSingleValue && props.onClear$) {
           props.onClear$();
         } else if (Array.isArray(props.value) && props.value.length > 0 && props.onUnselect$) {
-          // multi-select: remove the last selected option
-          props.onUnselect$(props.value[props.value.length - 1]);
+          props.onUnselect$(props.value[props.value.length - 1]); // remove the last selected option
         }
         if (isOpenStore.value) {
           closeMenu()
@@ -235,9 +234,17 @@ function useSelect<Option>(
   });
 
   useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
-    track(() => filteredOptionsStore.options);
-    if (isOpenStore.value) {
-      hoverSelectedOrFirstOption(props.value);
+    const filteredOptions = track(() => filteredOptionsStore.options);
+    if (filteredOptions.length > 0 && isOpenStore.value) {
+      const shouldFindByLabel = isAsync && hasSingleValue;
+      // prettier-ignore
+      const selectedOpt = shouldFindByLabel
+        // @ts-ignore
+        ? filteredOptions.find((o) => o[config.optionLabelKey!] === props.value[config.optionLabelKey!])
+        : props.value;
+
+      // let the list render first before scrolling to the selected option
+      setTimeout(() => hoverSelectedOrFirstOption(selectedOpt));
     }
   });
 
