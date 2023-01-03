@@ -34,7 +34,7 @@ Use the unstyled `Select` component or develop your own UI component with the `u
 ```javascript
 import { component$, useStyles$, useStore } from "@builder.io/qwik";
 import { Select } from "qwik-select";
-import styles from "qwik-select/style.css";
+import styles from "qwik-select/style.css?inline";
 
 export default component$(() => {
   const state = useStore({

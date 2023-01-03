@@ -21,7 +21,7 @@ You can use the built-in unstyled component or build your own UI component with 
 ```javascript
 import { component$, useStyles$, useStore } from "@builder.io/qwik";
 import { Select } from "qwik-select";
-import styles from "qwik-select/style.css";
+import styles from "qwik-select/style.css?inline";
 
 export default component$(() => {
   const state = useStore({
