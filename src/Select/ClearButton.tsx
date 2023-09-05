@@ -1,12 +1,12 @@
 // prettier-ignore
-import { component$, PropFunction, useClientEffect$, useSignal } from "@builder.io/qwik";
+import { component$, PropFunction, useVisibleTask$, useSignal } from "@builder.io/qwik";
 
 const ClearButton = component$(
   (props: { onClick$: PropFunction<() => any> }) => {
     // we use synchronous event here to stop it from propagating
     // to the container which would toggle the menu
     const ref = useSignal<HTMLElement>();
-    useClientEffect$(() => {
+    useVisibleTask$(() => {
       const handler = (event: Event) => {
         event.stopPropagation();
         props.onClick$();

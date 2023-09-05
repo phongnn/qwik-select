@@ -1,5 +1,5 @@
 // prettier-ignore
-import { PropFunction, Signal, component$, useSignal, useClientEffect$ } from "@builder.io/qwik";
+import { PropFunction, Signal, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "../useSelect";
 import ClearButton from "./ClearButton";
@@ -67,7 +67,7 @@ export const MultiValue = component$(
     // we use synchronous event here to stop it from propagating
     // to the container which would toggle the menu
     const clearBtnRef = useSignal<HTMLElement>();
-    useClientEffect$(() => {
+    useVisibleTask$(() => {
       const handler = (event: Event) => {
         event.stopPropagation();
         if (props.onClear$) {

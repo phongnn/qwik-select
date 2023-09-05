@@ -48,7 +48,7 @@
     "@builder.io/qwik": "^0.11.1"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.11.1",
+    "@builder.io/qwik": "1.2.10",
     "@builder.io/qwik-city": "0.0.112",
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
@@ -60,6 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
     "@vitest/coverage-c8": "^0.26.3",
+    "cp": "^0.2.0",
     "cypress": "^12.2.0",
     "eslint": "^8.31.0",
     "eslint-plugin-qwik": "^0.16.1",
