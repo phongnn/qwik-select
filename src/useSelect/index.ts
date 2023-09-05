@@ -1,5 +1,5 @@
 // prettier-ignore
-import { useSignal, useClientEffect$, $, PropFunction, useStore } from "@builder.io/qwik";
+import { useSignal, useVisibleTask$, $, PropFunction, useStore } from "@builder.io/qwik";
 
 import type { OptionLabelKey } from "./types";
 // prettier-ignore
@@ -215,7 +215,7 @@ function useSelect<Option>(
   });
 
   // prettier-ignore
-  useClientEffect$(() => {
+  useVisibleTask$(() => {
     containerRef.value?.addEventListener("click", handleContainerClick);
     containerRef.value?.addEventListener("pointerdown", handleContainerPointerDown);
     inputRef.value?.addEventListener("keydown", handleInputKeyDown);
@@ -233,7 +233,7 @@ function useSelect<Option>(
     };
   });
 
-  useClientEffect$(function updateHoveredOptionWhenListChange({ track }) {
+  useVisibleTask$(function updateHoveredOptionWhenListChange({ track }) {
     const filteredOptions = track(() => filteredOptionsStore.options);
     if (filteredOptions.length > 0 && isOpenStore.value) {
       const shouldFindByLabel = isAsync && hasSingleValue;

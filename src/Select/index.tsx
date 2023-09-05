@@ -1,4 +1,4 @@
-import { component$, $, useClientEffect$ } from "@builder.io/qwik";
+import { component$, $, useVisibleTask$ } from "@builder.io/qwik";
 
 import type { OptionLabelKey, UseSelectProps } from "../useSelect";
 import { useSelect } from "../useSelect";
@@ -38,7 +38,7 @@ const Select = component$(<Option,>(props: SelectProps<Option>) => {
   // prettier-ignore
   const { isOpenStore, inputValueStore, filteredOptionsStore, hoveredOptionStore } = stores;
 
-  useClientEffect$(function scrollToHoveredOption({ track }) {
+  useVisibleTask$(function scrollToHoveredOption({ track }) {
     const hoveredOption = track(() => hoveredOptionStore.hoveredOption);
     if (hoveredOption) {
       // prettier-ignore
